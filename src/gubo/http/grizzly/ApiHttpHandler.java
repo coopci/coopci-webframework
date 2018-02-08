@@ -4,34 +4,33 @@ import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 public class ApiHttpHandler extends NannyHttpHandler {
 
+
+	public ObjectMapper getObjectMapper() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+		return objectMapper;
+	}
+	
     // subclass "can" override this method to custom serialization.
-    public void sendContent(Object o, Request req, Response res) throws IOException {
+    public void sendContent(Object o, Request req, Response response) throws IOException {
         if (o == null) {
-            res.setStatus(HttpStatus.METHOD_NOT_ALLOWED_405);
+        	response.setStatus(HttpStatus.METHOD_NOT_ALLOWED_405);
         }
         
-        if (o instanceof String) {
-            this.sendContent((String)o, req, res);
-        } else {
-            this.sendContent("not implemented yet.", req, res);
-        }
-            
+        ObjectMapper mapper = getObjectMapper();
+        String content = mapper.writeValueAsString(o);
         
+        response.setCharacterEncoding("utf-8");
+        response.setContentType("application/json");
+        response.getWriter().write(content);
     }
-    
-    
-    public void sendContent(String s, Request req, Response response) throws IOException {
-        response.setContentType("text/plain");
-        response.setContentLength(s.length());
-        response.getWriter().write(s);
-        
-    }
-    
-    
     
     public void serveHead(Request req, Response res) throws Exception {
         Object o = this.doHead(req, res);
