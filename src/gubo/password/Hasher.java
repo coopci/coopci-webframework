@@ -57,6 +57,11 @@ public class Hasher {
     public String encode(String password, String salt) {
         return this.encode(password, salt, this.DEFAULT_ITERATIONS);
     }
+    
+    public String encode(String password) throws NoSuchAlgorithmException {
+    	String salt = SaltGenerator.generate(16);
+        return this.encode(password, salt, this.DEFAULT_ITERATIONS);
+    }
 
     public boolean checkPassword(String password, String hashedPassword) {
         // hashedPassword consist of: ALGORITHM, ITERATIONS_NUMBER, SALT and
