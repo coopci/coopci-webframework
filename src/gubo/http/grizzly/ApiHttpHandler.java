@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 
 public class ApiHttpHandler extends NannyHttpHandler {
 
@@ -81,6 +82,14 @@ public class ApiHttpHandler extends NannyHttpHandler {
     public Object doDelete(Request req, Response res) throws Exception {
         return null;
     }
+    
+    public HashMap<String, Object> getOKResponse() {
+    	HashMap<String, Object> ret = new HashMap<String, Object>();
+    	ret.put("code", "200");
+    	ret.put("message", "OK");
+    	return ret;
+    }
+    
     
     
 }
