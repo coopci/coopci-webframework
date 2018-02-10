@@ -136,11 +136,23 @@ public class ResultSetMapper<T> {
 			stmt.setObject(idx, p);	
 			++idx;
 		}
-		
 		ResultSet rs = stmt.executeQuery();
 		List<T> pojolist = this.mapRersultSetToObject(rs, outputClass);
-		
 		return pojolist;
+	}
+	
+	public T loadPojo(Connection dbconn, Class<?> outputClass, String sql, Object ...params) throws SQLException {
 		
+		PreparedStatement stmt = dbconn.prepareStatement(sql);
+		int idx = 1;
+		for (Object p : params) {
+			stmt.setObject(idx, p);	
+			++idx;
+		}
+		ResultSet rs = stmt.executeQuery();
+		List<T> pojolist = this.mapRersultSetToObject(rs, outputClass);
+		if (pojolist.isEmpty())
+			return null;
+		return pojolist.get(0);
 	}
 }
