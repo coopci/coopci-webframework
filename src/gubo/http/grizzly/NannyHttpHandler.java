@@ -2,6 +2,7 @@ package gubo.http.grizzly;
 
 import gubo.exceptions.BadParameterException;
 import gubo.exceptions.RequiredParameterException;
+import gubo.session.SessonManager;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -15,7 +16,10 @@ import org.glassfish.grizzly.http.util.HttpStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class NannyHttpHandler extends HttpHandler {
-
+	SessonManager sessonManager = new SessonManager();
+	public SessonManager getNannySessionManager() {
+		return this.sessonManager;
+	}
 	public void serveHead(Request req, Response res) throws Exception {
 		res.setStatus(HttpStatus.METHOD_NOT_ALLOWED_405);
 	}
@@ -158,5 +162,4 @@ public class NannyHttpHandler extends HttpHandler {
         response.setContentType("application/json");
         response.getWriter().write(content);
 	}
-	
 }
