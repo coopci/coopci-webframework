@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.glassfish.grizzly.http.server.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -202,6 +203,47 @@ public class QueryStringBinder {
 		return;
 	}
 
+	
+	
+	public void bind(Request req, Object pojo) throws Exception {
+		Binding binding = this.getBinding(pojo);
+		HashSet<Field> requiredFields = binding.getRequiredFieldsChecking();
+
+		
+		for (String pn : req.getParameterNames()) {
+
+			String fieldname = pn;
+			String value = req.getParameter(pn);
+
+			IQueryStringFieldParser parser = binding.getParser(fieldname);
+			if (parser == null) {
+				// System.out.println("parser == null: " + fieldname);
+				continue;
+			}
+			Object parsedValue = null;
+			try {
+				parsedValue = parser.parse(value);
+
+			} catch (Exception ex) {
+				if (!parser.getIgnoreMalFormat()) {
+					throw ex;
+				} else {
+					continue;
+				}
+			}
+			parser.getField().set(pojo, parsedValue);
+			requiredFields.remove(parser.getField());
+		}
+
+		if (requiredFields.size() > 0) {
+			throw this.makeRequiredParametersMissingException(requiredFields);
+
+		}
+		return;
+	}
+
+	
+	
 	// 只是开发的时候生成测试用例用，没做cache，如果需要生产用，需要加上cache功能。
 	public String toQueryString(Object pojo, String dateFormatStr) throws IllegalArgumentException, IllegalAccessException, UnsupportedEncodingException {
 		if (dateFormatStr == null)
