@@ -1,6 +1,7 @@
 package gubo.http.grizzly;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.HashMap;
 
 import org.glassfish.grizzly.http.server.Request;
@@ -8,7 +9,10 @@ import org.glassfish.grizzly.http.server.Response;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
+import gubo.db.ISimplePoJo;
 import gubo.exceptions.SessionNotFoundException;
+import gubo.http.querystring.QueryStringBinder;
+import gubo.jdbc.mapping.InsertStatementGenerator;
 
 public class ApiHttpHandler extends NannyHttpHandler {
 
@@ -112,6 +116,36 @@ public class ApiHttpHandler extends NannyHttpHandler {
 		ret.put("handler", ApiHttpHandler.class);
 		this.sendContent(ret, req, res);
 		return;
+	}
+	
+
+	public HashMap<String, Object> createSimplePojo(Request request, Class<? extends ISimplePoJo> clazz) throws Exception {
+		
+		ISimplePoJo newPojo = clazz.newInstance();
+		
+		QueryStringBinder binder = new QueryStringBinder();
+		binder.bind(request, newPojo);
+		
+		Connection dbconn = this.getConnection();
+		try {
+			dbconn.setAutoCommit(false);
+			
+			
+			InsertStatementGenerator g = new InsertStatementGenerator();
+			Long newid = g.insertNew(dbconn, newPojo);
+			newPojo.setId(newid);
+			dbconn.commit();
+			
+			HashMap<String, Object> ret = this.getOKResponse();
+			ret.put("data", newPojo);
+			return ret;
+
+		} catch (Exception ex) {
+			dbconn.rollback();
+			throw ex;
+		} finally {
+			dbconn.close();
+		}
 	}
 	
 }
