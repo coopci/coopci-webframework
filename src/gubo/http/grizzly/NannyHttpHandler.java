@@ -2,9 +2,13 @@ package gubo.http.grizzly;
 
 import gubo.exceptions.BadParameterException;
 import gubo.exceptions.RequiredParameterException;
+import gubo.exceptions.SessionNotFound;
 import gubo.session.SessonManager;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
 import org.glassfish.grizzly.http.Method;
@@ -14,6 +18,8 @@ import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import db.DBUtils;
 
 public class NannyHttpHandler extends HttpHandler {
 	SessonManager sessonManager = new SessonManager();
@@ -161,5 +167,17 @@ public class NannyHttpHandler extends HttpHandler {
         response.setCharacterEncoding("utf-8");
         response.setContentType("application/json");
         response.getWriter().write(content);
+	}
+	
+	public Connection getConnection() throws SQLException {
+		return null;
+	}
+	// 从req里找sessid，并返回 返回关联的 user id。
+	// 如果找不到就抛异常。
+	public Long requireLogin(Request req) throws RequiredParameterException, NoSuchAlgorithmException, SQLException, SessionNotFound {
+		String sess_id = this.getRequiredStringParameter(req, "sess_id");
+		Connection dbconn = this.getConnection();
+		dbconn.setAutoCommit(true);
+		return this.getNannySessionManager().get(dbconn, sess_id, true);
 	}
 }

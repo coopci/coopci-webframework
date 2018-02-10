@@ -8,6 +8,8 @@ import org.glassfish.grizzly.http.server.Response;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
+import gubo.exceptions.SessionNotFound;
+
 public class ApiHttpHandler extends NannyHttpHandler {
 
 	// subclass "can" override this method to custom serialization.
@@ -80,6 +82,8 @@ public class ApiHttpHandler extends NannyHttpHandler {
 	public void handleException(Exception ex, Request req, Response res) throws Exception {
 		if (ex instanceof MySQLIntegrityConstraintViolationException) {
 			this.handleException((MySQLIntegrityConstraintViolationException) ex, req, res);
+		} else if (ex instanceof SessionNotFound ) {
+			this.handleException((SessionNotFound) ex, req, res);
 		} else {
 			super.handleException(ex, req, res);
 		}
@@ -97,4 +101,17 @@ public class ApiHttpHandler extends NannyHttpHandler {
 		}
 		throw ex;
 	}
+	
+	public void handleException(SessionNotFound ex, Request req, Response res)
+			throws Exception {
+		
+		String msg = ex.getMessage();
+		HashMap<String, Object> ret = getErrorResponse("500", msg);
+		ret.put("message", "SessionNotFound");
+		ret.put("sess_id", ex.getSessid());
+		ret.put("handler", ApiHttpHandler.class);
+		this.sendContent(ret, req, res);
+		return;
+	}
+	
 }

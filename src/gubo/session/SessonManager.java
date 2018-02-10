@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import gubo.exceptions.SessionNotFound;
+
 public class SessonManager {
 	public static String generateNewSessionId() {
 		String sessid = UUID.randomUUID().toString();
@@ -24,7 +26,7 @@ public class SessonManager {
 		_cache.remove(sess_id);
 	}
 	
-	public Long get(Connection dbconn, String sess_id) throws NoSuchAlgorithmException, SQLException {
+	public Long get(Connection dbconn, String sess_id, boolean throwOnNotFound) throws NoSuchAlgorithmException, SQLException, SessionNotFound {
 		Long uid = this._cache.get(sess_id);
 		if (uid == null) {
 			SessionUser su = SessionUser.loadBySessionid(dbconn, sess_id);
@@ -33,8 +35,12 @@ public class SessonManager {
 				uid = su.user_id;
 			}
 		}
-		return uid;
 		
+		if (uid == null && throwOnNotFound) {
+			throw new SessionNotFound(sess_id);
+			
+		}
+		return uid;
 	}
 	
 }
