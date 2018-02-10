@@ -4,7 +4,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.Column;
@@ -124,5 +126,17 @@ public class InsertStatementGenerator {
 		return stmt;
 	}
 	
-	
+	public Long insertNew(Connection dbconn, Object pojo) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, SQLException {
+		
+		Long newId = null;
+
+		InsertStatementGenerator generator = new InsertStatementGenerator();
+		PreparedStatement insertStmt = generator.prepareInsertStatement(dbconn, pojo, Statement.RETURN_GENERATED_KEYS);
+		insertStmt.execute();
+		ResultSet rs = insertStmt.getGeneratedKeys();
+		if (rs != null && rs.next()) {
+			newId = rs.getLong(1);
+		}
+		return newId;
+	}
 }

@@ -52,7 +52,7 @@ public class NannyHttpHandler extends HttpHandler {
 
 	@Override
 	public void service(Request req, Response res) throws Exception {
-
+		req.setCharacterEncoding("utf-8");
 		Method method = req.getMethod();
 
 		try {
