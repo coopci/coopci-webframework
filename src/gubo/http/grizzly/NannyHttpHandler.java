@@ -2,7 +2,7 @@ package gubo.http.grizzly;
 
 import gubo.exceptions.BadParameterException;
 import gubo.exceptions.RequiredParameterException;
-import gubo.exceptions.SessionNotFound;
+import gubo.exceptions.SessionNotFoundException;
 import gubo.session.SessonManager;
 
 import java.io.IOException;
@@ -174,7 +174,7 @@ public class NannyHttpHandler extends HttpHandler {
 	}
 	// 从req里找sessid，并返回 返回关联的 user id。
 	// 如果找不到就抛异常。
-	public Long requireLogin(Request req) throws RequiredParameterException, NoSuchAlgorithmException, SQLException, SessionNotFound {
+	public Long requireLogin(Request req) throws RequiredParameterException, NoSuchAlgorithmException, SQLException, SessionNotFoundException {
 		String sess_id = this.getRequiredStringParameter(req, "sess_id");
 		Connection dbconn = this.getConnection();
 		dbconn.setAutoCommit(true);

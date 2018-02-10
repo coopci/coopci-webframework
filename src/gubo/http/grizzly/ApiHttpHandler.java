@@ -8,7 +8,7 @@ import org.glassfish.grizzly.http.server.Response;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
-import gubo.exceptions.SessionNotFound;
+import gubo.exceptions.SessionNotFoundException;
 
 public class ApiHttpHandler extends NannyHttpHandler {
 
@@ -82,8 +82,8 @@ public class ApiHttpHandler extends NannyHttpHandler {
 	public void handleException(Exception ex, Request req, Response res) throws Exception {
 		if (ex instanceof MySQLIntegrityConstraintViolationException) {
 			this.handleException((MySQLIntegrityConstraintViolationException) ex, req, res);
-		} else if (ex instanceof SessionNotFound ) {
-			this.handleException((SessionNotFound) ex, req, res);
+		} else if (ex instanceof SessionNotFoundException ) {
+			this.handleException((SessionNotFoundException) ex, req, res);
 		} else {
 			super.handleException(ex, req, res);
 		}
@@ -102,7 +102,7 @@ public class ApiHttpHandler extends NannyHttpHandler {
 		throw ex;
 	}
 	
-	public void handleException(SessionNotFound ex, Request req, Response res)
+	public void handleException(SessionNotFoundException ex, Request req, Response res)
 			throws Exception {
 		
 		String msg = ex.getMessage();
