@@ -2,7 +2,6 @@ package gubo.exceptions;
 
 public class LoginAuthFailedException extends Exception {
 
-
 	/**
 	 * 
 	 */
