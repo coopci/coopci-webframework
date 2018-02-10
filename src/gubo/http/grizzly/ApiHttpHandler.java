@@ -5,6 +5,7 @@ import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -13,24 +14,10 @@ import java.util.HashMap;
 public class ApiHttpHandler extends NannyHttpHandler {
 
 
-	public ObjectMapper getObjectMapper() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-		return objectMapper;
-	}
 	
     // subclass "can" override this method to custom serialization.
     public void sendContent(Object o, Request req, Response response) throws IOException {
-        if (o == null) {
-        	response.setStatus(HttpStatus.METHOD_NOT_ALLOWED_405);
-        }
-        
-        ObjectMapper mapper = getObjectMapper();
-        String content = mapper.writeValueAsString(o);
-        
-        response.setCharacterEncoding("utf-8");
-        response.setContentType("application/json");
-        response.getWriter().write(content);
+        this.sendJson(o, req, response);
     }
     
     public void serveHead(Request req, Response res) throws Exception {
@@ -89,7 +76,29 @@ public class ApiHttpHandler extends NannyHttpHandler {
     	ret.put("message", "OK");
     	return ret;
     }
-    
+
+	public void handleException(Exception ex, Request req, Response res) throws Exception {
+		if (ex instanceof MySQLIntegrityConstraintViolationException) {
+			this.handleException((MySQLIntegrityConstraintViolationException) ex, req, res);
+		}
+		return;
+	}
+	public HashMap<String, Object> getErrorResponse(String error, String message) {
+    	HashMap<String, Object> ret = new HashMap<String, Object>();
+    	ret.put("code", error);
+    	ret.put("message", message);
+    	return ret;
+    }
+	public void handleException(MySQLIntegrityConstraintViolationException ex, Request req, Response res) throws Exception {
+		if (ex.getSQLState().equals("23000")) {
+			String msg = ex.getMessage();
+			HashMap<String, Object> ret = getErrorResponse("500", msg);
+			this.sendContent(ret, req, res);
+			return;
+		}
+		throw ex;
+	}
+
     
     
 }
