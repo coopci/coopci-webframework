@@ -1,8 +1,6 @@
 package gubo.http.querystring.demo;
 
 import gubo.http.querystring.QueryStringField;
-import gubo.http.querystring.parsers.DatetimeParser;
-import gubo.http.querystring.parsers.LongFieldParser;
 
 import java.util.Date;
 

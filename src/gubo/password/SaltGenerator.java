@@ -25,9 +25,6 @@ public class SaltGenerator {
 	}
 	
 	public static void main(String[] argv) throws Exception {
-		
-		SaltGenerator generator = new SaltGenerator();
-		
 		for (int i = 0; i < 1000; ++i) {
 			String salt = SaltGenerator.generate(12);
 			System.out.println("salt: " + salt);

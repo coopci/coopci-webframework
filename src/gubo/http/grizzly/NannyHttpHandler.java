@@ -19,8 +19,6 @@ import org.glassfish.grizzly.http.util.HttpStatus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import db.DBUtils;
-
 public class NannyHttpHandler extends HttpHandler {
 	SessonManager sessonManager = new SessonManager();
 	public SessonManager getNannySessionManager() {

@@ -21,10 +21,10 @@ public class ListAllHandler extends BaseApiHander {
 		this.clazz = clazz;
 	}
 	
-
+	
 	@Override
 	public Object doGet(Request request, Response response) throws Exception {
-		Long uid = this.requireLogin(request);
+		
 		Entity entity = clazz.getAnnotation(Entity.class);
 		String tablename = entity.name();
 		if (tablename == null || tablename.length() == 0) {

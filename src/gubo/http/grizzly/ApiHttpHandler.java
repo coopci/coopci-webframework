@@ -1,7 +1,9 @@
 package gubo.http.grizzly;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 
 import org.glassfish.grizzly.http.server.Request;
@@ -10,6 +12,7 @@ import org.glassfish.grizzly.http.server.Response;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import gubo.db.ISimplePoJo;
+import gubo.exceptions.RequiredParameterException;
 import gubo.exceptions.SessionNotFoundException;
 import gubo.http.querystring.QueryStringBinder;
 import gubo.jdbc.mapping.InsertStatementGenerator;
@@ -147,5 +150,18 @@ public class ApiHttpHandler extends NannyHttpHandler {
 			dbconn.close();
 		}
 	}
-	
+
+
+	public boolean needLogin = true;
+	public void checkPermission(Long uid) {
+		
+	}
+	public Long authCheck(Request request) throws NoSuchAlgorithmException, RequiredParameterException, SQLException, SessionNotFoundException {
+		if (this.needLogin) {
+			Long uid = this.requireLogin(request);
+			this.checkPermission(uid);
+			return uid;
+		}
+		return null;
+	}
 }

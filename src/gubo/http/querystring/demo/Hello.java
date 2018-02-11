@@ -2,9 +2,6 @@ package gubo.http.querystring.demo;
 
 import gubo.http.querystring.QueryStringBinder;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Date;
 
 public class Hello {
