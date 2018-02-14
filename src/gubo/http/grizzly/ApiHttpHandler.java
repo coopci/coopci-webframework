@@ -12,6 +12,7 @@ import org.glassfish.grizzly.http.server.Response;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import gubo.db.ISimplePoJo;
+import gubo.exceptions.ApiException;
 import gubo.exceptions.RequiredParameterException;
 import gubo.exceptions.SessionNotFoundException;
 import gubo.http.querystring.QueryStringBinder;
@@ -25,26 +26,36 @@ public class ApiHttpHandler extends NannyHttpHandler {
 	}
 
 	public void serveHead(Request req, Response res) throws Exception {
+		this.setCrossDomain(res);
 		Object o = this.doHead(req, res);
 		this.sendContent(o, req, res);
 	}
 
 	public void serveGet(Request req, Response res) throws Exception {
+		this.setCrossDomain(res);
 		Object o = this.doGet(req, res);
 		this.sendContent(o, req, res);
 	}
 
 	public void servePost(Request req, Response res) throws Exception {
+		this.setCrossDomain(res);
 		Object o = this.doPost(req, res);
 		this.sendContent(o, req, res);
 	}
 
 	public void servePut(Request req, Response res) throws Exception {
+		this.setCrossDomain(res);
 		Object o = this.doPut(req, res);
 		this.sendContent(o, req, res);
 	}
+	
+	public void setCrossDomain (Response response) {
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		
+	}
 
 	public void serveDelete(Request req, Response res) throws Exception {
+		this.setCrossDomain(res);
 		Object o = this.doDelete(req, res);
 		this.sendContent(o, req, res);
 	}
@@ -76,10 +87,12 @@ public class ApiHttpHandler extends NannyHttpHandler {
 		HashMap<String, Object> ret = new HashMap<String, Object>();
 		ret.put("code", "200");
 		ret.put("message", "OK");
+		HashMap<String, Object> data = new HashMap<String, Object>();
+		ret.put("data", data);
 		return ret;
 	}
 
-	public HashMap<String, Object> getErrorResponse(String error, String message) {
+	public HashMap<String, Object> getErrorResponse(int error, String message) {
 		HashMap<String, Object> ret = new HashMap<String, Object>();
 		ret.put("code", error);
 		ret.put("message", message);
@@ -91,17 +104,32 @@ public class ApiHttpHandler extends NannyHttpHandler {
 			this.handleException((MySQLIntegrityConstraintViolationException) ex, req, res);
 		} else if (ex instanceof SessionNotFoundException ) {
 			this.handleException((SessionNotFoundException) ex, req, res);
+		} else if (ex instanceof ApiException) {
+			this.handleException((ApiException) ex, req, res);
 		} else {
 			super.handleException(ex, req, res);
 		}
 		return;
 	}
-
+	
+	
+	public void handleException(ApiException ex, Request req, Response res)
+			throws Exception {
+		String msg = ex.getMessage();
+		HashMap<String, Object> ret = getErrorResponse(ex.getCode(), msg);
+		ret.put("message", msg);
+		ret.put("handler", ApiHttpHandler.class);
+		res.setStatus(ex.getHttpStatus());
+		this.sendContent(ret, req, res);
+		return;
+	}
+	
+	
 	public void handleException(MySQLIntegrityConstraintViolationException ex, Request req, Response res)
 			throws Exception {
 		if (ex.getSQLState().equals("23000")) {
 			String msg = ex.getMessage();
-			HashMap<String, Object> ret = getErrorResponse("500", msg);
+			HashMap<String, Object> ret = getErrorResponse(500, msg);
 			ret.put("handler", ApiHttpHandler.class);
 			this.sendContent(ret, req, res);
 			return;
@@ -113,7 +141,7 @@ public class ApiHttpHandler extends NannyHttpHandler {
 			throws Exception {
 		
 		String msg = ex.getMessage();
-		HashMap<String, Object> ret = getErrorResponse("500", msg);
+		HashMap<String, Object> ret = getErrorResponse(500, msg);
 		ret.put("message", "SessionNotFound");
 		ret.put("sess_id", ex.getSessid());
 		ret.put("handler", ApiHttpHandler.class);

@@ -1,6 +1,6 @@
 package gubo.exceptions;
 
-public class LoginAuthFailedException extends Exception {
+public class LoginAuthFailedException extends ApiException {
 
 	/**
 	 * 
@@ -13,7 +13,13 @@ public class LoginAuthFailedException extends Exception {
 	public String getMessage() {
 		return "用户名或密码错误";
 	}
-	public String getCode() {
-		return "401";
+	@Override
+	public int getCode() {
+		return 401;
+	}
+	
+	@Override
+	public int getHttpStatus() {
+		return 401;
 	}
 }

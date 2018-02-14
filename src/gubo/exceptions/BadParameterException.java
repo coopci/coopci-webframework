@@ -1,6 +1,6 @@
 package gubo.exceptions;
 
-public class BadParameterException extends Exception {
+public class BadParameterException extends ApiException {
 
 	/**
 	 * 
@@ -15,8 +15,8 @@ public class BadParameterException extends Exception {
 	public String getMessage() {
 		return this.message;
 	}
-	
-	public String getCode() {
-		return "400";
+	@Override
+	public int getCode() {
+		return 400;
 	}
 }
