@@ -14,6 +14,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLDecoder;
 import java.util.Date;
+import java.util.Map;
+import java.util.Set;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -196,15 +198,13 @@ public class QueryStringBinder {
 			requiredFields.remove(parser.getField());
 		}
 
-		if (requiredFields.size() > 0) {
+		if (requiredFields.size() > 0 && !this.ignoreRequiredCheck) {
 			throw this.makeRequiredParametersMissingException(requiredFields);
-
 		}
 		return;
 	}
 
-	
-	
+	public boolean ignoreRequiredCheck = false;
 	public void bind(Request req, Object pojo) throws Exception {
 		Binding binding = this.getBinding(pojo);
 		HashSet<Field> requiredFields = binding.getRequiredFieldsChecking();
@@ -235,13 +235,89 @@ public class QueryStringBinder {
 			requiredFields.remove(parser.getField());
 		}
 
-		if (requiredFields.size() > 0) {
+		if (requiredFields.size() > 0 && !this.ignoreRequiredCheck) {
 			throw this.makeRequiredParametersMissingException(requiredFields);
-
 		}
 		return;
 	}
 
+	public void bind(Request req, Object pojo, Set<String> allowedFields) throws Exception {
+		Binding binding = this.getBinding(pojo);
+		HashSet<Field> requiredFields = binding.getRequiredFieldsChecking();
+
+		
+		for (String pn : req.getParameterNames()) {
+
+			if (allowedFields != null && 
+					!allowedFields.contains(pn)) {
+				continue;
+			}
+			String fieldname = pn;
+			String value = req.getParameter(pn);
+
+			IQueryStringFieldParser parser = binding.getParser(fieldname);
+			if (parser == null) {
+				// System.out.println("parser == null: " + fieldname);
+				continue;
+			}
+			Object parsedValue = null;
+			try {
+				parsedValue = parser.parse(value);
+
+			} catch (Exception ex) {
+				if (!parser.getIgnoreMalFormat()) {
+					throw ex;
+				} else {
+					continue;
+				}
+			}
+			parser.getField().set(pojo, parsedValue);
+			requiredFields.remove(parser.getField());
+		}
+
+		if (requiredFields.size() > 0 && !this.ignoreRequiredCheck) {
+			throw this.makeRequiredParametersMissingException(requiredFields);
+		}
+		return;
+	}
+	
+	
+	public void bind(Map<String, String> data, Object pojo) throws Exception {
+		Binding binding = this.getBinding(pojo);
+		HashSet<Field> requiredFields = binding.getRequiredFieldsChecking();
+
+		
+		for (String pn : data.keySet()) {
+
+			String fieldname = pn;
+			String value = data.get(pn);
+
+			IQueryStringFieldParser parser = binding.getParser(fieldname);
+			if (parser == null) {
+				// System.out.println("parser == null: " + fieldname);
+				continue;
+			}
+			Object parsedValue = null;
+			try {
+				parsedValue = parser.parse(value);
+
+			} catch (Exception ex) {
+				if (!parser.getIgnoreMalFormat()) {
+					throw ex;
+				} else {
+					continue;
+				}
+			}
+			parser.getField().set(pojo, parsedValue);
+			requiredFields.remove(parser.getField());
+		}
+
+		if (requiredFields.size() > 0 && !this.ignoreRequiredCheck) {
+			throw this.makeRequiredParametersMissingException(requiredFields);
+		}
+		return;
+	}
+	
 	
 	
 	// 只是开发的时候生成测试用例用，没做cache，如果需要生产用，需要加上cache功能。
