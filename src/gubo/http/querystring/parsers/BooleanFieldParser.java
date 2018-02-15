@@ -22,7 +22,7 @@ public class BooleanFieldParser extends BaseQueryStringFieldParser{
 	@Override
 	public Object parse(String s) throws ParseException {
 		s = s.toLowerCase();
-		if(dict.contains(s)) {
+		if(dict.containsKey(s)) {
 			return dict.get(s);
 		}
 		throw new java.text.ParseException("Unparseable boolean: " + s, 0);
