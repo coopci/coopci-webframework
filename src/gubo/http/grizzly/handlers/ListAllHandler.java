@@ -13,7 +13,10 @@ import db.ShadowMerchant;
 import api.handlers.BaseApiHander;
 import gubo.db.ISimplePoJo;
 import gubo.jdbc.mapping.ResultSetMapper;
-
+/**
+ *	列出被@Entity的类对应的表中的所有数据。
+ * 
+ **/
 public class ListAllHandler extends BaseApiHander {
 	
 	Class<? extends ISimplePoJo> clazz;
