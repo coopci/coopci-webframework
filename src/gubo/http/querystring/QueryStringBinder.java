@@ -283,6 +283,9 @@ public class QueryStringBinder {
 	
 	
 	public void bind(Map<String, String> data, Object pojo) throws Exception {
+		if (data == null) {
+			return;
+		}
 		Binding binding = this.getBinding(pojo);
 		HashSet<Field> requiredFields = binding.getRequiredFieldsChecking();
 
