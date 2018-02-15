@@ -12,6 +12,7 @@ import org.glassfish.grizzly.http.server.Response;
 
 import db.ShadowMerchant;
 import api.handlers.BaseApiHander;
+import gubo.db.IConnectionProvider;
 import gubo.db.ISimplePoJo;
 import gubo.http.grizzly.ApiHttpHandler;
 import gubo.http.querystring.QueryStringBinder;
@@ -41,7 +42,9 @@ public class UpdateByIdHandler extends ApiHttpHandler {
 	 * @param allowedFields null表示可以对任何列做更新，长度为0的数组表示不允许对任何列做更新，其他情况表示可以对指定的列做更新。
 	 * 
 	 **/
-	public UpdateByIdHandler(Class<? extends ISimplePoJo> clazz, String[] allowedFields, HashMap<String, String> overrideFields) {
+	public UpdateByIdHandler(Class<? extends ISimplePoJo> clazz, 
+			IConnectionProvider connectionProvider,
+			String[] allowedFields, HashMap<String, String> overrideFields) {
 		this.clazz = clazz;
 		if (allowedFields == null) {
 			this.allowedFields = null;	
@@ -52,11 +55,13 @@ public class UpdateByIdHandler extends ApiHttpHandler {
 			}
 		}
 		this.overrideFields = overrideFields;
+		this.setConnectionProvider(connectionProvider);
 	}
 	
 	
 	@Override
 	public Object doPost(Request request, Response response) throws Exception {
+		this.authCheck(request);
 		String id = this.getRequiredStringParameter(request, "id");
 		Entity entity = clazz.getAnnotation(Entity.class);
 		String tablename = entity.name();
