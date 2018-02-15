@@ -24,6 +24,16 @@ import gubo.jdbc.mapping.UpdateStatementGenerator;
 public class UpdateByIdHandler extends BaseApiHander {
 	private final Class<? extends ISimplePoJo> clazz;
 	private final HashSet<String> allowedFields;
+	public HashSet<String> getAllowedFields() {
+		return allowedFields;
+	}
+
+
+	public HashMap<String, String> getOverrideFields() {
+		return overrideFields;
+	}
+
+
 	private final HashMap<String, String> overrideFields;
 	/**
 	 *
@@ -63,9 +73,9 @@ public class UpdateByIdHandler extends BaseApiHander {
 			
 			QueryStringBinder binder = new QueryStringBinder();
 			binder.ignoreRequiredCheck=true;
-			binder.bind(request, pojo, this.allowedFields);
+			binder.bind(request, pojo, this.getAllowedFields());
 			
-			binder.bind(this.overrideFields, pojo);
+			binder.bind(this.getOverrideFields(), pojo);
 			
 			
 			UpdateStatementGenerator.update(dbconn, pojo);
