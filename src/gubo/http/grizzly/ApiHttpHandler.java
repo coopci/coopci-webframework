@@ -85,7 +85,8 @@ public class ApiHttpHandler extends NannyHttpHandler {
 
 	public HashMap<String, Object> getOKResponse() {
 		HashMap<String, Object> ret = new HashMap<String, Object>();
-		ret.put("code", "200");
+		// ret.put("code", "200");
+		ret.put("status", 200);
 		ret.put("message", "OK");
 		HashMap<String, Object> data = new HashMap<String, Object>();
 		ret.put("data", data);
