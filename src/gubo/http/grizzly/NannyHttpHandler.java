@@ -176,6 +176,10 @@ public class NannyHttpHandler extends HttpHandler {
 		String sess_id = this.getRequiredStringParameter(req, "sess_id");
 		Connection dbconn = this.getConnection();
 		dbconn.setAutoCommit(true);
-		return this.getNannySessionManager().get(dbconn, sess_id, true);
+		try {
+			return this.getNannySessionManager().get(dbconn, sess_id, true);
+		} finally {
+			dbconn.close();
+		}
 	}
 }
