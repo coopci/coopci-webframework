@@ -13,6 +13,7 @@ import org.glassfish.grizzly.http.server.Response;
 import db.ShadowMerchant;
 import api.handlers.BaseApiHander;
 import gubo.db.ISimplePoJo;
+import gubo.http.grizzly.ApiHttpHandler;
 import gubo.http.querystring.QueryStringBinder;
 import gubo.jdbc.mapping.ResultSetMapper;
 import gubo.jdbc.mapping.UpdateStatementGenerator;
@@ -21,7 +22,7 @@ import gubo.jdbc.mapping.UpdateStatementGenerator;
  *  只对作为参数给出的id的行做更新。
  * 
  **/
-public class UpdateByIdHandler extends BaseApiHander {
+public class UpdateByIdHandler extends ApiHttpHandler {
 	private final Class<? extends ISimplePoJo> clazz;
 	private final HashSet<String> allowedFields;
 	public HashSet<String> getAllowedFields() {
