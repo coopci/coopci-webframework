@@ -170,7 +170,7 @@ public class NannyHttpHandler extends HttpHandler {
 	public Connection getConnection() throws SQLException {
 		return null;
 	}
-	// 从req里找sessid，并返回 返回关联的 user id。
+	// 从req里找sessid，并返回关联的 user id。
 	// 如果找不到就抛异常。
 	public Long requireLogin(Request req) throws RequiredParameterException, NoSuchAlgorithmException, SQLException, SessionNotFoundException {
 		String sess_id = this.getRequiredStringParameter(req, "sess_id");
