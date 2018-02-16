@@ -119,7 +119,8 @@ public class ApiHttpHandler extends NannyHttpHandler {
 		String msg = ex.getMessage();
 		HashMap<String, Object> ret = getErrorResponse(ex.getCode(), msg);
 		ret.put("message", msg);
-		ret.put("handler", ApiHttpHandler.class);
+		ret.put("exception-handler", ApiHttpHandler.class);
+		ret.put("handler", this.getClass().toString());
 		res.setStatus(ex.getHttpStatus());
 		this.sendContent(ret, req, res);
 		return;
