@@ -10,4 +10,6 @@ public interface IQueryStringFieldParser {
 	Field getField();
 	void setIgnoreMalFormat(boolean v);
 	boolean getIgnoreMalFormat();
+	public boolean isCanBeBlank();
+	public void setCanBeBlank(boolean canBeBlank);
 }

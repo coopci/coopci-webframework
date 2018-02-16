@@ -31,4 +31,14 @@ public abstract class BaseQueryStringFieldParser implements
 		this.field = field;
 	}
 
+	boolean canBeBlank = true;
+
+	public boolean isCanBeBlank() {
+		return canBeBlank;
+	}
+
+	public void setCanBeBlank(boolean canBeBlank) {
+		this.canBeBlank = canBeBlank;
+	}
+
 }

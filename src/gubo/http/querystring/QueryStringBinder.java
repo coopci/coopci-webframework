@@ -119,6 +119,7 @@ public class QueryStringBinder {
 			IQueryStringFieldParser deserializerObj = deserializerClass.newInstance();
 			if (anno != null) {
 				deserializerObj.setIgnoreMalFormat(anno.ignoreMalFormat());
+				deserializerObj.setCanBeBlank(anno.canBeBlank());
 			}
 
 			deserializerObj.setField(f);
@@ -180,7 +181,9 @@ public class QueryStringBinder {
 
 			IQueryStringFieldParser parser = binding.getParser(fieldname);
 			if (parser == null) {
-				// System.out.println("parser == null: " + fieldname);
+				continue;
+			}
+			if (value.length() == 0 && !parser.isCanBeBlank() ) {
 				continue;
 			}
 			Object parsedValue = null;
@@ -218,6 +221,10 @@ public class QueryStringBinder {
 			IQueryStringFieldParser parser = binding.getParser(fieldname);
 			if (parser == null) {
 				// System.out.println("parser == null: " + fieldname);
+				continue;
+			}
+			
+			if (value.length() == 0 && !parser.isCanBeBlank() ) {
 				continue;
 			}
 			Object parsedValue = null;
@@ -260,6 +267,10 @@ public class QueryStringBinder {
 				// System.out.println("parser == null: " + fieldname);
 				continue;
 			}
+
+			if (value.length() == 0 && !parser.isCanBeBlank() ) {
+				continue;
+			}
 			Object parsedValue = null;
 			try {
 				parsedValue = parser.parse(value);
@@ -298,6 +309,10 @@ public class QueryStringBinder {
 			IQueryStringFieldParser parser = binding.getParser(fieldname);
 			if (parser == null) {
 				// System.out.println("parser == null: " + fieldname);
+				continue;
+			}
+
+			if (value.length() == 0 && !parser.isCanBeBlank() ) {
 				continue;
 			}
 			Object parsedValue = null;
