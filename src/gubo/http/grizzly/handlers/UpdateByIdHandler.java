@@ -78,7 +78,7 @@ public class UpdateByIdHandler extends ApiHttpHandler {
 					"select * from `" + tablename + "` where id=?;", id);
 			
 			if (pojo == null) {
-				throw new ObjectNotFoundException(tablename);
+				throw new ObjectNotFoundException("Not Found: " + tablename + ", id=" + id);
 			}
 			QueryStringBinder binder = new QueryStringBinder();
 			binder.ignoreRequiredCheck=true;
