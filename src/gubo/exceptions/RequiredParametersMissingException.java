@@ -2,7 +2,7 @@ package gubo.exceptions;
 
 import java.util.HashSet;
 
-public class RequiredParametersMissingException extends RuntimeExceptionWithCustomContext {
+public class RequiredParametersMissingException extends ApiException {
 
 	
 
@@ -22,7 +22,6 @@ public class RequiredParametersMissingException extends RuntimeExceptionWithCust
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(this.getCustomContext());
 		sb.append("\nThese required parameters are missing: ");
 		boolean isFirst = true;
 		for (String p : missingParamters) {
@@ -33,5 +32,28 @@ public class RequiredParametersMissingException extends RuntimeExceptionWithCust
 		}
 		String ret = sb.toString();
 		return ret;
+	}
+
+	@Override
+	public String getMessage() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\nThese required parameters are missing: ");
+		boolean isFirst = true;
+		for (String p : missingParamters) {
+			if (!isFirst)
+				sb.append(", ");
+			sb.append(p);
+			isFirst = false;
+		}
+		String ret = sb.toString();
+		return ret;
+	}
+
+	public int getHttpStatus() {
+		return 400;
+	}
+	
+	public int getCode() {
+		return 400;
 	}
 }
