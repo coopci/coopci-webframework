@@ -14,6 +14,7 @@ import db.ShadowMerchant;
 import api.handlers.BaseApiHander;
 import gubo.db.IConnectionProvider;
 import gubo.db.ISimplePoJo;
+import gubo.exceptions.ObjectNotFoundException;
 import gubo.http.grizzly.ApiHttpHandler;
 import gubo.http.querystring.QueryStringBinder;
 import gubo.jdbc.mapping.ResultSetMapper;
@@ -76,7 +77,9 @@ public class UpdateByIdHandler extends ApiHttpHandler {
 			Object pojo = mapper.loadPojo(dbconn, clazz,
 					"select * from `" + tablename + "` where id=?;", id);
 			
-			
+			if (pojo == null) {
+				throw new ObjectNotFoundException(tablename);
+			}
 			QueryStringBinder binder = new QueryStringBinder();
 			binder.ignoreRequiredCheck=true;
 			binder.bind(request, pojo, this.getAllowedFields());
