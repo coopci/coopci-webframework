@@ -336,6 +336,22 @@ public class QueryStringBinder {
 
 	public static class JDBCWhere {
 		String whereClause = "";
+		public String getWhereClause() {
+			return whereClause;
+		}
+
+		public void setWhereClause(String whereClause) {
+			this.whereClause = whereClause;
+		}
+
+		public Object[] getParams() {
+			return params;
+		}
+
+		public void setParams(Object[] params) {
+			this.params = params;
+		}
+
 		Object[] params = new Object[0];
 
 		public JDBCWhere() {
