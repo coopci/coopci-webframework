@@ -1,6 +1,6 @@
 package gubo.exceptions;
 
-public class BadParameterException extends ApiException {
+public class IntegrityViolatedException extends ApiException {
 
 	/**
 	 * 
@@ -8,7 +8,7 @@ public class BadParameterException extends ApiException {
 	private static final long serialVersionUID = 428638368019065199L;
 	protected String message;
 
-	public BadParameterException(String message) {
+	public IntegrityViolatedException(String message) {
 		super();
 		this.message = message;
 	}
