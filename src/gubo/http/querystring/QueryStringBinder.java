@@ -13,21 +13,22 @@ import gubo.http.querystring.parsers.StringFieldParser;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-import java.text.SimpleDateFormat;
-import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.glassfish.grizzly.http.server.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class QueryStringBinder {
-	public static Logger logger = LoggerFactory.getLogger(QueryStringBinder.class);
+	public static Logger logger = LoggerFactory
+			.getLogger(QueryStringBinder.class);
 
 	public static class Binding {
 		Class<?> clazz;
@@ -52,9 +53,9 @@ public class QueryStringBinder {
 		}
 	}
 
-	public Binding constructBinding(Object pojo) throws InstantiationException, IllegalAccessException {
+	public Binding constructBinding(Class<? extends Object> clazz)
+			throws InstantiationException, IllegalAccessException {
 		Binding binding = new Binding();
-		Class<? extends Object> clazz = pojo.getClass();
 		binding.clazz = clazz;
 
 		Field[] fields = clazz.getFields();
@@ -68,7 +69,8 @@ public class QueryStringBinder {
 			if (anno == null) {
 				// System.out.println("anno == null: " + f.getName());
 
-				logger.debug("anno == null, class: {}, field name: {} ", clazz.getName(), f.getName());
+				logger.debug("anno == null, class: {}, field name: {} ",
+						clazz.getName(), f.getName());
 				continue;
 			}
 
@@ -86,7 +88,8 @@ public class QueryStringBinder {
 
 			// System.out.println("queryStrfieldName = " + queryStrfieldName);
 
-			Class<? extends IQueryStringFieldParser> deserializerClass = anno.deserializer();
+			Class<? extends IQueryStringFieldParser> deserializerClass = anno
+					.deserializer();
 			if (deserializerClass == NullParser.class) {
 				if (f.getType() == String.class) {
 					deserializerClass = StringFieldParser.class;
@@ -117,7 +120,8 @@ public class QueryStringBinder {
 
 			// System.out.println("deserializerClass = " + deserializerClass);
 
-			IQueryStringFieldParser deserializerObj = deserializerClass.newInstance();
+			IQueryStringFieldParser deserializerObj = deserializerClass
+					.newInstance();
 			if (anno != null) {
 				deserializerObj.setIgnoreMalFormat(anno.ignoreMalFormat());
 				deserializerObj.setCanBeBlank(anno.canBeBlank());
@@ -129,21 +133,31 @@ public class QueryStringBinder {
 		return binding;
 	}
 
+	public Binding constructBinding(Object pojo) throws InstantiationException,
+			IllegalAccessException {
+		return constructBinding(pojo.getClass());
+	}
+
 	static ConcurrentHashMap<Class<?>, Binding> _cachedBindings = new ConcurrentHashMap<Class<?>, Binding>();
 
-	public Binding getBinding(Object pojo) throws InstantiationException, IllegalAccessException {
-		Binding ret = _cachedBindings.get(pojo.getClass());
+	public Binding getBinding(Class<? extends Object> clazz)
+			throws InstantiationException, IllegalAccessException {
+		Binding ret = _cachedBindings.get(clazz);
 		if (ret != null) {
 			return ret;
 		}
-		ret = constructBinding(pojo);
-		_cachedBindings.put(pojo.getClass(), ret);
-
+		ret = constructBinding(clazz);
+		_cachedBindings.put(clazz, ret);
 		return ret;
-
 	}
 
-	RequiredParametersMissingException makeRequiredParametersMissingException(HashSet<Field> missingFields) {
+	public Binding getBinding(Object pojo) throws InstantiationException,
+			IllegalAccessException {
+		return getBinding(pojo.getClass());
+	}
+
+	RequiredParametersMissingException makeRequiredParametersMissingException(
+			HashSet<Field> missingFields) {
 
 		if (missingFields.size() == 0)
 			return null;
@@ -160,7 +174,8 @@ public class QueryStringBinder {
 			missingParameters.add(queryStrfieldName);
 		}
 
-		RequiredParametersMissingException ret = new RequiredParametersMissingException(missingParameters);
+		RequiredParametersMissingException ret = new RequiredParametersMissingException(
+				missingParameters);
 		return ret;
 	}
 
@@ -179,37 +194,38 @@ public class QueryStringBinder {
 		this.bind(data, pojo, null);
 	}
 
-	public boolean ignoreRequiredCheck = false;
-	public void bind(Request req, Object pojo) throws Exception {
+	public static Map<String, String> extractParameters(Request req) {
 		Map<String, String> data = new HashMap<String, String>();
 		for (String pn : req.getParameterNames()) {
 			String value = req.getParameter(pn);
 			data.put(pn, value);
 		}
+		return data;
+	}
+
+	public boolean ignoreRequiredCheck = false;
+
+	public void bind(Request req, Object pojo) throws Exception {
+		Map<String, String> data = extractParameters(req);
 		this.bind(data, pojo, null);
 	}
 
-	public void bind(Request req, Object pojo, Set<String> allowedFields) throws Exception {
-		Map<String, String> data = new HashMap<String, String>();
-		for (String pn : req.getParameterNames()) {
-			String value = req.getParameter(pn);
-			data.put(pn, value);
-		}
+	public void bind(Request req, Object pojo, Set<String> allowedFields)
+			throws Exception {
+		Map<String, String> data = extractParameters(req);
 		this.bind(data, pojo, allowedFields);
 	}
-	
-	
-	public void bind(Map<String, String> data, Object pojo, Set<String> allowedFields) throws Exception {
+
+	public void bind(Map<String, String> data, Object pojo,
+			Set<String> allowedFields) throws Exception {
 		if (data == null) {
 			return;
 		}
 		Binding binding = this.getBinding(pojo);
 		HashSet<Field> requiredFields = binding.getRequiredFieldsChecking();
 
-		
 		for (String pn : data.keySet()) {
-			if (allowedFields != null && 
-					!allowedFields.contains(pn)) {
+			if (allowedFields != null && !allowedFields.contains(pn)) {
 				continue;
 			}
 			String fieldname = pn;
@@ -221,7 +237,7 @@ public class QueryStringBinder {
 				continue;
 			}
 
-			if (value.length() == 0 && !parser.isCanBeBlank() ) {
+			if (value.length() == 0 && !parser.isCanBeBlank()) {
 				continue;
 			}
 			Object parsedValue = null;
@@ -244,15 +260,15 @@ public class QueryStringBinder {
 		}
 		return;
 	}
-	
-	
-	
+
 	// 只是开发的时候生成测试用例用，没做cache，如果需要生产用，需要加上cache功能。
-	public String toQueryString(Object pojo, String dateFormatStr) throws IllegalArgumentException, IllegalAccessException, UnsupportedEncodingException {
+	public String toQueryString(Object pojo, String dateFormatStr)
+			throws IllegalArgumentException, IllegalAccessException,
+			UnsupportedEncodingException {
 		if (dateFormatStr == null)
 			dateFormatStr = "yyyy-MM-dd HH:mm:ss";
 		SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormatStr);
-		
+
 		StringBuilder sb = new StringBuilder();
 		Binding binding = new Binding();
 		Class<? extends Object> clazz = pojo.getClass();
@@ -286,14 +302,14 @@ public class QueryStringBinder {
 			} else if (f.getType() == double.class) {
 				v = Double.toString(f.getDouble(pojo));
 			} else if (Date.class.isAssignableFrom(f.getType())) {
-				Date d = (Date)f.get(pojo);
+				Date d = (Date) f.get(pojo);
 				if (d == null) {
 					v = "";
 				} else {
 					v = dateFormatter.format(d);
 				}
 			} else if (f.getType().isAssignableFrom(Date.class)) {
-				Date d = (Date)f.get(pojo);
+				Date d = (Date) f.get(pojo);
 				if (d == null) {
 					v = "";
 				} else {
@@ -304,7 +320,8 @@ public class QueryStringBinder {
 				if (o == null)
 					v = "";
 				else
-					v = java.net.URLEncoder.encode(f.get(pojo).toString(), "UTF-8");
+					v = java.net.URLEncoder.encode(f.get(pojo).toString(),
+							"UTF-8");
 			}
 			sb.append(k);
 			sb.append("=");
@@ -317,4 +334,106 @@ public class QueryStringBinder {
 		return ret;
 	}
 
+	public static class JDBCWhere {
+		String whereClause = "";
+		Object[] params = new Object[0];
+
+		public JDBCWhere() {
+		}
+
+		public JDBCWhere(String where, Object[] params) {
+			this.whereClause = where;
+			this.params = params;
+		}
+
+	}
+
+	public JDBCWhere genJDBCWhere(Map<String, String> data,
+			Class<? extends Object> clazz, Set<String> allowedFields)
+			throws Exception {
+		if (data == null) {
+			return new JDBCWhere();
+		}
+		StringBuilder sb = new StringBuilder();
+		LinkedList<Object> params = new LinkedList<Object>();
+
+		Binding binding = this.getBinding(clazz);
+		String conj = "WHERE ";
+		for (String key : data.keySet()) {
+			if (allowedFields != null && !allowedFields.contains(key)) {
+				continue;
+			}
+			String fieldname = "";
+			String op = "";
+			boolean needValue = true;
+			if (key.startsWith("eq__")) {
+				fieldname = key.substring(4);
+				op = " = ? ";
+			} else if (key.startsWith("lt__")) {
+				fieldname = key.substring(4);
+				op = " < ? ";
+			} else if (key.startsWith("lte__")) {
+				fieldname = key.substring(5);
+				op = " <= ? ";
+			} else if (key.startsWith("gt__")) {
+				fieldname = key.substring(4);
+				op = " > ? ";
+			} else if (key.startsWith("gte__")) {
+				fieldname = key.substring(5);
+				op = " > ? ";
+			} else if (key.startsWith("isnull__")) {
+				fieldname = key.substring(8);
+				op = " IS NULL ";
+				needValue = false;
+			} else {
+				continue;
+			}
+			Object parsedValue = null;
+			if (needValue) {
+				String value = data.get(key);
+
+				IQueryStringFieldParser parser = binding.getParser(fieldname);
+				if (parser == null) {
+					continue;
+				}
+
+				if (value.length() == 0 && !parser.isCanBeBlank()) {
+					continue;
+				}
+				try {
+					parsedValue = parser.parse(value);
+
+				} catch (Exception ex) {
+					if (!parser.getIgnoreMalFormat()) {
+						throw ex;
+					} else {
+						continue;
+					}
+				}
+			}
+
+			sb.append(conj);
+			sb.append(fieldname);
+			sb.append(op);
+
+			conj = " AND \n";
+			if (needValue) {
+				params.add(parsedValue);
+			}
+
+		}
+		return new JDBCWhere(sb.toString(), params.toArray());
+	}
+	public JDBCWhere genJDBCWhere(Request req,
+			Class<? extends Object> clazz, Set<String> allowedFields)
+			throws Exception {
+		
+		Map<String, String> data = extractParameters(req);
+		return this.genJDBCWhere(data, clazz, allowedFields);
+	}
+	public JDBCWhere genJDBCWhere(Request req,
+			Class<? extends Object> clazz)
+			throws Exception {
+		return this.genJDBCWhere(req, clazz, null);
+	}
 }
