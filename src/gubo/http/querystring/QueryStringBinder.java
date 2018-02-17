@@ -14,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLDecoder;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.text.SimpleDateFormat;
@@ -209,43 +210,12 @@ public class QueryStringBinder {
 
 	public boolean ignoreRequiredCheck = false;
 	public void bind(Request req, Object pojo) throws Exception {
-		Binding binding = this.getBinding(pojo);
-		HashSet<Field> requiredFields = binding.getRequiredFieldsChecking();
-
-		
+		Map<String, String> data = new HashMap<String, String>();
 		for (String pn : req.getParameterNames()) {
-
-			String fieldname = pn;
 			String value = req.getParameter(pn);
-
-			IQueryStringFieldParser parser = binding.getParser(fieldname);
-			if (parser == null) {
-				// System.out.println("parser == null: " + fieldname);
-				continue;
-			}
-			
-			if (value.length() == 0 && !parser.isCanBeBlank() ) {
-				continue;
-			}
-			Object parsedValue = null;
-			try {
-				parsedValue = parser.parse(value);
-
-			} catch (Exception ex) {
-				if (!parser.getIgnoreMalFormat()) {
-					throw ex;
-				} else {
-					continue;
-				}
-			}
-			parser.getField().set(pojo, parsedValue);
-			requiredFields.remove(parser.getField());
+			data.put(pn, value);
 		}
-
-		if (requiredFields.size() > 0 && !this.ignoreRequiredCheck) {
-			throw this.makeRequiredParametersMissingException(requiredFields);
-		}
-		return;
+		this.bind(data, pojo);
 	}
 
 	public void bind(Request req, Object pojo, Set<String> allowedFields) throws Exception {
