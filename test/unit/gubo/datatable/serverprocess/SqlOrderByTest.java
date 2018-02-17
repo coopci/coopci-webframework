@@ -11,7 +11,7 @@ public class SqlOrderByTest {
 	public void t1() {
 		
 		String[] columnnames = new String[]{"col0","col1","col2","col3"};
-		Map<String, String> dtParams = new HashMap();
+		Map<String, String> dtParams = new HashMap<String, String>();
 		
 			
 		dtParams.put("order[0][column]", "3");
