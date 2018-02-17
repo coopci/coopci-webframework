@@ -83,7 +83,7 @@ public class UpdateByIdHandler extends ApiHttpHandler {
 			binder.ignoreRequiredCheck=true;
 			binder.bind(request, pojo, this.getAllowedFields());
 			
-			binder.bind(this.getOverrideFields(), pojo);
+			binder.bind(this.getOverrideFields(), pojo, null);
 			
 			
 			UpdateStatementGenerator.update(dbconn, pojo);

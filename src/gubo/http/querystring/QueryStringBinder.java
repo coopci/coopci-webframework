@@ -215,55 +215,20 @@ public class QueryStringBinder {
 			String value = req.getParameter(pn);
 			data.put(pn, value);
 		}
-		this.bind(data, pojo);
+		this.bind(data, pojo, null);
 	}
 
 	public void bind(Request req, Object pojo, Set<String> allowedFields) throws Exception {
-		Binding binding = this.getBinding(pojo);
-		HashSet<Field> requiredFields = binding.getRequiredFieldsChecking();
-
-		
+		Map<String, String> data = new HashMap<String, String>();
 		for (String pn : req.getParameterNames()) {
-
-			if (allowedFields != null && 
-					!allowedFields.contains(pn)) {
-				continue;
-			}
-			String fieldname = pn;
 			String value = req.getParameter(pn);
-
-			IQueryStringFieldParser parser = binding.getParser(fieldname);
-			if (parser == null) {
-				// System.out.println("parser == null: " + fieldname);
-				continue;
-			}
-
-			if (value.length() == 0 && !parser.isCanBeBlank() ) {
-				continue;
-			}
-			Object parsedValue = null;
-			try {
-				parsedValue = parser.parse(value);
-
-			} catch (Exception ex) {
-				if (!parser.getIgnoreMalFormat()) {
-					throw ex;
-				} else {
-					continue;
-				}
-			}
-			parser.getField().set(pojo, parsedValue);
-			requiredFields.remove(parser.getField());
+			data.put(pn, value);
 		}
-
-		if (requiredFields.size() > 0 && !this.ignoreRequiredCheck) {
-			throw this.makeRequiredParametersMissingException(requiredFields);
-		}
-		return;
+		this.bind(data, pojo, allowedFields);
 	}
 	
 	
-	public void bind(Map<String, String> data, Object pojo) throws Exception {
+	public void bind(Map<String, String> data, Object pojo, Set<String> allowedFields) throws Exception {
 		if (data == null) {
 			return;
 		}
@@ -272,7 +237,10 @@ public class QueryStringBinder {
 
 		
 		for (String pn : data.keySet()) {
-
+			if (allowedFields != null && 
+					!allowedFields.contains(pn)) {
+				continue;
+			}
 			String fieldname = pn;
 			String value = data.get(pn);
 
