@@ -7,7 +7,7 @@ import java.util.Date;
 public class Hello {
 
 	public static void benchmark(long runs) throws Exception{
-		String qs = "name=gubo&register_time=2017-10-23 10:00:09&a=b&age=10&isVIP=sk&height=1.87&tier=VI";
+		String qs = "name=gubo&register_time=2017-10-23 10:00:09&a=b&age=10&isVIP=1&height=1.87&tier=VI";
 		Person p = new Person();
 		
 		QueryStringBinder binder = new QueryStringBinder();
@@ -26,7 +26,7 @@ public class Hello {
 		Person p = new Person();
 		
 		QueryStringBinder binder = new QueryStringBinder();
-		binder.bind("name=gubo&register_time=2017-10-23 10:00:09&a=b&age=10&isVIP=sk&height=1.87&tier=VI", p);
+		binder.bind("name=gubo&register_time=2017-10-23 10:00:09&a=b&age=10&isVIP=1&height=1.87&tier=VI", p);
 		System.out.println("p.name=" + p.name);
 		System.out.println("p.registerTime=" + p.registerTime );
 		System.out.println("p.age=" + p.age );

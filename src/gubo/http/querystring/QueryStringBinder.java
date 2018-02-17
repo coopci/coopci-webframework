@@ -165,47 +165,18 @@ public class QueryStringBinder {
 	}
 
 	public void bind(String qstrin, Object pojo) throws Exception {
-		Binding binding = this.getBinding(pojo);
-		HashSet<Field> requiredFields = binding.getRequiredFieldsChecking();
-
+		Map<String, String> data = new HashMap<String, String>();
 		for (String s : qstrin.split("&")) {
-
 			if (s == null || s.length() == 0)
 				continue;
-
 			String[] kv = s.split("=", -1);
 			if (kv.length != 2)
 				continue;
-
 			String fieldname = URLDecoder.decode(kv[0], "UTF-8");
 			String value = URLDecoder.decode(kv[1], "UTF-8");
-
-			IQueryStringFieldParser parser = binding.getParser(fieldname);
-			if (parser == null) {
-				continue;
-			}
-			if (value.length() == 0 && !parser.isCanBeBlank() ) {
-				continue;
-			}
-			Object parsedValue = null;
-			try {
-				parsedValue = parser.parse(value);
-
-			} catch (Exception ex) {
-				if (!parser.getIgnoreMalFormat()) {
-					throw ex;
-				} else {
-					continue;
-				}
-			}
-			parser.getField().set(pojo, parsedValue);
-			requiredFields.remove(parser.getField());
+			data.put(fieldname, value);
 		}
-
-		if (requiredFields.size() > 0 && !this.ignoreRequiredCheck) {
-			throw this.makeRequiredParametersMissingException(requiredFields);
-		}
-		return;
+		this.bind(data, pojo, null);
 	}
 
 	public boolean ignoreRequiredCheck = false;
