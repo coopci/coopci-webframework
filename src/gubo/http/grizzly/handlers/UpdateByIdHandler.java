@@ -1,17 +1,5 @@
 package gubo.http.grizzly.handlers;
 
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-
-import javax.persistence.Entity;
-
-import org.glassfish.grizzly.http.server.Request;
-import org.glassfish.grizzly.http.server.Response;
-
-import db.ShadowMerchant;
-import api.handlers.BaseApiHander;
 import gubo.db.IConnectionProvider;
 import gubo.db.ISimplePoJo;
 import gubo.exceptions.ObjectNotFoundException;
@@ -19,6 +7,17 @@ import gubo.http.grizzly.ApiHttpHandler;
 import gubo.http.querystring.QueryStringBinder;
 import gubo.jdbc.mapping.ResultSetMapper;
 import gubo.jdbc.mapping.UpdateStatementGenerator;
+
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import javax.persistence.Entity;
+
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
+
+import db.ShadowMerchant;
 /**
  *	对指定 被@Entity的类对应的表 做update。
  *  只对作为参数给出的id的行做更新。
