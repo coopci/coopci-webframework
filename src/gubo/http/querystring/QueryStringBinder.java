@@ -364,6 +364,11 @@ public class QueryStringBinder {
 
 	}
 
+	/**
+	 * eq__a=& 这种写法的效果是忽略 eq__a
+	 * 如果筛选a==''，需要写: isblank__a=&
+	 *  
+	 **/
 	public JDBCWhere genJDBCWhere(Map<String, String> data,
 			Class<? extends Object> clazz, Set<String> allowedFields)
 			throws Exception {
@@ -401,6 +406,10 @@ public class QueryStringBinder {
 				fieldname = key.substring(8);
 				op = " IS NULL ";
 				needValue = false;
+			} else if (key.startsWith("isblank__")) {
+				fieldname = key.substring(8);
+				op = " = '' ";
+				needValue = false;
 			} else {
 				continue;
 			}
@@ -413,7 +422,7 @@ public class QueryStringBinder {
 					continue;
 				}
 
-				if (value.length() == 0 && !parser.isCanBeBlank()) {
+				if (value.length() == 0 ) {
 					continue;
 				}
 				try {
