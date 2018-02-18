@@ -13,6 +13,7 @@ import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationExceptio
 
 import gubo.db.ISimplePoJo;
 import gubo.exceptions.ApiException;
+import gubo.exceptions.QueryStringParseException;
 import gubo.exceptions.RequiredParameterException;
 import gubo.exceptions.SessionNotFoundException;
 import gubo.http.querystring.QueryStringBinder;
@@ -21,7 +22,8 @@ import gubo.jdbc.mapping.InsertStatementGenerator;
 public class ApiHttpHandler extends NannyHttpHandler {
 
 	// subclass "can" override this method to custom serialization.
-	public void sendContent(Object o, Request req, Response response) throws IOException {
+	public void sendContent(Object o, Request req, Response response)
+			throws IOException {
 		this.sendJson(o, req, response);
 	}
 
@@ -48,10 +50,10 @@ public class ApiHttpHandler extends NannyHttpHandler {
 		Object o = this.doPut(req, res);
 		this.sendContent(o, req, res);
 	}
-	
-	public void setCrossDomain (Response response) {
+
+	public void setCrossDomain(Response response) {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		
+
 	}
 
 	public void serveDelete(Request req, Response res) throws Exception {
@@ -100,20 +102,36 @@ public class ApiHttpHandler extends NannyHttpHandler {
 		return ret;
 	}
 
-	public void handleException(Exception ex, Request req, Response res) throws Exception {
+	public void handleException(Exception ex, Request req, Response res)
+			throws Exception {
 		if (ex instanceof MySQLIntegrityConstraintViolationException) {
-			this.handleException((MySQLIntegrityConstraintViolationException) ex, req, res);
-		} else if (ex instanceof SessionNotFoundException ) {
+			this.handleException(
+					(MySQLIntegrityConstraintViolationException) ex, req, res);
+		} else if (ex instanceof SessionNotFoundException) {
 			this.handleException((SessionNotFoundException) ex, req, res);
+		} else if (ex instanceof QueryStringParseException) {
+			this.handleException((QueryStringParseException) ex, req, res);
 		} else if (ex instanceof ApiException) {
 			this.handleException((ApiException) ex, req, res);
 		} else {
 			super.handleException(ex, req, res);
 		}
+
 		return;
 	}
-	
-	
+
+	public void handleException(QueryStringParseException ex, Request req,
+			Response res) throws Exception {
+		String msg = ex.getMessage();
+		HashMap<String, Object> ret = getErrorResponse(400, msg);
+		ret.put("message", msg);
+		ret.put("exception-handler", ApiHttpHandler.class);
+		ret.put("handler", this.getClass().toString());
+		res.setStatus(400);
+		this.sendContent(ret, req, res);
+		return;
+	}
+
 	public void handleException(ApiException ex, Request req, Response res)
 			throws Exception {
 		String msg = ex.getMessage();
@@ -125,10 +143,9 @@ public class ApiHttpHandler extends NannyHttpHandler {
 		this.sendContent(ret, req, res);
 		return;
 	}
-	
-	
-	public void handleException(MySQLIntegrityConstraintViolationException ex, Request req, Response res)
-			throws Exception {
+
+	public void handleException(MySQLIntegrityConstraintViolationException ex,
+			Request req, Response res) throws Exception {
 		if (ex.getSQLState().equals("23000")) {
 			String msg = ex.getMessage();
 			HashMap<String, Object> ret = getErrorResponse(500, msg);
@@ -138,10 +155,10 @@ public class ApiHttpHandler extends NannyHttpHandler {
 		}
 		throw ex;
 	}
-	
-	public void handleException(SessionNotFoundException ex, Request req, Response res)
-			throws Exception {
-		
+
+	public void handleException(SessionNotFoundException ex, Request req,
+			Response res) throws Exception {
+
 		String msg = ex.getMessage();
 		HashMap<String, Object> ret = getErrorResponse(500, msg);
 		ret.put("message", "SessionNotFound");
@@ -150,25 +167,24 @@ public class ApiHttpHandler extends NannyHttpHandler {
 		this.sendContent(ret, req, res);
 		return;
 	}
-	
 
-	public HashMap<String, Object> createSimplePojo(Request request, Class<? extends ISimplePoJo> clazz) throws Exception {
-		
+	public HashMap<String, Object> createSimplePojo(Request request,
+			Class<? extends ISimplePoJo> clazz) throws Exception {
+
 		ISimplePoJo newPojo = clazz.newInstance();
-		
+
 		QueryStringBinder binder = new QueryStringBinder();
 		binder.bind(request, newPojo);
-		
+
 		Connection dbconn = this.getConnection();
 		try {
 			dbconn.setAutoCommit(false);
-			
-			
+
 			InsertStatementGenerator g = new InsertStatementGenerator();
 			Long newid = g.insertNew(dbconn, newPojo);
 			newPojo.setId(newid);
 			dbconn.commit();
-			
+
 			HashMap<String, Object> ret = this.getOKResponse();
 			ret.put("data", newPojo);
 			return ret;
@@ -181,12 +197,14 @@ public class ApiHttpHandler extends NannyHttpHandler {
 		}
 	}
 
-
 	public boolean needLogin = true;
+
 	public void checkPermission(Long uid) {
-		
+
 	}
-	public Long authCheck(Request request) throws NoSuchAlgorithmException, RequiredParameterException, SQLException, SessionNotFoundException {
+
+	public Long authCheck(Request request) throws NoSuchAlgorithmException,
+			RequiredParameterException, SQLException, SessionNotFoundException {
 		if (this.needLogin) {
 			Long uid = this.requireLogin(request);
 			this.checkPermission(uid);
