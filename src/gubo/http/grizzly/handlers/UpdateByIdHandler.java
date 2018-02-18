@@ -9,8 +9,10 @@ import gubo.jdbc.mapping.ResultSetMapper;
 import gubo.jdbc.mapping.UpdateStatementGenerator;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import javax.persistence.Entity;
 
@@ -59,10 +61,7 @@ public class UpdateByIdHandler extends ApiHttpHandler {
 	}
 	
 	
-	@Override
-	public Object doPost(Request request, Response response) throws Exception {
-		this.authCheck(request);
-		String id = this.getRequiredStringParameter(request, "id");
+	final Object doUpdate(String id, Map<String, String> data) throws Exception {
 		Entity entity = clazz.getAnnotation(Entity.class);
 		String tablename = entity.name();
 		if (tablename == null || tablename.length() == 0) {
@@ -81,7 +80,7 @@ public class UpdateByIdHandler extends ApiHttpHandler {
 			}
 			QueryStringBinder binder = new QueryStringBinder();
 			binder.ignoreRequiredCheck=true;
-			binder.bind(request, pojo, this.getAllowedFields());
+			binder.bind(data, pojo, this.getAllowedFields());
 			
 			binder.bind(this.getOverrideFields(), pojo, null);
 			
@@ -95,6 +94,20 @@ public class UpdateByIdHandler extends ApiHttpHandler {
 		} finally {
 			dbconn.close();
 		}
+	}
+	
+	/**
+	 *	Subclasses can override this method to do custom check, then call super.doUpdate 
+	 *  
+	 **/
+	@Override
+	public Object doPost(Request request, Response response) throws Exception {
+		this.authCheck(request);
+		Map<String, String> data = QueryStringBinder.extractParameters(request);
+		String id = this.getRequiredStringParameter(request, "id");
+		
+		Object ret = this.doUpdate(id, data);
+		return ret;
 	}
 
 }

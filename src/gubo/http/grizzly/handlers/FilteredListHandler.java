@@ -4,13 +4,14 @@ import gubo.db.IConnectionProvider;
 import gubo.db.ISimplePoJo;
 import gubo.http.grizzly.ApiHttpHandler;
 import gubo.http.querystring.QueryStringBinder;
-import gubo.http.querystring.QueryStringField;
 import gubo.http.querystring.QueryStringBinder.JDBCWhere;
+import gubo.http.querystring.QueryStringField;
 import gubo.jdbc.mapping.ResultSetMapper;
 
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Entity;
 
@@ -21,8 +22,7 @@ import db.ShadowMerchant;
 
 /**
  * 列出被@Entity的类对应的表中的数据。 带有筛选功能，筛选功能用 {@link QueryStringBinder } 的 genJDBCWhere
- * 实现。
- * 作为筛选的字段需要用 {@link QueryStringField} 标注才行。
+ * 实现。 作为筛选的字段需要用 {@link QueryStringField} 标注才行。
  **/
 public class FilteredListHandler extends ApiHttpHandler {
 
@@ -34,9 +34,8 @@ public class FilteredListHandler extends ApiHttpHandler {
 		this.setConnectionProvider(connectionProvider);
 	}
 
-	@Override
-	public Object doGet(Request request, Response response) throws Exception {
-		this.authCheck(request);
+	final Object doFilter(Map<String, String> params) throws Exception {
+
 		Entity entity = clazz.getAnnotation(Entity.class);
 		String tablename = entity.name();
 		if (tablename == null || tablename.length() == 0) {
@@ -44,7 +43,7 @@ public class FilteredListHandler extends ApiHttpHandler {
 		}
 
 		QueryStringBinder binder = new QueryStringBinder();
-		JDBCWhere jdbcWhere = binder.genJDBCWhere(request, clazz, null);
+		JDBCWhere jdbcWhere = binder.genJDBCWhere(params, clazz, null);
 
 		Connection dbconn = this.getConnection();
 		try {
@@ -61,6 +60,21 @@ public class FilteredListHandler extends ApiHttpHandler {
 		} finally {
 			dbconn.close();
 		}
+	}
+
+	/**
+	 * Subclasses can override this method to do custom check, add extra
+	 * conditions, then call super.doUpdate
+	 * 
+	 **/
+	@Override
+	public Object doGet(Request request, Response response) throws Exception {
+		this.authCheck(request);
+		Map<String, String> conditions = QueryStringBinder
+				.extractParameters(request);
+
+		Object ret = this.doFilter(conditions);
+		return ret;
 	}
 
 }
