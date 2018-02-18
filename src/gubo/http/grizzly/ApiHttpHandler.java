@@ -127,7 +127,7 @@ public class ApiHttpHandler extends NannyHttpHandler {
 		ret.put("message", msg);
 		ret.put("exception-handler", ApiHttpHandler.class);
 		ret.put("handler", this.getClass().toString());
-		res.setStatus(400);
+		res.setStatus(200);
 		this.sendContent(ret, req, res);
 		return;
 	}
