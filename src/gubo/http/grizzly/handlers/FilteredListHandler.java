@@ -34,7 +34,7 @@ public class FilteredListHandler extends ApiHttpHandler {
 		this.setConnectionProvider(connectionProvider);
 	}
 
-	final Object doFilter(Map<String, String> params) throws Exception {
+	protected final Object doFilter(Map<String, String> params) throws Exception {
 
 		Entity entity = clazz.getAnnotation(Entity.class);
 		String tablename = entity.name();
