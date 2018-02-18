@@ -1,5 +1,6 @@
 package gubo.http.querystring;
 
+import gubo.exceptions.QueryStringParseException;
 import gubo.exceptions.RequiredParametersMissingException;
 import gubo.http.querystring.parsers.BooleanFieldParser;
 import gubo.http.querystring.parsers.DatetimeParser;
@@ -250,7 +251,7 @@ public class QueryStringBinder {
 
 			} catch (Exception ex) {
 				if (!parser.getIgnoreMalFormat()) {
-					throw ex;
+					throw new QueryStringParseException(fieldname, value, ex);
 				} else {
 					continue;
 				}
