@@ -9,7 +9,6 @@ import gubo.jdbc.mapping.ResultSetMapper;
 import gubo.jdbc.mapping.UpdateStatementGenerator;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
