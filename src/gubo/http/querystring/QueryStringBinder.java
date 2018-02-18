@@ -9,10 +9,12 @@ import gubo.http.querystring.parsers.IntegerFieldParser;
 import gubo.http.querystring.parsers.LongFieldParser;
 import gubo.http.querystring.parsers.NullParser;
 import gubo.http.querystring.parsers.StringFieldParser;
+import gubo.http.querystring.parsers.TimeParser;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLDecoder;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -115,6 +117,8 @@ public class QueryStringBinder {
 					deserializerClass = DoubleFieldParser.class;
 				} else if (f.getType().isAssignableFrom(Date.class)) {
 					deserializerClass = DatetimeParser.class;
+				} else if (f.getType() == Time.class) {
+					deserializerClass = TimeParser.class;
 				}
 			}
 
