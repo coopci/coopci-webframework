@@ -1,5 +1,9 @@
 package gubo.jdbc.mapping;
 
+import gubo.http.querystring.QueryStringBinder;
+import gubo.http.querystring.QueryStringField;
+import gubo.http.querystring.QueryStringBinder.JDBCWhere;
+
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,6 +12,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.Column;
@@ -162,11 +167,40 @@ public class ResultSetMapper<T> {
 		return pojo;
 	}
 
-	public static <T> List<T> loadPoJoList(Connection dbconn, Class<?> outputClass,
-			String sql, Object... params) throws SQLException {
+	public static <T> List<T> loadPoJoList(Connection dbconn,
+			Class<?> outputClass, String sql, Object... params)
+			throws SQLException {
 
 		ResultSetMapper<T> mapper = new ResultSetMapper<T>();
-		List<T> pojoList = mapper.loadPojoList(dbconn, outputClass, sql, params);
+		List<T> pojoList = mapper
+				.loadPojoList(dbconn, outputClass, sql, params);
 		return pojoList;
+	}
+
+	
+	/**
+	 * 
+	 *@param filter  genJDBCWhere所能处理的筛选条件。
+	 *@param clazz 中作为筛选的字段需要用 {@link QueryStringField} 标注才行。
+	 **/
+	public static <T> List<T> loadPoJoList(Connection dbconn,
+			Class<?> outputClass, Map<String, String> filter) throws Exception {
+
+		Entity entity = outputClass.getAnnotation(Entity.class);
+		String tablename = entity.name();
+		if (tablename == null || tablename.length() == 0) {
+			tablename = outputClass.getName();
+		}
+
+		QueryStringBinder binder = new QueryStringBinder();
+		JDBCWhere jdbcWhere = binder.genJDBCWhere(filter, outputClass, null);
+
+		List<T> data = ResultSetMapper.loadPoJoList(
+				dbconn,
+				outputClass,
+				"select * from `" + tablename + "` "
+						+ jdbcWhere.getWhereClause(), jdbcWhere.getParams());
+		return data;
+
 	}
 }

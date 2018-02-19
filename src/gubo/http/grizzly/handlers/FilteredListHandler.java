@@ -35,23 +35,11 @@ public class FilteredListHandler extends ApiHttpHandler {
 	protected final Object doFilter(Map<String, String> params)
 			throws Exception {
 
-		Entity entity = clazz.getAnnotation(Entity.class);
-		String tablename = entity.name();
-		if (tablename == null || tablename.length() == 0) {
-			tablename = clazz.getName();
-		}
-
-		QueryStringBinder binder = new QueryStringBinder();
-		JDBCWhere jdbcWhere = binder.genJDBCWhere(params, clazz, null);
-
 		Connection dbconn = this.getConnection();
 		try {
 			dbconn.setAutoCommit(true);
 
-			List<?> data = ResultSetMapper
-					.loadPoJoList(dbconn, clazz, "select * from `" + tablename
-							+ "` " + jdbcWhere.getWhereClause(),
-							jdbcWhere.getParams());
+			List<?> data = ResultSetMapper.loadPoJoList(dbconn, clazz, params);
 			HashMap<String, Object> ret = this.getOKResponse();
 			ret.put("data", data);
 			return ret;
@@ -63,7 +51,7 @@ public class FilteredListHandler extends ApiHttpHandler {
 
 	/**
 	 * Subclasses can override this method to do custom check, add extra
-	 * conditions, then call super.doUpdate
+	 * conditions, then call super.doGet
 	 * 
 	 **/
 	@Override
@@ -71,7 +59,6 @@ public class FilteredListHandler extends ApiHttpHandler {
 		this.authCheck(request);
 		Map<String, String> conditions = QueryStringBinder
 				.extractParameters(request);
-
 		Object ret = this.doFilter(conditions);
 		return ret;
 	}

@@ -374,7 +374,7 @@ public class QueryStringBinder {
 	/**
 	 * eq__a=& 这种写法的效果是忽略 eq__a
 	 * 如果筛选a==''，需要写: isblank__a=&
-	 *  
+	 * @param clazz 中作为筛选的字段需要用 {@link QueryStringField} 标注才行。
 	 **/
 	public JDBCWhere genJDBCWhere(Map<String, String> data,
 			Class<? extends Object> clazz, Set<String> allowedFields)
