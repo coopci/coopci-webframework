@@ -220,7 +220,9 @@ public class QueryStringBinder {
 		Map<String, String> data = extractParameters(req);
 		this.bind(data, pojo, allowedFields);
 	}
-
+	public void bind(Map<String, String> data, Object pojo) throws Exception {
+		this.bind(data, pojo, null);
+	}
 	public void bind(Map<String, String> data, Object pojo,
 			Set<String> allowedFields) throws Exception {
 		if (data == null) {
