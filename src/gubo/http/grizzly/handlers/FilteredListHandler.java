@@ -18,8 +18,6 @@ import javax.persistence.Entity;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 
-import db.ShadowMerchant;
-
 /**
  * 列出被@Entity的类对应的表中的数据。 带有筛选功能，筛选功能用 {@link QueryStringBinder } 的 genJDBCWhere
  * 实现。 作为筛选的字段需要用 {@link QueryStringField} 标注才行。
@@ -34,7 +32,8 @@ public class FilteredListHandler extends ApiHttpHandler {
 		this.setConnectionProvider(connectionProvider);
 	}
 
-	protected final Object doFilter(Map<String, String> params) throws Exception {
+	protected final Object doFilter(Map<String, String> params)
+			throws Exception {
 
 		Entity entity = clazz.getAnnotation(Entity.class);
 		String tablename = entity.name();
@@ -48,11 +47,11 @@ public class FilteredListHandler extends ApiHttpHandler {
 		Connection dbconn = this.getConnection();
 		try {
 			dbconn.setAutoCommit(true);
-			ResultSetMapper<ShadowMerchant> mapper = new ResultSetMapper<ShadowMerchant>();
 
-			List<?> data = mapper.loadPojoList(dbconn, clazz, "select * from `"
-					+ tablename + "` " + jdbcWhere.getWhereClause(),
-					jdbcWhere.getParams());
+			List<?> data = ResultSetMapper
+					.loadPoJoList(dbconn, clazz, "select * from `" + tablename
+							+ "` " + jdbcWhere.getWhereClause(),
+							jdbcWhere.getParams());
 			HashMap<String, Object> ret = this.getOKResponse();
 			ret.put("data", data);
 			return ret;

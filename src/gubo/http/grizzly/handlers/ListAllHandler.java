@@ -14,7 +14,6 @@ import javax.persistence.Entity;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 
-import db.ShadowMerchant;
 /**
  *	列出被@Entity的类对应的表中的所有数据。
  * 
@@ -39,9 +38,8 @@ public class ListAllHandler extends ApiHttpHandler {
 		Connection dbconn = this.getConnection();
 		try {
 			dbconn.setAutoCommit(true);
-			ResultSetMapper<ShadowMerchant> mapper = new ResultSetMapper<ShadowMerchant>();
 
-			List<?> data = mapper.loadPojoList(dbconn, clazz,
+			List<?> data = ResultSetMapper.loadPoJoList(dbconn, clazz,
 					"select * from `" + tablename + "`;");
 			HashMap<String, Object> ret = this.getOKResponse();
 			ret.put("data", data);

@@ -18,7 +18,6 @@ import javax.persistence.Entity;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 
-import db.ShadowMerchant;
 /**
  *	对指定 被@Entity的类对应的表 做update。
  *  只对作为参数给出的id的行做更新。
@@ -69,9 +68,8 @@ public class UpdateByIdHandler extends ApiHttpHandler {
 		Connection dbconn = this.getConnection();
 		try {
 			dbconn.setAutoCommit(true);
-			ResultSetMapper<ShadowMerchant> mapper = new ResultSetMapper<ShadowMerchant>();
-
-			Object pojo = mapper.loadPojo(dbconn, clazz,
+			
+			Object pojo = ResultSetMapper.loadPoJo(dbconn, clazz,
 					"select * from `" + tablename + "` where id=?;", id);
 			
 			if (pojo == null) {

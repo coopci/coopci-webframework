@@ -5,11 +5,10 @@ import java.util.HashMap;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 
-import api.handlers.BaseApiHander;
 import gubo.scm.Version;
 
 // 报告当前程序的代码版本
-public class VersionHandler extends BaseApiHander {
+public class VersionHandler extends ApiHttpHandler {
 
 	@Override
 	public Object doGet(Request request, Response response) throws Exception {
