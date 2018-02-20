@@ -4,7 +4,6 @@ import gubo.db.IConnectionProvider;
 import gubo.db.ISimplePoJo;
 import gubo.http.grizzly.ApiHttpHandler;
 import gubo.http.querystring.QueryStringBinder;
-import gubo.http.querystring.QueryStringBinder.JDBCWhere;
 import gubo.http.querystring.QueryStringField;
 import gubo.jdbc.mapping.ResultSetMapper;
 
@@ -12,8 +11,6 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.Entity;
 
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
