@@ -132,7 +132,14 @@ public class NannyHttpHandler extends HttpHandler {
 			throw new RequiredParameterException(pname);
 		return ret;
 	}
-
+	
+	public String getTrimedStringParameter(Request request, String pname)
+			throws RequiredParameterException {
+		String ret = request.getParameter(pname);
+		if (ret != null)
+			ret = ret.trim();
+		return ret;
+	}
 	/**
 	 * 获取string类型的参数值，如果为null或空字符串，则返回缺省值。
 	 * 
