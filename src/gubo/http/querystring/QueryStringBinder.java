@@ -409,6 +409,9 @@ public class QueryStringBinder {
 			} else if (key.startsWith("gte__")) {
 				fieldname = key.substring(5);
 				op = " > ? ";
+			} else if (key.startsWith("neg__")) {
+				fieldname = key.substring(5);
+				op = " != ";
 			} else if (key.startsWith("isnull__")) {
 				fieldname = key.substring(8);
 				op = " IS NULL ";
