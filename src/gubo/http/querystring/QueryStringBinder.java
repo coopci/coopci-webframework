@@ -11,9 +11,11 @@ import gubo.http.querystring.parsers.LongFieldParser;
 import gubo.http.querystring.parsers.NullParser;
 import gubo.http.querystring.parsers.StringFieldParser;
 import gubo.http.querystring.parsers.TimeParser;
+import gubo.http.querystring.parsers.BigDecimalParser;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
@@ -120,6 +122,8 @@ public class QueryStringBinder {
 					deserializerClass = DatetimeParser.class;
 				} else if (f.getType() == Time.class) {
 					deserializerClass = TimeParser.class;
+				} else if (f.getType() == BigDecimal.class) {
+					deserializerClass = BigDecimalParser.class;
 				}
 			}
 
