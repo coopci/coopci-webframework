@@ -379,6 +379,8 @@ public class QueryStringBinder {
 	 * eq__a=& 这种写法的效果是忽略 eq__a
 	 * 如果筛选a==''，需要写: isblank__a=&
 	 * @param clazz 中作为筛选的字段需要用 {@link QueryStringField} 标注才行。
+	 * 
+	 * 目前支持的操作符包括: eq__, lt__, lte__, gt__, gte__
 	 **/
 	public JDBCWhere genJDBCWhere(Map<String, String> data,
 			Class<? extends Object> clazz, Set<String> allowedFields)
@@ -413,7 +415,7 @@ public class QueryStringBinder {
 			} else if (key.startsWith("gte__")) {
 				fieldname = key.substring(5);
 				op = " > ? ";
-			} else if (key.startsWith("neg__")) {
+			} else if (key.startsWith("neq__")) {
 				fieldname = key.substring(5);
 				op = " != ";
 			} else if (key.startsWith("isnull__")) {
