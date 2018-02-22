@@ -127,12 +127,16 @@ public class NannyHttpHandler extends HttpHandler {
 
 	public String getRequiredStringParameter(Request request, String pname)
 			throws RequiredParameterException {
+		return getRequiredStringParameter(request, pname, false);
+	}
+
+	public String getRequiredStringParameter(Request request, String pname, boolean trim)
+			throws RequiredParameterException {
 		String ret = request.getParameter(pname);
 		if (ret == null || ret.length() == 0)
 			throw new RequiredParameterException(pname);
-		return ret;
+		return ret.trim();
 	}
-	
 	public String getTrimedStringParameter(Request request, String pname)
 			throws RequiredParameterException {
 		String ret = request.getParameter(pname);
