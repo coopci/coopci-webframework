@@ -14,7 +14,7 @@ public class ObjectNotFoundException extends ApiException {
 	}
 	@Override
 	public int getHttpStatus() {
-		return 400;
+		return 200;
 	}
 	
 	@Override
