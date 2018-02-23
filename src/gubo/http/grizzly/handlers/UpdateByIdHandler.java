@@ -59,7 +59,7 @@ public class UpdateByIdHandler extends ApiHttpHandler {
 	}
 	
 	
-	final Object doUpdate(String id, Map<String, String> data) throws Exception {
+	final protected Object doUpdate(String id, Map<String, String> data) throws Exception {
 		Entity entity = clazz.getAnnotation(Entity.class);
 		String tablename = entity.name();
 		if (tablename == null || tablename.length() == 0) {
