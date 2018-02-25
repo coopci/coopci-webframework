@@ -180,8 +180,7 @@ public class ApiHttpHandler extends NannyHttpHandler {
 		try {
 			dbconn.setAutoCommit(false);
 
-			InsertStatementGenerator g = new InsertStatementGenerator();
-			Long newid = g.insertNew(dbconn, newPojo);
+			Long newid = InsertStatementGenerator.insertNew(dbconn, newPojo);
 			newPojo.setId(newid);
 			dbconn.commit();
 

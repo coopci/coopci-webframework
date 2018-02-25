@@ -126,7 +126,7 @@ public class InsertStatementGenerator {
 		return stmt;
 	}
 	
-	public Long insertNew(Connection dbconn, Object pojo) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, SQLException {
+	public static Long insertNew(Connection dbconn, Object pojo) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, SQLException {
 		
 		Long newId = null;
 
