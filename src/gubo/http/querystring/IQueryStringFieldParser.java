@@ -12,4 +12,6 @@ public interface IQueryStringFieldParser {
 	boolean getIgnoreMalFormat();
 	public boolean isCanBeBlank();
 	public void setCanBeBlank(boolean canBeBlank);
+	public boolean isDoTrim();
+	public void setDoTrim(boolean doTrim);
 }

@@ -41,4 +41,13 @@ public abstract class BaseQueryStringFieldParser implements
 		this.canBeBlank = canBeBlank;
 	}
 
+	boolean doTrim = false;
+
+	public boolean isDoTrim() {
+		return doTrim;
+	}
+
+	public void setDoTrim(boolean doTrim) {
+		this.doTrim = doTrim;
+	}
 }

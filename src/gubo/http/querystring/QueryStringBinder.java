@@ -134,6 +134,7 @@ public class QueryStringBinder {
 			if (anno != null) {
 				deserializerObj.setIgnoreMalFormat(anno.ignoreMalFormat());
 				deserializerObj.setCanBeBlank(anno.canBeBlank());
+				deserializerObj.setDoTrim(anno.doTrim());
 			}
 
 			deserializerObj.setField(f);

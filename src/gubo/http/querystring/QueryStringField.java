@@ -14,4 +14,7 @@ public @interface QueryStringField {
    
    // 如果是字符串类型,指定是否允许是""。
    boolean canBeBlank() default true;
+   
+   // trim the string
+   boolean doTrim() default false;
 }
