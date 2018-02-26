@@ -198,12 +198,11 @@ public class ApiHttpHandler extends NannyHttpHandler {
 
 	public boolean needLogin = true;
 
-	public void checkPermission(Long uid) {
+	public void checkPermission(Long uid) throws Exception {
 
 	}
 
-	public Long authCheck(Request request) throws NoSuchAlgorithmException,
-			RequiredParameterException, SQLException, SessionNotFoundException {
+	public Long authCheck(Request request) throws Exception {
 		if (this.needLogin) {
 			Long uid = this.requireLogin(request);
 			this.checkPermission(uid);
