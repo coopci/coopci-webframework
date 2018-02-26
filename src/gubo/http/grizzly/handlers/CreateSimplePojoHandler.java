@@ -1,6 +1,5 @@
 package gubo.http.grizzly.handlers;
 
-import gubo.db.IConnectionProvider;
 import gubo.db.ISimplePoJo;
 import gubo.http.grizzly.ApiHttpHandler;
 
@@ -12,9 +11,8 @@ import org.glassfish.grizzly.http.server.Response;
 public class CreateSimplePojoHandler extends ApiHttpHandler {
 	
 	Class<? extends ISimplePoJo> clazz;
-	public CreateSimplePojoHandler(Class<? extends ISimplePoJo> clazz, IConnectionProvider connectionProvider) {
+	public CreateSimplePojoHandler(Class<? extends ISimplePoJo> clazz) {
 		this.clazz = clazz;
-		this.setConnectionProvider(connectionProvider);
 	}
 	
 

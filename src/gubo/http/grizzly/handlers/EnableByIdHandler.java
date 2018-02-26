@@ -1,6 +1,5 @@
 package gubo.http.grizzly.handlers;
 
-import gubo.db.IConnectionProvider;
 import gubo.db.ISimplePoJo;
 
 import java.util.HashMap;
@@ -11,7 +10,7 @@ public class EnableByIdHandler extends UpdateByIdHandler {
 		enabled.put("enabled", "true");
 	}
 	
-	public EnableByIdHandler(Class<? extends ISimplePoJo> clazz, IConnectionProvider connectionProvider) {
-		super(clazz, connectionProvider, new String[0], enabled);
+	public EnableByIdHandler(Class<? extends ISimplePoJo> clazz) {
+		super(clazz, new String[0], enabled);
 	}
 }

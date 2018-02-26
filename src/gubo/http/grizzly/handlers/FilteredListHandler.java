@@ -1,6 +1,5 @@
 package gubo.http.grizzly.handlers;
 
-import gubo.db.IConnectionProvider;
 import gubo.db.ISimplePoJo;
 import gubo.http.grizzly.ApiHttpHandler;
 import gubo.http.querystring.QueryStringBinder;
@@ -23,10 +22,8 @@ public class FilteredListHandler extends ApiHttpHandler {
 
 	Class<? extends ISimplePoJo> clazz;
 
-	public FilteredListHandler(Class<? extends ISimplePoJo> clazz,
-			IConnectionProvider connectionProvider) {
+	public FilteredListHandler(Class<? extends ISimplePoJo> clazz) {
 		this.clazz = clazz;
-		this.setConnectionProvider(connectionProvider);
 	}
 
 	protected final Object doFilter(Map<String, String> params)

@@ -211,4 +211,10 @@ public class ApiHttpHandler extends NannyHttpHandler {
 		}
 		return null;
 	}
+
+	@Override
+	public Connection getConnection() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

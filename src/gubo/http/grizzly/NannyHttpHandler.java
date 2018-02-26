@@ -1,6 +1,5 @@
 package gubo.http.grizzly;
 
-import gubo.db.IConnectionProvider;
 import gubo.exceptions.BadParameterException;
 import gubo.exceptions.RequiredParameterException;
 import gubo.exceptions.SessionNotFoundException;
@@ -178,17 +177,17 @@ public class NannyHttpHandler extends HttpHandler {
         response.setContentType("application/json");
         response.getWriter().write(content);
 	}
+	
+	/*
 	IConnectionProvider connectionProvider = null;
 	public IConnectionProvider getConnectionProvider() {
 		return connectionProvider;
 	}
 	public void setConnectionProvider(IConnectionProvider connectionProvider) {
 		this.connectionProvider = connectionProvider;
-	}
+	}*/
 	public Connection getConnection() throws SQLException {
-		if (connectionProvider == null)
-			return null;
-		return connectionProvider.getConnection();
+		return null;
 	}
 	// 从req里找sessid，并返回关联的 user id。
 	// 如果找不到就抛异常。

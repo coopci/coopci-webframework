@@ -1,6 +1,5 @@
 package gubo.http.grizzly.handlers;
 
-import gubo.db.IConnectionProvider;
 import gubo.db.ISimplePoJo;
 import gubo.http.grizzly.ApiHttpHandler;
 import gubo.jdbc.mapping.ResultSetMapper;
@@ -21,9 +20,8 @@ import org.glassfish.grizzly.http.server.Response;
 public class ListAllHandler extends ApiHttpHandler {
 	
 	Class<? extends ISimplePoJo> clazz;
-	public ListAllHandler(Class<? extends ISimplePoJo> clazz, IConnectionProvider connectionProvider) {
+	public ListAllHandler(Class<? extends ISimplePoJo> clazz) {
 		this.clazz = clazz;
-		this.setConnectionProvider(connectionProvider);
 	}
 	
 	

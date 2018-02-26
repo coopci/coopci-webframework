@@ -1,6 +1,8 @@
 package gubo.http.grizzly;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
@@ -95,6 +97,12 @@ public class JtwigHandler extends NannyHttpHandler {
 	}
 
 	public ModelAndTemplate doDelete(Request req, Response res) throws Exception {
+		return null;
+	}
+
+	@Override
+	public Connection getConnection() throws SQLException {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

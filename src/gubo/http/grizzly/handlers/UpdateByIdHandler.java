@@ -1,6 +1,5 @@
 package gubo.http.grizzly.handlers;
 
-import gubo.db.IConnectionProvider;
 import gubo.db.ISimplePoJo;
 import gubo.exceptions.ObjectNotFoundException;
 import gubo.http.grizzly.ApiHttpHandler;
@@ -43,7 +42,6 @@ public class UpdateByIdHandler extends ApiHttpHandler {
 	 * 
 	 **/
 	public UpdateByIdHandler(Class<? extends ISimplePoJo> clazz, 
-			IConnectionProvider connectionProvider,
 			String[] allowedFields, HashMap<String, String> overrideFields) {
 		this.clazz = clazz;
 		if (allowedFields == null) {
@@ -55,7 +53,6 @@ public class UpdateByIdHandler extends ApiHttpHandler {
 			}
 		}
 		this.overrideFields = overrideFields;
-		this.setConnectionProvider(connectionProvider);
 	}
 	
 	
