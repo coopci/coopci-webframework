@@ -10,7 +10,17 @@ import org.glassfish.grizzly.http.server.Response;
 
 public class CreateSimplePojoHandler extends ApiHttpHandler {
 	
-	Class<? extends ISimplePoJo> clazz;
+	private Class<? extends ISimplePoJo> clazz;
+	public Class<? extends ISimplePoJo> getClazz() {
+		return clazz;
+	}
+
+
+	public void setClazz(Class<? extends ISimplePoJo> clazz) {
+		this.clazz = clazz;
+	}
+
+
 	public CreateSimplePojoHandler(Class<? extends ISimplePoJo> clazz) {
 		this.clazz = clazz;
 	}
