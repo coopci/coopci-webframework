@@ -418,7 +418,7 @@ public class QueryStringBinder {
 				op = " > ? ";
 			} else if (key.startsWith("neq__")) {
 				fieldname = key.substring(5);
-				op = " != ";
+				op = " != ? ";
 			} else if (key.startsWith("isnull__")) {
 				fieldname = key.substring(8);
 				op = " IS NULL ";
