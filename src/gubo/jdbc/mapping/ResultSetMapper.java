@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.Column;
@@ -28,6 +29,14 @@ public class ResultSetMapper<T> {
 	static class Mapping {
 		// key 是 表的列名， value是pojo的字段。
 		ConcurrentHashMap<String, Field> colnameToField = new ConcurrentHashMap<String, Field>();
+
+		public boolean containsCol(String col) {
+			return colnameToField.containsKey(col);
+		}
+
+		public Field get(String col) {
+			return colnameToField.get(col);
+		}
 	}
 
 	static ConcurrentHashMap<Class<?>, Mapping> cachedMappings = new ConcurrentHashMap<Class<?>, Mapping>();
@@ -111,7 +120,7 @@ public class ResultSetMapper<T> {
 		return outputList;
 	}
 
-	protected void set(Field field, Object bean, Object columnValue)
+	static protected void set(Field field, Object bean, Object columnValue)
 			throws IllegalArgumentException, IllegalAccessException {
 
 		if ((field.getType() == boolean.class || field.getType() == Boolean.class)
@@ -217,4 +226,28 @@ public class ResultSetMapper<T> {
 		return data;
 
 	}
+
+	static protected Object get(Field field, Object bean)
+			throws IllegalArgumentException, IllegalAccessException {
+		return field.get(bean);
+	}
+
+	public static void copy(Object to, Object from) throws Exception {
+		Class<?> toClass = to.getClass();
+		Class<?> fromClass = from.getClass();
+
+		Mapping toMapping = ResultSetMapper.getMapping(toClass);
+		Mapping fromMapping = ResultSetMapper.getMapping(fromClass);
+
+		for (Entry<String, Field> entry : toMapping.colnameToField.entrySet()) {
+			String colname = entry.getKey();
+			Field fromField = fromMapping.get(colname);
+			if (fromField == null) {
+				continue;
+			}
+			Object columnValue = get(fromField, from);
+			set(entry.getValue(), to, columnValue);
+		}
+	}
+
 }
