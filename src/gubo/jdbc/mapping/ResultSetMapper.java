@@ -167,6 +167,19 @@ public class ResultSetMapper<T> {
 		return pojo;
 	}
 
+	public static <T> T loadPoJoById(Connection dbconn, Class<?> outputClass,
+			Object id) throws SQLException {
+		if (!outputClass.isAnnotationPresent(Entity.class)) {
+			return null;
+		}
+		Entity entity = outputClass.getAnnotation(Entity.class);
+		String tablename = entity.name();
+		String sql = "select * from " + tablename + " where id =?";
+		ResultSetMapper<T> mapper = new ResultSetMapper<T>();
+		T pojo = mapper.loadPojo(dbconn, outputClass, sql, id);
+		return pojo;
+	}
+
 	public static <T> List<T> loadPoJoList(Connection dbconn,
 			Class<?> outputClass, String sql, Object... params)
 			throws SQLException {
@@ -177,11 +190,12 @@ public class ResultSetMapper<T> {
 		return pojoList;
 	}
 
-	
 	/**
 	 * 
-	 *@param filter  genJDBCWhere所能处理的筛选条件。
-	 *@param clazz 中作为筛选的字段需要用 {@link QueryStringField} 标注才行。
+	 * @param filter
+	 *            genJDBCWhere所能处理的筛选条件。
+	 * @param clazz
+	 *            中作为筛选的字段需要用 {@link QueryStringField} 标注才行。
 	 **/
 	public static <T> List<T> loadPoJoList(Connection dbconn,
 			Class<?> outputClass, Map<String, String> filter) throws Exception {
