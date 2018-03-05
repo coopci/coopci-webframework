@@ -5,6 +5,7 @@ import gubo.http.querystring.QueryStringField;
 import gubo.http.querystring.QueryStringBinder.JDBCWhere;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -199,6 +200,41 @@ public class ResultSetMapper<T> {
 		return pojoList;
 	}
 
+
+	public static long loadLong(Connection dbconn, String sql, Object... params)
+			throws SQLException {
+
+		PreparedStatement stmt = dbconn.prepareStatement(sql);
+		
+		for (int i = 0; i < params.length; ++i) {
+			stmt.setObject(i+1, params[i]);
+		}
+		long ret = 0;
+		ResultSet rs = stmt.executeQuery();
+		if (rs.next()) {
+			ret = rs.getLong(1);
+		}
+		rs.close();
+		return ret;
+	}
+	
+	public static BigDecimal loadBigDecimal(Connection dbconn, String sql, Object... params)
+			throws SQLException {
+
+		PreparedStatement stmt = dbconn.prepareStatement(sql);
+		
+		for (int i = 0; i < params.length; ++i) {
+			stmt.setObject(i+1, params[i]);
+		}
+		BigDecimal ret = new BigDecimal(0);
+		ResultSet rs = stmt.executeQuery();
+		if (rs.next()) {
+			ret = rs.getBigDecimal(1);
+		}
+		rs.close();
+		return ret;
+	}
+	
 	/**
 	 * 
 	 * @param filter
