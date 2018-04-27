@@ -1,7 +1,7 @@
 package gubo.http.grizzly.handlers;
 
 import gubo.db.ISimplePoJo;
-import gubo.http.grizzly.ApiHttpHandler;
+import gubo.http.grizzly.NannyHttpHandler;
 import gubo.http.querystring.QueryStringBinder;
 import gubo.http.querystring.QueryStringField;
 import gubo.jdbc.mapping.ResultSetMapper;
@@ -18,7 +18,7 @@ import org.glassfish.grizzly.http.server.Response;
  * 列出被@Entity的类对应的表中的数据。 带有筛选功能，筛选功能用 {@link QueryStringBinder } 的 genJDBCWhere
  * 实现。 作为筛选的字段需要用 {@link QueryStringField} 标注才行。
  **/
-public class FilteredListHandler extends ApiHttpHandler {
+public class FilteredListHandler extends NannyHttpHandler {
 
 	Class<? extends ISimplePoJo> clazz;
 

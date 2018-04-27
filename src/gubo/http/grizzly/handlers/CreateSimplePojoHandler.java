@@ -1,14 +1,14 @@
 package gubo.http.grizzly.handlers;
 
 import gubo.db.ISimplePoJo;
-import gubo.http.grizzly.ApiHttpHandler;
+import gubo.http.grizzly.NannyHttpHandler;
 
 import java.util.HashMap;
 
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 
-public class CreateSimplePojoHandler extends ApiHttpHandler {
+public class CreateSimplePojoHandler extends NannyHttpHandler {
 	
 	private Class<? extends ISimplePoJo> clazz;
 	public Class<? extends ISimplePoJo> getClazz() {

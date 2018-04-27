@@ -2,7 +2,7 @@ package gubo.http.grizzly.handlers;
 
 import gubo.db.ISimplePoJo;
 import gubo.exceptions.ObjectNotFoundException;
-import gubo.http.grizzly.ApiHttpHandler;
+import gubo.http.grizzly.NannyHttpHandler;
 import gubo.http.querystring.QueryStringBinder;
 import gubo.jdbc.mapping.ResultSetMapper;
 import gubo.jdbc.mapping.UpdateStatementGenerator;
@@ -22,7 +22,7 @@ import org.glassfish.grizzly.http.server.Response;
  *  只对作为参数给出的id的行做更新。
  * 
  **/
-public class UpdateByIdHandler extends ApiHttpHandler {
+public class UpdateByIdHandler extends NannyHttpHandler {
 	private final Class<? extends ISimplePoJo> clazz;
 	private final HashSet<String> allowedFields;
 	public HashSet<String> getAllowedFields() {

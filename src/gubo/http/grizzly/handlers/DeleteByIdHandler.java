@@ -1,7 +1,7 @@
 package gubo.http.grizzly.handlers;
 
 import gubo.db.ISimplePoJo;
-import gubo.http.grizzly.ApiHttpHandler;
+import gubo.http.grizzly.NannyHttpHandler;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,7 +16,7 @@ import org.glassfish.grizzly.http.server.Response;
  * 对指定 被@Entity的类对应的表 做delete。 只对作为参数给出的id的行做更新。
  * 
  **/
-public class DeleteByIdHandler extends ApiHttpHandler {
+public class DeleteByIdHandler extends NannyHttpHandler {
 	private final Class<? extends ISimplePoJo> clazz;
 
 	public DeleteByIdHandler(Class<? extends ISimplePoJo> clazz) {

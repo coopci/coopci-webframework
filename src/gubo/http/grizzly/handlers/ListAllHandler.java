@@ -1,7 +1,7 @@
 package gubo.http.grizzly.handlers;
 
 import gubo.db.ISimplePoJo;
-import gubo.http.grizzly.ApiHttpHandler;
+import gubo.http.grizzly.NannyHttpHandler;
 import gubo.jdbc.mapping.ResultSetMapper;
 
 import java.sql.Connection;
@@ -17,7 +17,7 @@ import org.glassfish.grizzly.http.server.Response;
  *	列出被@Entity的类对应的表中的所有数据。
  * 
  **/
-public class ListAllHandler extends ApiHttpHandler {
+public class ListAllHandler extends NannyHttpHandler {
 	
 	Class<? extends ISimplePoJo> clazz;
 	public ListAllHandler(Class<? extends ISimplePoJo> clazz) {
