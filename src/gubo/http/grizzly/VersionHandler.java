@@ -1,14 +1,14 @@
 package gubo.http.grizzly;
 
+import gubo.scm.Version;
+
 import java.util.HashMap;
 
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 
-import gubo.scm.Version;
-
 // 报告当前程序的代码版本
-public class VersionHandler extends ApiHttpHandler {
+public class VersionHandler extends NannyHttpHandler {
 
 	@Override
 	public Object doGet(Request request, Response response) throws Exception {

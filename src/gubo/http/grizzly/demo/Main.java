@@ -1,15 +1,15 @@
 package gubo.http.grizzly.demo;
 
-import gubo.http.grizzly.ApiHttpHandler;
 import gubo.http.grizzly.NannyHttpHandler;
-import org.glassfish.grizzly.http.server.HttpHandler;
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.Request;
-import org.glassfish.grizzly.http.server.Response;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
 
 public class Main {
 
@@ -17,7 +17,8 @@ public class Main {
         HttpServer server = HttpServer.createSimpleServer("0.0.0.0", 8777);
         server.getServerConfiguration().addHttpHandler(
             new HttpHandler() {
-                public void service(Request request, Response response) throws Exception {
+                @Override
+				public void service(Request request, Response response) throws Exception {
                     final SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
                     final String date = format.format(new Date(System.currentTimeMillis()));
                     response.setContentType("text/plain");
@@ -29,7 +30,8 @@ public class Main {
         
         server.getServerConfiguration().addHttpHandler(
                 new NannyHttpHandler() {
-                    public void serveGet(Request request, Response response) throws Exception {
+                    @Override
+					public void serveGet(Request request, Response response) throws Exception {
                         final SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
                         final String date = format.format(new Date(System.currentTimeMillis()));
                         response.setContentType("text/plain");
@@ -39,15 +41,6 @@ public class Main {
                 },
                 "/time-nanny-serve");
         
-        server.getServerConfiguration().addHttpHandler(
-                new ApiHttpHandler() {
-                    public Object doGet(Request request, Response response) throws Exception {
-                        final SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-                        final String date = format.format(new Date(System.currentTimeMillis()));
-                        return date;
-                    }
-                },
-                "/time-api-do");
         
         try {
             

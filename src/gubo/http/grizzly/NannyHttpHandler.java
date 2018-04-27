@@ -309,7 +309,7 @@ public class NannyHttpHandler extends HttpHandler {
 		String msg = ex.getMessage();
 		HashMap<String, Object> ret = getErrorResponse(400, msg);
 		ret.put("message", msg);
-		ret.put("exception-handler", ApiHttpHandler.class);
+		ret.put("exception-handler", NannyHttpHandler.class);
 		ret.put("handler", this.getClass().toString());
 		res.setStatus(200);
 		this.sendJson(ret, req, res);
@@ -321,7 +321,7 @@ public class NannyHttpHandler extends HttpHandler {
 		String msg = ex.getMessage();
 		HashMap<String, Object> ret = getErrorResponse(ex.getCode(), msg);
 		ret.put("message", msg);
-		ret.put("exception-handler", ApiHttpHandler.class);
+		ret.put("exception-handler", NannyHttpHandler.class);
 		ret.put("handler", this.getClass().toString());
 		res.setStatus(ex.getHttpStatus());
 		this.sendJson(ret, req, res);
@@ -333,7 +333,7 @@ public class NannyHttpHandler extends HttpHandler {
 		if (ex.getSQLState().equals("23000")) {
 			String msg = ex.getMessage();
 			HashMap<String, Object> ret = getErrorResponse(500, msg);
-			ret.put("handler", ApiHttpHandler.class);
+			ret.put("handler", NannyHttpHandler.class);
 			this.sendJson(ret, req, res);
 			return;
 		}
@@ -347,7 +347,7 @@ public class NannyHttpHandler extends HttpHandler {
 		HashMap<String, Object> ret = getErrorResponse(500, msg);
 		ret.put("message", "SessionNotFound");
 		ret.put("sess_id", ex.getSessid());
-		ret.put("handler", ApiHttpHandler.class);
+		ret.put("handler", NannyHttpHandler.class);
 		this.sendJson(ret, req, res);
 		return;
 	}
