@@ -1,8 +1,8 @@
 package gubo.jdbc.mapping;
 
 import gubo.http.querystring.QueryStringBinder;
-import gubo.http.querystring.QueryStringField;
 import gubo.http.querystring.QueryStringBinder.JDBCWhere;
+import gubo.http.querystring.QueryStringField;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -169,6 +170,32 @@ public class ResultSetMapper<T> {
 		return pojolist.get(0);
 	}
 
+	public T loadPojo(DataSource ds, Class<?> outputClass, String sql,
+			Object... params) throws SQLException {
+		Connection dbconn = ds.getConnection();
+		try {
+			return this.loadPojo(dbconn, outputClass, sql, params);
+		} finally {
+			dbconn.close();
+		}
+	}
+	
+	public static <T> T loadPoJo(DataSource ds, Class<?> outputClass,
+			String sql, Object... params) throws SQLException {
+
+		Connection dbconn = ds.getConnection();
+		try {
+			ResultSetMapper<T> mapper = new ResultSetMapper<T>();
+			T pojo = mapper.loadPojo(dbconn, outputClass, sql, params);
+			return pojo;	
+		} finally {
+			dbconn.close();
+		}
+		
+	}
+	
+	
+	
 	public static <T> T loadPoJo(Connection dbconn, Class<?> outputClass,
 			String sql, Object... params) throws SQLException {
 
