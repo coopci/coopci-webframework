@@ -23,6 +23,7 @@ public class SimplePoJoDAO {
 
 		Connection dbconn = ds.getConnection();
 		try {
+			dbconn.setAutoCommit(true);
 			ResultSetMapper<T> mapper = new ResultSetMapper<T>();
 			T pojo = mapper.loadPojo(dbconn, this.clazz, sql, params);
 			return pojo;
@@ -35,7 +36,7 @@ public class SimplePoJoDAO {
 			throws Exception {
 		Connection dbconn = ds.getConnection();
 		try {
-			dbconn.setAutoCommit(false);
+			dbconn.setAutoCommit(true);
 			Long newid = InsertStatementGenerator.insertNew(dbconn, pojo);
 			pojo.setId(newid);
 			return pojo;
@@ -48,7 +49,7 @@ public class SimplePoJoDAO {
 			throws Exception {
 		Connection dbconn = ds.getConnection();
 		try {
-			dbconn.setAutoCommit(false);
+			dbconn.setAutoCommit(true);
 			UpdateStatementGenerator.update(dbconn, pojo);
 			return pojo;
 		} finally {
@@ -60,7 +61,7 @@ public class SimplePoJoDAO {
 			Set<String> allowedCols) throws Exception {
 		Connection dbconn = ds.getConnection();
 		try {
-			dbconn.setAutoCommit(false);
+			dbconn.setAutoCommit(true);
 			UpdateStatementGenerator.update(dbconn, pojo, allowedCols);
 			return pojo;
 		} finally {
