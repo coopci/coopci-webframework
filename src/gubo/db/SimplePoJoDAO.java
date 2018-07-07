@@ -66,6 +66,21 @@ public class SimplePoJoDAO {
 		}
 	}
 	
+	public <T> T loadPoJoByUniqueKey(DataSource ds, String keyName, Object pkValue)
+			throws SQLException {
+
+		Connection dbconn = ds.getConnection();
+		try {
+			dbconn.setAutoCommit(true);
+			ResultSetMapper<T> mapper = new ResultSetMapper<T>();
+			String sql = "select * from " + this.tablename + " where " + keyName + " = ?";
+			T pojo = mapper.loadPojo(dbconn, this.clazz, sql, pkValue);
+			return pojo;
+		} finally {
+			dbconn.close();
+		}
+	}
+	
 	public <T extends ISimplePoJo> T insert(DataSource ds, T pojo)
 			throws Exception {
 		Connection dbconn = ds.getConnection();
