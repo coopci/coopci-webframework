@@ -33,12 +33,14 @@ public class NannyHttpHandler extends HttpHandler {
 		return this.sessonManager;
 	}
 	
-	public void send(Object ret, Request req, Response res) throws IOException {
+	public void send(Object ret, Request req, Response res) throws Exception {
 		if (ret instanceof ModelAndTemplate) {
 			send( (ModelAndTemplate)ret, req, res);
 		} else if (ret instanceof String) {
 			String s = (String) ret;
 			send( s, req, res);
+		} else if (ret instanceof ISentAsJson) {
+			send( (ISentAsJson)ret, req, res);
 		} else {
 			this.sendJson(ret, req, res);
 		}
@@ -199,6 +201,13 @@ public class NannyHttpHandler extends HttpHandler {
 		response.setContentType("text/html; charset=UTF-8");
 		response.getWriter().write(s);
 	}
+	public void send(ISentAsJson obj, Request req, Response response) throws Exception {
+		this.setCrossDomain(response);
+        response.setCharacterEncoding("utf-8");
+        response.setContentType("application/json");
+		response.getWriter().write(obj.toJson());
+	}
+	
 	public void sendJson(Object o, Request req, Response response) throws IOException {
 		if (o == null) {
         	response.setStatus(HttpStatus.METHOD_NOT_ALLOWED_405);
