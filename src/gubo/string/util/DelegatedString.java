@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.stream.IntStream;
 
+// 之所以要费劲巴拉地弄这个一个 delegate 是因为 java.lang.String 是 final的类。
 public class DelegatedString implements java.io.Serializable, Comparable<DelegatedString>, CharSequence {
 	
 	/**
@@ -60,6 +61,7 @@ public class DelegatedString implements java.io.Serializable, Comparable<Delegat
 		delegate.getChars(srcBegin, srcEnd, dst, dstBegin);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void getBytes(int srcBegin, int srcEnd, byte[] dst, int dstBegin) {
 		delegate.getBytes(srcBegin, srcEnd, dst, dstBegin);
 	}
