@@ -3,6 +3,7 @@ package gubo.algo.merge.allocate.seqnum;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -77,6 +78,9 @@ public class SeqService<T> implements Runnable {
 
 	HashMap<T, MergedSeqNumAllocateTask<T>> mergedTasks = new HashMap<T, MergedSeqNumAllocateTask<T>>();
 	
+	ConcurrentHashMap<T, Boolean> inflights = new ConcurrentHashMap<T, Boolean>(); 
+	
+	
 	void oneRound() {
 
 		int batchSize = 0;
@@ -94,6 +98,11 @@ public class SeqService<T> implements Runnable {
 
 		for (final Entry<T, MergedSeqNumAllocateTask<T>> entry : mergedTasks
 				.entrySet()) {
+			T key = entry.getKey();
+			if (this.inflights.containsKey(entry.getKey())) {
+				continue;
+			}
+			this.inflights.put(key, true);
 			Runnable runable = new Runnable() {
 
 				@Override
@@ -107,6 +116,7 @@ public class SeqService<T> implements Runnable {
 					mt.maxBound = mt.lowBound + mt.count;
 					mt.allocate();
 					
+					inflights.remove(mt.key);
 					synchronized (tasks) {
 						tasks.notifyAll();
 					}

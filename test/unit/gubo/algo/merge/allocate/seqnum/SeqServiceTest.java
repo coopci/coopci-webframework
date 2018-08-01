@@ -29,7 +29,7 @@ public class SeqServiceTest {
 
 	@Test
 	public void f2() throws InterruptedException, ExecutionException {
-		int n = 1000;
+		int n = 10000;
 		final SeqService<String> service = new SeqService<String>();
 		service.setAllocator(new MemSeqAllocator<String>(345L));
 		service.start();
@@ -93,7 +93,7 @@ public class SeqServiceTest {
 		service.start();
 
 		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors
-				.newFixedThreadPool(400);
+				.newFixedThreadPool(100);
 		for (int i = 0; i < n; ++i) {
 
 			executor.execute(new Runnable() {
