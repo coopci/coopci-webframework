@@ -75,11 +75,13 @@ public class SeqService<T> implements Runnable {
 	private ISeqAllocator<T> allocator;
 	int maxBatch = 100;
 
+	HashMap<T, MergedSeqNumAllocateTask<T>> mergedTasks = new HashMap<T, MergedSeqNumAllocateTask<T>>();
+	
 	void oneRound() {
 
 		int batchSize = 0;
 
-		HashMap<T, MergedSeqNumAllocateTask<T>> mergedTasks = new HashMap<T, MergedSeqNumAllocateTask<T>>();
+		
 		while (!tasks.isEmpty() && batchSize < maxBatch) {
 			SeqNumAllocateTask<T> t = tasks.pop();
 			if (!mergedTasks.containsKey(t.key)) {
@@ -96,12 +98,18 @@ public class SeqService<T> implements Runnable {
 
 				@Override
 				public void run() {
-					MergedSeqNumAllocateTask<T> mt = entry.getValue();
+					MergedSeqNumAllocateTask<T> mt = entry.getValue().makeCopy();
+					entry.getValue().clear();
+					
 					mt.lowBound = allocator.allocate(mt.key, mt.count);
 
 					realCalls.incrementAndGet();
 					mt.maxBound = mt.lowBound + mt.count;
 					mt.allocate();
+					
+					synchronized (tasks) {
+						tasks.notifyAll();
+					}
 				}
 			};
 			executor.execute(runable);

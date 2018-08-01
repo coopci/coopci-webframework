@@ -35,5 +35,21 @@ public class MergedSeqNumAllocateTask<T>  {
 			}
 		}
 	}
+	
+	public MergedSeqNumAllocateTask<T> makeCopy() {
+		MergedSeqNumAllocateTask<T> copy = new MergedSeqNumAllocateTask<T>(this.key);
+		copy.count = this.count;
+		copy.lowBound = this.lowBound;
+		copy.maxBound = this.maxBound;
+		copy.tasks = tasks;
+		return copy;
+	}
+	
+	public void clear() {
+		this.count = 0L;
+		this.lowBound = -1L;
+		this.maxBound = -1L;
+		this.tasks = new LinkedList<SeqNumAllocateTask<T>>();
+	}
 
 }
