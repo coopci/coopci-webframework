@@ -31,12 +31,10 @@ public class Main {
         server.getServerConfiguration().addHttpHandler(
                 new NannyHttpHandler() {
                     @Override
-					public void serveGet(Request request, Response response) throws Exception {
+					public Object doGet(Request request, Response response) throws Exception {
                         final SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
                         final String date = format.format(new Date(System.currentTimeMillis()));
-                        response.setContentType("text/plain");
-                        response.setContentLength(date.length());
-                        response.getWriter().write(date);
+                        return date;
                     }
                 },
                 "/time-nanny-serve");

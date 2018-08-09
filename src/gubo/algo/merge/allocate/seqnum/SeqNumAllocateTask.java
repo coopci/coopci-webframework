@@ -8,6 +8,4 @@ public class SeqNumAllocateTask<T> {
 	T key;
 	
 	CompletableFuture<Long> cf;
-	
-
 }

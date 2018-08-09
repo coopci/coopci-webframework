@@ -7,6 +7,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import gubo.algo.merge.allocate.seqnum.MemSeqAllocator;
+import gubo.algo.merge.allocate.seqnum.SeqService;
 import org.junit.Test;
 
 public class SeqServiceTest {
@@ -29,7 +31,7 @@ public class SeqServiceTest {
 
 	@Test
 	public void f2() throws InterruptedException, ExecutionException {
-		int n = 10000;
+		int n = 1000;
 		final SeqService<String> service = new SeqService<String>();
 		service.setAllocator(new MemSeqAllocator<String>(345L));
 		service.start();
@@ -40,11 +42,11 @@ public class SeqServiceTest {
 		}
 		for (CompletableFuture<Long> cf : cfList) {
 			cf.get();
-			System.out.println("cf.get(): " + cf.get());
+			// System.out.println("cf.get(): " + cf.get());
 		}
 
 		service.stop();
-		System.out.println("service.getRealCalls(): " + service.getRealCalls());
+		System.out.println("f2 service.getRealCalls(): " + service.getRealCalls());
 	}
 
 	@Test
@@ -62,7 +64,8 @@ public class SeqServiceTest {
 				public void run() {
 					CompletableFuture<Long> cf = service.submit("key1", 1L);
 					try {
-						System.out.println("cf.get(): " + cf.get());
+					    cf.get();
+						// System.out.println("cf.get(): " + cf.get());
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -82,11 +85,12 @@ public class SeqServiceTest {
 		}
 
 		service.stop();
+		System.out.println("f3 service.getRealCalls(): " + service.getRealCalls());
 	}
 
 	@Test
 	public void f4() throws InterruptedException, ExecutionException {
-		int n = 10000;
+		int n = 1000;
 		CountDownLatch latch = new CountDownLatch(n);
 		final SeqService<String> service = new SeqService<String>();
 		service.setAllocator(new MemSeqAllocator<String>(345L));
@@ -105,7 +109,8 @@ public class SeqServiceTest {
 					// latch.countDown();
 					
 					try {
-						System.out.println("cf.get(): " + cf.get());
+						// System.out.println("cf.get(): " + cf.get());
+					    cf.get();
 						latch.countDown();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
@@ -114,18 +119,12 @@ public class SeqServiceTest {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
 				}
 			});
-
 		}
-		
 		latch.await();
-		
 		service.stop();
-		System.out.println("service.getRealCalls(): " + service.getRealCalls());
-		
-		
+		System.out.println("f4 service.getRealCalls(): " + service.getRealCalls());
 	}
-
+	
 }
