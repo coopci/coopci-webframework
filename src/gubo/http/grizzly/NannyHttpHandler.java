@@ -149,7 +149,49 @@ public class NannyHttpHandler extends HttpHandler {
 		}
 		return 0.0;
 	}
+	
+	/**
+	 * 获取long类型的参数，如果参数不存在返回defaultValue。如果参数错误，
+	 * throwExceptionWhenError为true时抛出异常，
+	 * throwExceptionWhenError为false时返回defaultValue。
+	 * 
+	 * @param request
+	 * @param pname
+	 * @param defaultValue
+	 * @param throwExceptionWhenError
+	 * @return
+	 * @throws BadParameterException
+	 */
+	public long getLongParameter(Request request, String pname,
+			long defaultValue, boolean throwExceptionWhenError)
+			throws BadParameterException {
+		String ret = request.getParameter(pname);
+		if (ret == null || ret.isEmpty()) {
+			return defaultValue;
+		}
+		try {
+			return Long.parseLong(ret);
+		} catch (Exception e) {
+			if (throwExceptionWhenError) {
+				throw new BadParameterException("Bad parameter '" + pname + "'");
+			}
+		}
+		return 0L;
+	}
 
+	public long getLongParameter(Request request, String pname)
+			throws BadParameterException {
+		String ret = request.getParameter(pname);
+		if (ret == null || ret.isEmpty()) {
+			throw new BadParameterException("Bad parameter '" + pname + "'");
+		}
+		try {
+			return Long.parseLong(ret);
+		} catch (Exception e) {
+			throw new BadParameterException("Bad parameter '" + pname + "'");
+		}
+	}
+	
 	public String getRequiredStringParameter(Request request, String pname)
 			throws RequiredParameterException {
 		return getRequiredStringParameter(request, pname, false);
