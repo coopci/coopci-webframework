@@ -6,7 +6,7 @@ import gubo.jdbc.mapping.UpdateStatementGenerator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Set;
+import java.util.HashSet;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -106,28 +106,38 @@ public class SimplePoJoDAO {
 		}
 	}
 
+	public <T extends ISimplePoJo> T update(Connection dbconn, T pojo)
+			throws Exception {
+			UpdateStatementGenerator.update(dbconn, pojo);
+			return pojo;
+	}
+	
 	public <T extends ISimplePoJo> T update(DataSource ds, T pojo,
-			Set<String> allowedCols) throws Exception {
+			String ... allowedCols) throws Exception {
+		
+		HashSet<String> cols = new HashSet<String>();
+		for (String col : allowedCols) {
+			cols.add(col);
+		}
+		
 		Connection dbconn = ds.getConnection();
 		try {
 			dbconn.setAutoCommit(true);
-			UpdateStatementGenerator.update(dbconn, pojo, allowedCols);
+			UpdateStatementGenerator.update(dbconn, pojo, cols);
 			return pojo;
 		} finally {
 			dbconn.close();
 		}
 	}
 	
-	public <T extends ISimplePoJo> T update(Connection dbconn, T pojo)
-			throws Exception {
-			UpdateStatementGenerator.update(dbconn, pojo);
-			return pojo;
-	}
-
 	public <T extends ISimplePoJo> T update(Connection dbconn, T pojo,
-			Set<String> allowedCols) throws Exception {
-		
-		UpdateStatementGenerator.update(dbconn, pojo, allowedCols);
+			String ... allowedCols) throws Exception {
+
+		HashSet<String> cols = new HashSet<String>();
+		for (String col : allowedCols) {
+			cols.add(col);
+		}
+		UpdateStatementGenerator.update(dbconn, pojo, cols);
 		return pojo;
 	}
 	
