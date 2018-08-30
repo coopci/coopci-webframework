@@ -1,8 +1,12 @@
 package gubo.jdbc.mapping;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,6 +27,22 @@ import org.slf4j.LoggerFactory;
 public class TableClassGenerator {
 	public static Logger logger = LoggerFactory
 			.getLogger(TableClassGenerator.class);
+	private static String warningComment = "//// This file is generated with "
+			+ TableClassGenerator.class + ".";
+
+	private String boundaryBegin = "/////////////////// User code begins here /////////////////\r\n";
+	private String boundaryEnd = "/////////////////// User code ends here /////////////////\r\n";
+
+	private void embedUserCode(File file, String newSource) throws IOException {
+		InputStream ins = new FileInputStream(file);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
+
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+
+		}
+
+	}
 
 	public void generateAndWrite(DataSource ds, String schemaName,
 			String tableName, String srcRoot, String packageName,
@@ -40,10 +60,27 @@ public class TableClassGenerator {
 		if (!file.exists()) {
 			file.createNewFile();
 		}
+
 		logger.info("Writing to " + file.toString());
 		OutputStream outs = new FileOutputStream(file);
 		outs.write(source.getBytes());
 		outs.close();
+	}
+
+	public String getBoundaryBegin() {
+		return boundaryBegin;
+	}
+
+	public void setBoundaryBegin(String boundaryBegin) {
+		this.boundaryBegin = boundaryBegin;
+	}
+
+	public String getBoundaryEnd() {
+		return boundaryEnd;
+	}
+
+	public void setBoundaryEnd(String boundaryEnd) {
+		this.boundaryEnd = boundaryEnd;
 	}
 
 	public String generateSource(DataSource ds, String schemaName,
@@ -58,15 +95,19 @@ public class TableClassGenerator {
 		}
 	}
 
-	private void appendImports(StringBuilder sb) {
+	private void appendWarningComments(StringBuilder sb) {
+		sb.append(warningComment);
+		sb.append("\r\n");
+	}
 
+	private void appendImports(StringBuilder sb) {
 		sb.append("import gubo.db.ISimplePoJo;\r\n"
 				+ "import gubo.db.SimplePoJoDAO;\r\n"
 				+ "import gubo.http.querystring.QueryStringField;\r\n"
 				+ "import gubo.jdbc.mapping.InsertStatementGenerator;\r\n"
 				+ "import gubo.jdbc.mapping.ResultSetMapper;\r\n"
 				+ "import gubo.jdbc.mapping.UpdateStatementGenerator;\r\n"
-				+ "\r\n" + "\r\n" + "import java.sql.Connection;\r\n"
+				+ "import java.sql.Connection;\r\n"
 				+ "import java.sql.PreparedStatement;\r\n"
 				+ "import java.sql.ResultSet;\r\n"
 				+ "import java.sql.SQLException;\r\n"
@@ -81,7 +122,11 @@ public class TableClassGenerator {
 				+ "import javax.persistence.Id;\r\n"
 				+ "import java.math.BigDecimal;\r\n"
 				+ "import javax.sql.DataSource;");
+	}
 
+	private void appenBoundaries(StringBuilder sb) {
+		sb.append(boundaryBegin);
+		sb.append(boundaryEnd);
 	}
 
 	private String indent = "\t";
@@ -183,6 +228,7 @@ public class TableClassGenerator {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("package " + packageName + ";\r\n\r\n");
+		appendWarningComments(sb);
 		appendImports(sb);
 
 		sb.append("\r\n\r\n");
@@ -232,9 +278,9 @@ public class TableClassGenerator {
 			sb.append(";\r\n");
 
 		}
+		appenBoundaries(sb);
 		sb.append("}\r\n");
 		return sb.toString();
 
 	}
-
 }
