@@ -2,6 +2,7 @@ package gubo.jdbc.mapping;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,8 +30,8 @@ public class TableClassGenerator {
 	private static String warningComment = "//// This file is generated with "
 			+ TableClassGenerator.class + ".";
 
-	private String boundaryBegin = "/////////////////// User code begins here /////////////////";
-	private String boundaryEnd = "/////////////////// User code ends here /////////////////";
+	private String boundaryBegin = "====User code begins here====";
+	private String boundaryEnd = "====User code ends here====";
 
 	String extractUserCode(InputStream ins) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
@@ -39,9 +40,9 @@ public class TableClassGenerator {
 		boolean inUserCode = false;
 		StringBuilder sb = new StringBuilder();
 		while ((line = reader.readLine()) != null) {
-			if (line.startsWith(boundaryBegin)) {
+			if (line.indexOf(boundaryBegin) > 0) {
 				inUserCode = true;
-			} else if (line.startsWith(boundaryEnd)) {
+			} else if (line.indexOf(boundaryEnd) > 0) {
 				inUserCode = false;
 			} else if (inUserCode) {
 				sb.append(line);
@@ -59,7 +60,7 @@ public class TableClassGenerator {
 			line = line.replace("\n", "");
 			sb.append(line);
 			sb.append("\r\n");
-			if (line.startsWith(boundaryBegin)) {
+			if (line.indexOf(boundaryBegin) > 0) {
 				sb.append(userCode);
 			}
 		}
@@ -83,6 +84,8 @@ public class TableClassGenerator {
 			file.createNewFile();
 		}
 
+		FileInputStream ins = new FileInputStream(file);
+		source = embedUserCode(ins, source);
 		logger.info("Writing to " + file.toString());
 		OutputStream outs = new FileOutputStream(file);
 		outs.write(source.getBytes());
@@ -147,9 +150,10 @@ public class TableClassGenerator {
 	}
 
 	private void appenBoundaries(StringBuilder sb) {
-		sb.append(boundaryBegin);
 		sb.append("\r\n");
-		sb.append(boundaryEnd);
+		sb.append("// " + boundaryBegin);
+		sb.append("\r\n");
+		sb.append("// " + boundaryEnd);
 		sb.append("\r\n");
 	}
 
