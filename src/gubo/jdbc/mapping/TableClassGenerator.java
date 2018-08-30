@@ -30,10 +30,29 @@ public class TableClassGenerator {
 	private static String warningComment = "//// This file is generated with "
 			+ TableClassGenerator.class + ".";
 
-	private String boundaryBegin = "/////////////////// User code begins here /////////////////\r\n";
-	private String boundaryEnd = "/////////////////// User code ends here /////////////////\r\n";
+	private String boundaryBegin = "/////////////////// User code begins here /////////////////";
+	private String boundaryEnd = "/////////////////// User code ends here /////////////////";
 
-	private void embedUserCode(File file, String newSource) throws IOException {
+	String extractUserCode(InputStream ins) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
+
+		String line = null;
+		boolean inUserCode = false;
+		StringBuilder sb = new StringBuilder();
+		while ((line = reader.readLine()) != null) {
+			if (line.startsWith(boundaryBegin)) {
+				inUserCode = true;
+			} else if (line.startsWith(boundaryEnd)) {
+				inUserCode = false;
+			} else if (inUserCode) {
+				sb.append(line);
+				sb.append("\r\n");
+			}
+		}
+		return sb.toString();
+	}
+
+	void embedUserCode(File file, String newSource) throws IOException {
 		InputStream ins = new FileInputStream(file);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
 
@@ -126,7 +145,9 @@ public class TableClassGenerator {
 
 	private void appenBoundaries(StringBuilder sb) {
 		sb.append(boundaryBegin);
+		sb.append("\r\n");
 		sb.append(boundaryEnd);
+		sb.append("\r\n");
 	}
 
 	private String indent = "\t";
