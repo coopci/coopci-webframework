@@ -2,7 +2,6 @@ package gubo.jdbc.mapping;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,15 +51,19 @@ public class TableClassGenerator {
 		return sb.toString();
 	}
 
-	void embedUserCode(File file, String newSource) throws IOException {
-		InputStream ins = new FileInputStream(file);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
-
-		String line = null;
-		while ((line = reader.readLine()) != null) {
-
+	String embedUserCode(InputStream ins, String newSource) throws IOException {
+		String userCode = this.extractUserCode(ins);
+		StringBuilder sb = new StringBuilder();
+		for (String line : newSource.split("\n")) {
+			line = line.replace("\r", "");
+			line = line.replace("\n", "");
+			sb.append(line);
+			sb.append("\r\n");
+			if (line.startsWith(boundaryBegin)) {
+				sb.append(userCode);
+			}
 		}
-
+		return sb.toString();
 	}
 
 	public void generateAndWrite(DataSource ds, String schemaName,
