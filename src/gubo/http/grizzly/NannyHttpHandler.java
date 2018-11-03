@@ -29,26 +29,24 @@ import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationExceptio
 
 public class NannyHttpHandler extends HttpHandler {
 	SessonManager sessonManager = new SessonManager();
+
 	public SessonManager getNannySessionManager() {
 		return this.sessonManager;
 	}
-	
+
 	public void send(Object ret, Request req, Response res) throws Exception {
 		if (ret instanceof ModelAndTemplate) {
-			send( (ModelAndTemplate)ret, req, res);
+			send((ModelAndTemplate) ret, req, res);
 		} else if (ret instanceof String) {
 			String s = (String) ret;
-			send( s, req, res);
+			send(s, req, res);
 		} else if (ret instanceof ISentAsJson) {
-			send( (ISentAsJson)ret, req, res);
+			send((ISentAsJson) ret, req, res);
 		} else {
 			this.sendJson(ret, req, res);
 		}
 	}
-	
-	
-	
-	
+
 	public void serveHead(Request req, Response res) throws Exception {
 		Object ret = this.doHead(req, res);
 		this.send(ret, req, res);
@@ -120,7 +118,7 @@ public class NannyHttpHandler extends HttpHandler {
 			throw new RequiredParameterException(pname);
 		}
 	}
-	
+
 	/**
 	 * 获取double类型的参数，如果参数不存在返回defaultValue。如果参数错误，
 	 * throwExceptionWhenError为true时抛出异常，
@@ -149,7 +147,7 @@ public class NannyHttpHandler extends HttpHandler {
 		}
 		return 0.0;
 	}
-	
+
 	/**
 	 * 获取long类型的参数，如果参数不存在返回defaultValue。如果参数错误，
 	 * throwExceptionWhenError为true时抛出异常，
@@ -191,19 +189,20 @@ public class NannyHttpHandler extends HttpHandler {
 			throw new BadParameterException("Bad parameter '" + pname + "'");
 		}
 	}
-	
+
 	public String getRequiredStringParameter(Request request, String pname)
 			throws RequiredParameterException {
 		return getRequiredStringParameter(request, pname, false);
 	}
 
-	public String getRequiredStringParameter(Request request, String pname, boolean trim)
-			throws RequiredParameterException {
+	public String getRequiredStringParameter(Request request, String pname,
+			boolean trim) throws RequiredParameterException {
 		String ret = request.getParameter(pname);
 		if (ret == null || ret.length() == 0)
 			throw new RequiredParameterException(pname);
 		return ret.trim();
 	}
+
 	public String getTrimedStringParameter(Request request, String pname)
 			throws RequiredParameterException {
 		String ret = request.getParameter(pname);
@@ -211,6 +210,7 @@ public class NannyHttpHandler extends HttpHandler {
 			ret = ret.trim();
 		return ret;
 	}
+
 	/**
 	 * 获取string类型的参数值，如果为null或空字符串，则返回缺省值。
 	 * 
@@ -233,50 +233,57 @@ public class NannyHttpHandler extends HttpHandler {
 		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 		return objectMapper;
 	}
-	public void send(ModelAndTemplate mat, Request req, Response response) throws IOException {
+
+	public void send(ModelAndTemplate mat, Request req, Response response)
+			throws IOException {
 		JtwigTemplate template = mat.getTemplate();
 		response.setContentType("text/html; charset=UTF-8");
-        String content = template.render(mat.getModel());
-        response.getWriter().write(content);
+		String content = template.render(mat.getModel());
+		response.getWriter().write(content);
 	}
-	public void send(String s, Request req, Response response) throws IOException {
+
+	public void send(String s, Request req, Response response)
+			throws IOException {
 		response.setContentType("text/html; charset=UTF-8");
 		response.getWriter().write(s);
 	}
-	public void send(ISentAsJson obj, Request req, Response response) throws Exception {
+
+	public void send(ISentAsJson obj, Request req, Response response)
+			throws Exception {
 		this.setCrossDomain(response);
-        response.setCharacterEncoding("utf-8");
-        response.setContentType("application/json");
+		response.setCharacterEncoding("utf-8");
+		response.setContentType("application/json");
 		response.getWriter().write(obj.toJson());
 	}
-	
-	public void sendJson(Object o, Request req, Response response) throws IOException {
+
+	public void sendJson(Object o, Request req, Response response)
+			throws IOException {
 		if (o == null) {
-        	response.setStatus(HttpStatus.METHOD_NOT_ALLOWED_405);
-        }
-        
-        ObjectMapper mapper = getJsonObjectMapper();
-        String content = mapper.writeValueAsString(o);
-        this.setCrossDomain(response);
-        response.setCharacterEncoding("utf-8");
-        response.setContentType("application/json");
-        response.getWriter().write(content);
+			response.setStatus(HttpStatus.METHOD_NOT_ALLOWED_405);
+		}
+
+		ObjectMapper mapper = getJsonObjectMapper();
+		String content = mapper.writeValueAsString(o);
+		this.setCrossDomain(response);
+		response.setCharacterEncoding("utf-8");
+		response.setContentType("application/json");
+		response.getWriter().write(content);
 	}
-	
+
 	/*
-	IConnectionProvider connectionProvider = null;
-	public IConnectionProvider getConnectionProvider() {
-		return connectionProvider;
-	}
-	public void setConnectionProvider(IConnectionProvider connectionProvider) {
-		this.connectionProvider = connectionProvider;
-	}*/
+	 * IConnectionProvider connectionProvider = null; public IConnectionProvider
+	 * getConnectionProvider() { return connectionProvider; } public void
+	 * setConnectionProvider(IConnectionProvider connectionProvider) {
+	 * this.connectionProvider = connectionProvider; }
+	 */
 	public Connection getConnection() throws SQLException {
 		return null;
 	}
+
 	// 从req里找sessid，并返回关联的 user id。
 	// 如果找不到就抛异常。
-	public Long requireLogin(Request req) throws RequiredParameterException, NoSuchAlgorithmException, SQLException, SessionNotFoundException {
+	public Long requireLogin(Request req) throws RequiredParameterException,
+			NoSuchAlgorithmException, SQLException, SessionNotFoundException {
 		String sess_id = this.getRequiredStringParameter(req, "sess_id");
 		Connection dbconn = this.getConnection();
 		dbconn.setAutoCommit(true);
@@ -286,9 +293,7 @@ public class NannyHttpHandler extends HttpHandler {
 			dbconn.close();
 		}
 	}
-	
-	
-	
+
 	// subclasses should implement these doXXX methods. The returned Object is
 	// serialized by this class and the status code will always be 200 upon
 	// successful doXXX.
@@ -315,9 +320,6 @@ public class NannyHttpHandler extends HttpHandler {
 	public void setCrossDomain(Response response) {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 	}
-	
-	
-	
 
 	public HashMap<String, Object> getOKResponse() {
 		HashMap<String, Object> ret = new HashMap<String, Object>();
@@ -336,7 +338,6 @@ public class NannyHttpHandler extends HttpHandler {
 		return ret;
 	}
 
-	
 	public void handleException(Exception ex, Request req, Response res)
 			throws Exception {
 		if (ex instanceof MySQLIntegrityConstraintViolationException) {
@@ -445,5 +446,13 @@ public class NannyHttpHandler extends HttpHandler {
 		}
 		return null;
 	}
-		
+
+	public void bindParameter(Request req, Object p) throws Exception {
+
+		// TODO test content-type to call the right binder.
+		final QueryStringBinder binder = new QueryStringBinder();
+		binder.bind(req, p);
+		return;
+	}
+
 }

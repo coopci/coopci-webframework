@@ -13,40 +13,45 @@ import org.glassfish.grizzly.http.server.Response;
 
 public class Main {
 
-    public static void main(String[] args) {
-        HttpServer server = HttpServer.createSimpleServer("0.0.0.0", 8777);
-        server.getServerConfiguration().addHttpHandler(
-            new HttpHandler() {
-                @Override
-				public void service(Request request, Response response) throws Exception {
-                    final SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-                    final String date = format.format(new Date(System.currentTimeMillis()));
-                    response.setContentType("text/plain");
-                    response.setContentLength(date.length());
-                    response.getWriter().write(date);
-                }
-            },
-            "/time");
-        
-        server.getServerConfiguration().addHttpHandler(
-                new NannyHttpHandler() {
-                    @Override
-					public Object doGet(Request request, Response response) throws Exception {
-                        final SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-                        final String date = format.format(new Date(System.currentTimeMillis()));
-                        return date;
-                    }
-                },
-                "/time-nanny-serve");
-        
-        
-        try {
-            
-            server.start();
-            System.out.println("Press any key to stop the server...");
-            System.in.read();
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-    }
+	public static void main(String[] args) {
+		HttpServer server = HttpServer.createSimpleServer("0.0.0.0", 8777);
+		server.getServerConfiguration().addHttpHandler(new HttpHandler() {
+			@Override
+			public void service(Request request, Response response)
+					throws Exception {
+				final SimpleDateFormat format = new SimpleDateFormat(
+						"EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+				final String date = format.format(new Date(System
+						.currentTimeMillis()));
+				response.setContentType("text/plain");
+				response.setContentLength(date.length());
+				response.getWriter().write(date);
+			}
+		}, "/time");
+
+		server.getServerConfiguration().addHttpHandler(new NannyHttpHandler() {
+			@Override
+			public Object doGet(Request request, Response response)
+					throws Exception {
+				final SimpleDateFormat format = new SimpleDateFormat(
+						"EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+				final String date = format.format(new Date(System
+						.currentTimeMillis()));
+				return date;
+			}
+		}, "/time-nanny-serve");
+
+		// curl -XPOST -d'a=1&b=11' 'http://localhost:8777/add'
+		server.getServerConfiguration()
+				.addHttpHandler(new AddHandler(), "/add");
+
+		try {
+
+			server.start();
+			System.out.println("Press any key to stop the server...");
+			System.in.read();
+		} catch (Exception e) {
+			System.err.println(e);
+		}
+	}
 }
