@@ -180,7 +180,10 @@ public class TableClassGenerator {
 			return "Boolean";
 		case java.sql.Types.BIT:
 			return "Boolean";
+		case java.sql.Types.LONGVARCHAR:
+			return "String";
 		default:
+			System.out.println("Unknown column type: " + dataType);
 			return "Unknown";
 		}
 	}
@@ -203,17 +206,28 @@ public class TableClassGenerator {
 			sb.append("\")");
 			return;
 		case java.sql.Types.VARCHAR:
-			sb.append('"');
-			sb.append(defaultValue);
-			sb.append('"');
+		case java.sql.Types.LONGVARCHAR:
+			if (defaultValue == null) {
+				sb.append("null");
+			} else {
+				sb.append('"');
+				sb.append(defaultValue);
+				sb.append('"');
+			}
 			return;
 		case java.sql.Types.CHAR:
-			sb.append('"');
-			sb.append(defaultValue);
-			sb.append('"');
+			if (defaultValue == null) {
+				sb.append("null");
+			} else {
+				sb.append('"');
+				sb.append(defaultValue);
+				sb.append('"');
+			}
 			return;
 		case java.sql.Types.TIMESTAMP:
-			if (defaultValue.equals("current_timestamp()")) {
+			if (defaultValue == null) {
+				sb.append("null");
+			} else if (defaultValue.equals("current_timestamp()")) {
 				sb.append("new Timestamp(System.currentTimeMillis())");
 			} else {
 
@@ -246,6 +260,9 @@ public class TableClassGenerator {
 			}
 			return;
 		default:
+			if (defaultValue == null) {
+				sb.append("null");
+			}
 			return;
 		}
 	}
