@@ -281,7 +281,10 @@ public class TableClassGenerator {
 		sb.append("@Entity(name = \"" + tableName + "\")\r\n");
 		sb.append("@Table(name = \"" + tableName + "\")\r\n");
 
-		sb.append("public class " + className + " {\r\n");
+		sb.append("public class " + className + " implements ISimplePoJo {\r\n");
+
+		sb.append("@Override\r\n" + "		public void setId(long id) {\r\n"
+				+ "			this.id = id;\r\n" + "		}");
 
 		sb.append(this.indent
 				+ "public static SimplePoJoDAO dao = new SimplePoJoDAO("
