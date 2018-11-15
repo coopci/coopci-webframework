@@ -56,6 +56,84 @@ public class QueryStringBinder {
 			HashSet<Field> ret = (HashSet<Field>) requiredFields.clone();
 			return ret;
 		}
+		
+		public void tryAddField(Field f) throws InstantiationException, IllegalAccessException {
+		    if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
+                return;
+            }
+
+            QueryStringField anno = f.getAnnotation(QueryStringField.class);
+
+            if (anno == null) {
+                // System.out.println("anno == null: " + f.getName());
+
+                logger.debug("anno == null, class: {}, field name: {} ",
+                        clazz.getName(), f.getName());
+                return;
+            }
+
+            String queryStrfieldName = f.getName();
+
+            if (anno != null) {
+                if (anno.name() != null && anno.name().length() > 0) {
+                    queryStrfieldName = anno.name();
+                }
+                if (anno.required()) {
+                    this.requiredFields.add(f);
+                }
+
+            }
+
+            // System.out.println("queryStrfieldName = " + queryStrfieldName);
+
+            Class<? extends IQueryStringFieldParser> deserializerClass = anno
+                    .deserializer();
+            if (deserializerClass == NullParser.class) {
+                if (f.getType() == String.class) {
+                    deserializerClass = StringFieldParser.class;
+                } else if (f.getType() == Long.class) {
+                    deserializerClass = LongFieldParser.class;
+                } else if (f.getType() == long.class) {
+                    deserializerClass = LongFieldParser.class;
+                } else if (f.getType() == Integer.class) {
+                    deserializerClass = IntegerFieldParser.class;
+                } else if (f.getType() == int.class) {
+                    deserializerClass = IntegerFieldParser.class;
+                } else if (f.getType() == Boolean.class) {
+                    deserializerClass = BooleanFieldParser.class;
+                } else if (f.getType() == boolean.class) {
+                    deserializerClass = BooleanFieldParser.class;
+                } else if (f.getType() == Float.class) {
+                    deserializerClass = FloatFieldParser.class;
+                } else if (f.getType() == float.class) {
+                    deserializerClass = FloatFieldParser.class;
+                } else if (f.getType() == Double.class) {
+                    deserializerClass = DoubleFieldParser.class;
+                } else if (f.getType() == double.class) {
+                    deserializerClass = DoubleFieldParser.class;
+                } else if (f.getType().isAssignableFrom(Date.class)) {
+                    deserializerClass = DatetimeParser.class;
+                } else if (f.getType() == Time.class) {
+                    deserializerClass = TimeParser.class;
+                } else if (f.getType() == BigDecimal.class) {
+                    deserializerClass = BigDecimalParser.class;
+                }
+            }
+
+            // System.out.println("deserializerClass = " + deserializerClass);
+
+            IQueryStringFieldParser deserializerObj = deserializerClass
+                    .newInstance();
+            if (anno != null) {
+                deserializerObj.setIgnoreMalFormat(anno.ignoreMalFormat());
+                deserializerObj.setCanBeBlank(anno.canBeBlank());
+                deserializerObj.setDoTrim(anno.doTrim());
+            }
+
+            deserializerObj.setField(f);
+            this._cachedParses.put(queryStrfieldName, deserializerObj);
+		    
+		}
 	}
 
 	public Binding constructBinding(Class<? extends Object> clazz)
@@ -65,80 +143,7 @@ public class QueryStringBinder {
 
 		Field[] fields = clazz.getFields();
 		for (Field f : fields) {
-			if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
-				continue;
-			}
-
-			QueryStringField anno = f.getAnnotation(QueryStringField.class);
-
-			if (anno == null) {
-				// System.out.println("anno == null: " + f.getName());
-
-				logger.debug("anno == null, class: {}, field name: {} ",
-						clazz.getName(), f.getName());
-				continue;
-			}
-
-			String queryStrfieldName = f.getName();
-
-			if (anno != null) {
-				if (anno.name() != null && anno.name().length() > 0) {
-					queryStrfieldName = anno.name();
-				}
-				if (anno.required()) {
-					binding.requiredFields.add(f);
-				}
-
-			}
-
-			// System.out.println("queryStrfieldName = " + queryStrfieldName);
-
-			Class<? extends IQueryStringFieldParser> deserializerClass = anno
-					.deserializer();
-			if (deserializerClass == NullParser.class) {
-				if (f.getType() == String.class) {
-					deserializerClass = StringFieldParser.class;
-				} else if (f.getType() == Long.class) {
-					deserializerClass = LongFieldParser.class;
-				} else if (f.getType() == long.class) {
-					deserializerClass = LongFieldParser.class;
-				} else if (f.getType() == Integer.class) {
-					deserializerClass = IntegerFieldParser.class;
-				} else if (f.getType() == int.class) {
-					deserializerClass = IntegerFieldParser.class;
-				} else if (f.getType() == Boolean.class) {
-					deserializerClass = BooleanFieldParser.class;
-				} else if (f.getType() == boolean.class) {
-					deserializerClass = BooleanFieldParser.class;
-				} else if (f.getType() == Float.class) {
-					deserializerClass = FloatFieldParser.class;
-				} else if (f.getType() == float.class) {
-					deserializerClass = FloatFieldParser.class;
-				} else if (f.getType() == Double.class) {
-					deserializerClass = DoubleFieldParser.class;
-				} else if (f.getType() == double.class) {
-					deserializerClass = DoubleFieldParser.class;
-				} else if (f.getType().isAssignableFrom(Date.class)) {
-					deserializerClass = DatetimeParser.class;
-				} else if (f.getType() == Time.class) {
-					deserializerClass = TimeParser.class;
-				} else if (f.getType() == BigDecimal.class) {
-					deserializerClass = BigDecimalParser.class;
-				}
-			}
-
-			// System.out.println("deserializerClass = " + deserializerClass);
-
-			IQueryStringFieldParser deserializerObj = deserializerClass
-					.newInstance();
-			if (anno != null) {
-				deserializerObj.setIgnoreMalFormat(anno.ignoreMalFormat());
-				deserializerObj.setCanBeBlank(anno.canBeBlank());
-				deserializerObj.setDoTrim(anno.doTrim());
-			}
-
-			deserializerObj.setField(f);
-			binding._cachedParses.put(queryStrfieldName, deserializerObj);
+		    binding.tryAddField(f);
 		}
 		return binding;
 	}
