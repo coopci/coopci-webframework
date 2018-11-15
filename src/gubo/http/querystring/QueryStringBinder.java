@@ -141,10 +141,16 @@ public class QueryStringBinder {
 		Binding binding = new Binding();
 		binding.clazz = clazz;
 
-		Field[] fields = clazz.getFields();
-		for (Field f : fields) {
-		    binding.tryAddField(f);
-		}
+        Field[] fields = clazz.getFields();
+        for (Field f : fields) {
+            binding.tryAddField(f);
+        }
+
+        fields = clazz.getDeclaredFields();
+        for (Field f : fields) {
+            binding.tryAddField(f);
+        }
+        
 		return binding;
 	}
 
@@ -268,7 +274,9 @@ public class QueryStringBinder {
 					continue;
 				}
 			}
-			parser.getField().set(pojo, parsedValue);
+			Field f = parser.getField();
+			f.setAccessible(true);
+			f.set(pojo, parsedValue);
 			requiredFields.remove(parser.getField());
 		}
 
