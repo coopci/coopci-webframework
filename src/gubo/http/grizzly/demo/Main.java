@@ -44,7 +44,13 @@ public class Main {
 		// curl -XPOST -d'a=1&b=11' 'http://localhost:8777/add'
 		server.getServerConfiguration()
 				.addHttpHandler(new AddHandler(), "/add");
+		
+		// curl -XPOST -d'a=1&b=11' 'http://localhost:8777/jtwig-html'
+		server.getServerConfiguration()
+        .addHttpHandler(new HtmlHandler(), "/jtwig-html");
 
+		
+		
 		try {
 
 			server.start();
