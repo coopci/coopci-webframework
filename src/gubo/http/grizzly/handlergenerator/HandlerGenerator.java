@@ -79,7 +79,7 @@ public class HandlerGenerator {
         sb.append(imports);
         
         
-        String classDef = "public class AddBalanceHandler extends " + this.getSuperClass().getCanonicalName() + " {\n";
+        String classDef = "public class " + handlerName + " extends " + this.getSuperClass().getCanonicalName() + " {\n";
         sb.append(classDef);
         
         String ctor = String.format("    public %s(%s itf) {\n" +  
