@@ -2,7 +2,14 @@ package gubo.http.grizzly.handlergenerator;
 
 import gubo.http.grizzly.NannyHttpHandler;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 
 /**
@@ -10,7 +17,23 @@ import java.sql.SQLException;
  * 
  **/
 public class HandlerGenerator {
-
+    public static class SourceFile {
+        String filename;
+        String source;
+        
+        @Override 
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            
+            sb.append("============ ");
+            sb.append(filename);
+            sb.append(": \n");
+            sb.append(this.source);
+            sb.append("\n\n");
+            return sb.toString();
+        }
+        
+    }
     private Class<? extends NannyHttpHandler> superClass;
     private String interfacePropertyName;
     
@@ -30,22 +53,38 @@ public class HandlerGenerator {
         this.superClass = superClass;
     }
 
-    public String generateSource(Class<?> interfc, String packageName)
-            throws SQLException {
+    public String generateSource(String srcRoot, Class<?> interfc, String packageName, boolean doWriteFile)
+            throws SQLException, IOException {
 
 
         Method[] methods = interfc.getMethods();
 
         for (Method m : methods) {
 
-            generateSource(interfc, m, packageName);
-
+            SourceFile sf = generateSource(interfc, m, packageName);
+            System.out.println(sf);
+            
+            if (doWriteFile) {
+                
+                Path packagePath = Paths.get(srcRoot, packageName.replace(".", "/"));
+                packagePath.toFile().mkdirs();
+                Path filePath = Paths.get(packagePath.toString(), sf.filename);
+                File file = filePath.toFile();
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
+                
+                FileInputStream ins = new FileInputStream(file);
+                OutputStream outs = new FileOutputStream(file);
+                outs.write(sf.source.getBytes());
+                outs.close();
+            }
         }
 
         return "";
     }
 
-    public String generateSource(Class<?> interfc, Method method, String packageName)
+    public SourceFile generateSource(Class<?> interfc, Method method, String packageName)
             throws SQLException {
         StringBuilder sb = new StringBuilder();
         
@@ -108,13 +147,13 @@ public class HandlerGenerator {
         
         sb.append(doXXX);
         
-        
         sb.append("}\n");
         sb.append("\n");
-        System.out.println(sb.toString());
-
-
-        return "";
+        
+        SourceFile sf = new SourceFile();
+        sf.filename = handlerName + ".java";
+        sf.source = sb.toString();
+        return sf;
     }
 
 }
