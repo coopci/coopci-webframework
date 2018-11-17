@@ -11,6 +11,8 @@ import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.google.common.base.Preconditions;
 
@@ -22,6 +24,7 @@ public class HandlerGenerator {
 	public static class SourceFile {
 		String filename;
 		String source;
+		String addHandlerCode;
 
 		@Override
 		public String toString() {
@@ -62,9 +65,14 @@ public class HandlerGenerator {
 
 		Method[] methods = interfc.getMethods();
 
+		List<SourceFile> sourceFiles = new LinkedList<SourceFile>();
 		for (Method m : methods) {
 
 			SourceFile sf = generateSource(interfc, m, packageName);
+			if (sf == null) {
+				continue;
+			}
+			sourceFiles.add(sf);
 			System.out.println(sf);
 
 			if (doWriteFile) {
@@ -82,9 +90,13 @@ public class HandlerGenerator {
 				OutputStream outs = new FileOutputStream(file);
 				outs.write(sf.source.getBytes());
 				outs.close();
+				ins.close();
 			}
 		}
 
+		for (SourceFile sf : sourceFiles) {
+			System.out.println(sf.addHandlerCode);
+		}
 		return "";
 	}
 
@@ -164,7 +176,27 @@ public class HandlerGenerator {
 		SourceFile sf = new SourceFile();
 		sf.filename = handlerName + ".java";
 		sf.source = sb.toString();
+
+		String iftObjName = interfaceSetter.getName();
+		if (iftObjName.startsWith("set")) {
+			iftObjName = iftObjName.substring(3);
+		}
+		iftObjName = iftObjName.substring(0, 1).toLowerCase()
+				+ iftObjName.substring(1);
+
+		String path = method.getName();
+		MappingToPath[] mappings = method
+				.getAnnotationsByType(MappingToPath.class);
+		if (mappings.length > 0) {
+			path = mappings[0].value();
+		}
+
+		String addHandlerCode = String.format(
+				"server.getServerConfiguration()\r\n"
+						+ "        .addHttpHandler(new %s(%s), \"%s\");",
+				handlerName, iftObjName, path);
+
+		sf.addHandlerCode = addHandlerCode;
 		return sf;
 	}
-
 }
