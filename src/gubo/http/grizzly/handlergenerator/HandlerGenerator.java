@@ -12,148 +12,159 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 
+import com.google.common.base.Preconditions;
+
 /**
  * 给定一个java接口，为每个方法生成一个对应的 NannyHttpHandler的子类。
  * 
  **/
 public class HandlerGenerator {
-    public static class SourceFile {
-        String filename;
-        String source;
-        
-        @Override 
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            
-            sb.append("============ ");
-            sb.append(filename);
-            sb.append(": \n");
-            sb.append(this.source);
-            sb.append("\n\n");
-            return sb.toString();
-        }
-        
-    }
-    private Class<? extends NannyHttpHandler> superClass;
-    private String interfacePropertyName;
-    
-    public String getInterfacePropertyName() {
-        return interfacePropertyName;
-    }
+	public static class SourceFile {
+		String filename;
+		String source;
 
-    public void setInterfacePropertyName(String interfacePropertyName) {
-        this.interfacePropertyName = interfacePropertyName;
-    }
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
 
-    public Class<? extends NannyHttpHandler> getSuperClass() {
-        return superClass;
-    }
+			sb.append("============ ");
+			sb.append(filename);
+			sb.append(": \n");
+			sb.append(this.source);
+			sb.append("\n\n");
+			return sb.toString();
+		}
 
-    public void setSuperClass(Class<? extends NannyHttpHandler> superClass) {
-        this.superClass = superClass;
-    }
+	}
 
-    public String generateSource(String srcRoot, Class<?> interfc, String packageName, boolean doWriteFile)
-            throws SQLException, IOException {
+	private Class<? extends NannyHttpHandler> superClass;
+	private String interfacePropertyName;
 
+	public String getInterfacePropertyName() {
+		return interfacePropertyName;
+	}
 
-        Method[] methods = interfc.getMethods();
+	public void setInterfacePropertyName(String interfacePropertyName) {
+		this.interfacePropertyName = interfacePropertyName;
+	}
 
-        for (Method m : methods) {
+	public Class<? extends NannyHttpHandler> getSuperClass() {
+		return superClass;
+	}
 
-            SourceFile sf = generateSource(interfc, m, packageName);
-            System.out.println(sf);
-            
-            if (doWriteFile) {
-                
-                Path packagePath = Paths.get(srcRoot, packageName.replace(".", "/"));
-                packagePath.toFile().mkdirs();
-                Path filePath = Paths.get(packagePath.toString(), sf.filename);
-                File file = filePath.toFile();
-                if (!file.exists()) {
-                    file.createNewFile();
-                }
-                
-                FileInputStream ins = new FileInputStream(file);
-                OutputStream outs = new FileOutputStream(file);
-                outs.write(sf.source.getBytes());
-                outs.close();
-            }
-        }
+	public void setSuperClass(Class<? extends NannyHttpHandler> superClass) {
+		this.superClass = superClass;
+	}
 
-        return "";
-    }
+	public String generateSource(String srcRoot, Class<?> interfc,
+			String packageName, boolean doWriteFile) throws SQLException,
+			IOException {
 
-    public SourceFile generateSource(Class<?> interfc, Method method, String packageName)
-            throws SQLException {
-        StringBuilder sb = new StringBuilder();
-        
-        Method interfaceSetter = null;
-        Method interfaceGetter = null;
-        for (Method m : this.getSuperClass().getMethods()) {
-            if(m.isAnnotationPresent(InterfaceSetter.class)) {
-                interfaceSetter = m;
-            } else if(m.isAnnotationPresent(InterfaceGetter.class)) {
-                interfaceGetter = m;
-            }
-        }
-        
-        
-        String pkg = "package " + packageName + ";\n";
-        sb.append(pkg);
-        
-        sb.append("// This file is generated with " + this.getClass().getCanonicalName());
+		Method[] methods = interfc.getMethods();
 
-        String parameterClass = method.getParameterTypes()[0].getCanonicalName();
+		for (Method m : methods) {
 
-        String handlerName = method.getName() + "Handler";
-        handlerName = handlerName.substring(0, 1).toUpperCase() + handlerName.substring(1);
+			SourceFile sf = generateSource(interfc, m, packageName);
+			System.out.println(sf);
 
-        String imports = "import " + interfc.getCanonicalName() + "; // interface type\n" +
-                "import " + parameterClass + "; // Parameter type\n" +
-                "import org.glassfish.grizzly.http.server.Request;\n" +
-                "import org.glassfish.grizzly.http.server.Response;\n";
+			if (doWriteFile) {
 
-        sb.append("\n");
-        sb.append(imports);
-        
-        
-        String classDef = "public class " + handlerName + " extends " + this.getSuperClass().getCanonicalName() + " {\n";
-        sb.append(classDef);
-        
-        String ctor = String.format("    public %s(%s itf) {\n" +  
-                "        this.%s(itf);\n" + 
-                "    }\n", 
-                handlerName, 
-                interfc.getName(), 
-                interfaceSetter.getName()); 
-        
-        sb.append(ctor);
-        
-        
-        
-        String doXXXTemplate = "    @Override\n" + 
-                "    public Object doPost(Request request, Response response) throws Exception {\n" + 
-                "        %s p = new %s();\n" + 
-                "        this.bindParameter(request, p);\n" + 
-                "        Object res = this.%s().%s(p);\n" + 
-                "        return res;\n" + 
-                "    }\n";
-        
-        String doXXX = String.format(doXXXTemplate, method.getParameterTypes()[0].getName(), 
-                method.getParameterTypes()[0].getName(),
-                interfaceGetter.getName(),
-                method.getName());
-        
-        sb.append(doXXX);
-        
-        sb.append("}\n");
-        sb.append("\n");
-        
-        SourceFile sf = new SourceFile();
-        sf.filename = handlerName + ".java";
-        sf.source = sb.toString();
-        return sf;
-    }
+				Path packagePath = Paths.get(srcRoot,
+						packageName.replace(".", "/"));
+				packagePath.toFile().mkdirs();
+				Path filePath = Paths.get(packagePath.toString(), sf.filename);
+				File file = filePath.toFile();
+				if (!file.exists()) {
+					file.createNewFile();
+				}
+
+				FileInputStream ins = new FileInputStream(file);
+				OutputStream outs = new FileOutputStream(file);
+				outs.write(sf.source.getBytes());
+				outs.close();
+			}
+		}
+
+		return "";
+	}
+
+	public SourceFile generateSource(Class<?> interfc, Method method,
+			String packageName) throws SQLException {
+
+		Preconditions.checkArgument(this.getSuperClass() != null,
+				"Super class must not be null.");
+
+		StringBuilder sb = new StringBuilder();
+
+		Method interfaceSetter = null;
+		Method interfaceGetter = null;
+		for (Method m : this.getSuperClass().getMethods()) {
+			if (m.isAnnotationPresent(InterfaceSetter.class)) {
+				interfaceSetter = m;
+			} else if (m.isAnnotationPresent(InterfaceGetter.class)) {
+				interfaceGetter = m;
+			}
+		}
+
+		Preconditions.checkArgument(interfaceSetter != null,
+				"Super class must have a InterfaceSetter.");
+
+		Preconditions.checkArgument(interfaceGetter != null,
+				"Super class must have a InterfaceGetter.");
+
+		String pkg = "package " + packageName + ";\n";
+		sb.append(pkg);
+
+		sb.append("// This file is generated with "
+				+ this.getClass().getCanonicalName());
+
+		String parameterClass = method.getParameterTypes()[0]
+				.getCanonicalName();
+
+		String handlerName = method.getName() + "Handler";
+		handlerName = handlerName.substring(0, 1).toUpperCase()
+				+ handlerName.substring(1);
+
+		String imports = "import " + interfc.getCanonicalName()
+				+ "; // interface type\n" + "import " + parameterClass
+				+ "; // Parameter type\n"
+				+ "import org.glassfish.grizzly.http.server.Request;\n"
+				+ "import org.glassfish.grizzly.http.server.Response;\n";
+
+		sb.append("\n");
+		sb.append(imports);
+
+		String classDef = "public class " + handlerName + " extends "
+				+ this.getSuperClass().getCanonicalName() + " {\n";
+		sb.append(classDef);
+
+		String ctor = String.format("    public %s(%s itf) {\n"
+				+ "        this.%s(itf);\n" + "    }\n", handlerName,
+				interfc.getName(), interfaceSetter.getName());
+
+		sb.append(ctor);
+
+		String doXXXTemplate = "    @Override\n"
+				+ "    public Object doPost(Request request, Response response) throws Exception {\n"
+				+ "        %s p = new %s();\n"
+				+ "        this.bindParameter(request, p);\n"
+				+ "        Object res = this.%s().%s(p);\n"
+				+ "        return res;\n" + "    }\n";
+
+		String doXXX = String.format(doXXXTemplate,
+				method.getParameterTypes()[0].getName(),
+				method.getParameterTypes()[0].getName(),
+				interfaceGetter.getName(), method.getName());
+
+		sb.append(doXXX);
+
+		sb.append("}\n");
+		sb.append("\n");
+
+		SourceFile sf = new SourceFile();
+		sf.filename = handlerName + ".java";
+		sf.source = sb.toString();
+		return sf;
+	}
 
 }
