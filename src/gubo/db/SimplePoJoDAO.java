@@ -16,11 +16,11 @@ public class SimplePoJoDAO {
 
 	final private Class<?> clazz;
 	final private String tablename;
-	
+
 	public SimplePoJoDAO(Class<?> clazz) {
 		this.clazz = clazz;
-		
-		while(true) {
+
+		while (true) {
 			Table table = this.clazz.getAnnotation(Table.class);
 			if (table != null) {
 				this.tablename = table.name();
@@ -34,7 +34,7 @@ public class SimplePoJoDAO {
 			this.tablename = null;
 			break;
 		}
-		
+
 	}
 
 	public <T> T loadPoJo(DataSource ds, String sql, Object... params)
@@ -50,7 +50,7 @@ public class SimplePoJoDAO {
 			dbconn.close();
 		}
 	}
-	
+
 	public <T> T loadPoJoByPK(DataSource ds, String pkName, Object pkValue)
 			throws SQLException {
 
@@ -58,29 +58,38 @@ public class SimplePoJoDAO {
 		try {
 			dbconn.setAutoCommit(true);
 			ResultSetMapper<T> mapper = new ResultSetMapper<T>();
-			String sql = "select * from " + this.tablename + " where " + pkName + " = ?";
+			String sql = "select * from " + this.tablename + " where " + pkName
+					+ " = ?";
 			T pojo = mapper.loadPojo(dbconn, this.clazz, sql, pkValue);
 			return pojo;
 		} finally {
 			dbconn.close();
 		}
 	}
-	
-	public <T> T loadPoJoByUniqueKey(DataSource ds, String keyName, Object pkValue)
-			throws SQLException {
+
+	public <T> T loadPoJoByUniqueKey(DataSource ds, String keyName,
+			Object pkValue) throws SQLException {
 
 		Connection dbconn = ds.getConnection();
 		try {
 			dbconn.setAutoCommit(true);
 			ResultSetMapper<T> mapper = new ResultSetMapper<T>();
-			String sql = "select * from " + this.tablename + " where " + keyName + " = ?";
+			String sql = "select * from " + this.tablename + " where "
+					+ keyName + " = ?";
 			T pojo = mapper.loadPojo(dbconn, this.clazz, sql, pkValue);
 			return pojo;
 		} finally {
 			dbconn.close();
 		}
 	}
-	
+
+	public <T extends ISimplePoJo> T insert(Connection dbconn, T pojo)
+			throws Exception {
+		Long newid = InsertStatementGenerator.insertNew(dbconn, pojo);
+		pojo.setId(newid);
+		return pojo;
+	}
+
 	public <T extends ISimplePoJo> T insert(DataSource ds, T pojo)
 			throws Exception {
 		Connection dbconn = ds.getConnection();
@@ -108,18 +117,18 @@ public class SimplePoJoDAO {
 
 	public <T extends ISimplePoJo> T update(Connection dbconn, T pojo)
 			throws Exception {
-			UpdateStatementGenerator.update(dbconn, pojo);
-			return pojo;
+		UpdateStatementGenerator.update(dbconn, pojo);
+		return pojo;
 	}
-	
+
 	public <T extends ISimplePoJo> T update(DataSource ds, T pojo,
-			String ... allowedCols) throws Exception {
-		
+			String... allowedCols) throws Exception {
+
 		HashSet<String> cols = new HashSet<String>();
 		for (String col : allowedCols) {
 			cols.add(col);
 		}
-		
+
 		Connection dbconn = ds.getConnection();
 		try {
 			dbconn.setAutoCommit(true);
@@ -129,9 +138,9 @@ public class SimplePoJoDAO {
 			dbconn.close();
 		}
 	}
-	
+
 	public <T extends ISimplePoJo> T update(Connection dbconn, T pojo,
-			String ... allowedCols) throws Exception {
+			String... allowedCols) throws Exception {
 
 		HashSet<String> cols = new HashSet<String>();
 		for (String col : allowedCols) {
@@ -140,6 +149,5 @@ public class SimplePoJoDAO {
 		UpdateStatementGenerator.update(dbconn, pojo, cols);
 		return pojo;
 	}
-	
-	
+
 }
