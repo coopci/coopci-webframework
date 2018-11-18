@@ -16,7 +16,6 @@ import javax.persistence.GeneratedValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * 
  * 生成 update 的jdbc statement。
@@ -25,113 +24,127 @@ import org.slf4j.LoggerFactory;
 public class InsertStatementGenerator {
 	public static Logger logger = LoggerFactory
 			.getLogger(InsertStatementGenerator.class);
-	
+
 	public static ConcurrentHashMap<Class<?>, StatementContext> cachedInsertStatementContext = new ConcurrentHashMap<Class<?>, StatementContext>();
-	
-	public StatementContext constructInsert(Class<?> clazz) throws NoSuchMethodException, SecurityException {
+
+	public StatementContext constructInsert(Class<?> clazz)
+			throws NoSuchMethodException, SecurityException {
 		// Class<?> clazz = pojo.getClass();
 		if (!clazz.isAnnotationPresent(Entity.class)) {
 			return null;
 		}
 		Entity entity = clazz.getAnnotation(Entity.class);
-		
-		
+
 		String tablename = entity.name();
 		if (tablename == null || tablename.length() == 0) {
 			tablename = clazz.getName();
 		}
-		
+
 		StatementContext ret = new StatementContext();
 		Field[] fields = clazz.getDeclaredFields();
 		int index = 1;
 		for (Field field : fields) {
 			if (field.isAnnotationPresent(Column.class)) {
 				if (field.isAnnotationPresent(GeneratedValue.class)) {
-					continue;  // insert 的时候不  insert GeneratedValue 的字段。
+					continue; // insert 的时候不 insert GeneratedValue 的字段。
 				}
-				
+
 				Column column = field.getAnnotation(Column.class);
-				
+
 				if (column.insertable() == false) {
 					continue;
 				}
-				
+
 				String columnName = column.name();
 				if (columnName == null || columnName.length() == 0) {
 					columnName = field.getName();
 				}
-				
+
 				ParameterSetter setter = new ParameterSetter();
 				setter.index = index;
-				setter.pojoField = field;
+				setter.setPojoField(field);
 				setter.columnName = columnName;
-				// setter.preparedStatementSetMethod = psClazz.getMethod("setObject", int.class, Object.class);
-				setter.preparedStatementSetMethod = PreparedStatement.class.getMethod("setObject", int.class, Object.class);
+				// setter.preparedStatementSetMethod =
+				// psClazz.getMethod("setObject", int.class, Object.class);
+				setter.preparedStatementSetMethod = PreparedStatement.class
+						.getMethod("setObject", int.class, Object.class);
 				++index;
 				ret.setters.add(setter);
 			}
 		}
-		
+
 		int setters = ret.setters.size();
 		int nth = 0;
-		StringBuilder sqlBuilder = new StringBuilder(); 
+		StringBuilder sqlBuilder = new StringBuilder();
 		sqlBuilder.append("insert into `");
 		sqlBuilder.append(tablename);
-		sqlBuilder.append("` (" );
+		sqlBuilder.append("` (");
 		if (setters > 0) {
-			sqlBuilder.append("`" );
+			sqlBuilder.append("`");
 			sqlBuilder.append(ret.setters.get(0).columnName);
-			sqlBuilder.append("`" );
+			sqlBuilder.append("`");
 		}
 		for (nth = 1; nth < setters; nth++) {
-			sqlBuilder.append(", `" );
+			sqlBuilder.append(", `");
 			sqlBuilder.append(ret.setters.get(nth).columnName);
-			sqlBuilder.append("`" );
+			sqlBuilder.append("`");
 		}
-		
-		sqlBuilder.append(" )" );
-		sqlBuilder.append(" values (" );
+
+		sqlBuilder.append(" )");
+		sqlBuilder.append(" values (");
 		if (setters > 0) {
-			sqlBuilder.append("?" );
+			sqlBuilder.append("?");
 		}
 		for (nth = 1; nth < setters; nth++) {
-			sqlBuilder.append(", ?" );
+			sqlBuilder.append(", ?");
 		}
-		sqlBuilder.append("); " );
+		sqlBuilder.append("); ");
 		ret.sql = sqlBuilder.toString();
 		return ret;
 	}
-	
-	public StatementContext getInsertStatementContext(Class<?> clazz) throws NoSuchMethodException, SecurityException {
+
+	public StatementContext getInsertStatementContext(Class<?> clazz)
+			throws NoSuchMethodException, SecurityException {
 		StatementContext ret = cachedInsertStatementContext.get(clazz);
 		if (ret == null) {
 			logger.debug("cachedInsertStatementContext miss: {}", clazz);
 			ret = constructInsert(clazz);
-			cachedInsertStatementContext.put(clazz,  ret);
+			cachedInsertStatementContext.put(clazz, ret);
 		} else {
-			
+
 			logger.debug("cachedInsertStatementContext hit: {}", clazz);
 		}
 		return ret;
 	}
-	public PreparedStatement prepareInsertStatement(Connection dbconn, Object pojo, int opt) throws SQLException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+
+	public PreparedStatement prepareInsertStatement(Connection dbconn,
+			Object pojo, int opt) throws SQLException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException {
 		StatementContext ctx = this.getInsertStatementContext(pojo.getClass());
 		PreparedStatement stmt = ctx.prepareStatement(dbconn, pojo, opt);
 		return stmt;
 	}
 
-	public PreparedStatement prepareInsertStatement(Connection dbconn, Object pojo) throws SQLException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public PreparedStatement prepareInsertStatement(Connection dbconn,
+			Object pojo) throws SQLException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException {
 		StatementContext ctx = this.getInsertStatementContext(pojo.getClass());
 		PreparedStatement stmt = ctx.prepareStatement(dbconn, pojo);
 		return stmt;
 	}
-	
-	public static Long insertNew(Connection dbconn, Object pojo) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, SQLException {
-		
+
+	public static Long insertNew(Connection dbconn, Object pojo)
+			throws IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException,
+			SecurityException, SQLException {
+
 		Long newId = null;
 
 		InsertStatementGenerator generator = new InsertStatementGenerator();
-		PreparedStatement insertStmt = generator.prepareInsertStatement(dbconn, pojo, Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement insertStmt = generator.prepareInsertStatement(dbconn,
+				pojo, Statement.RETURN_GENERATED_KEYS);
 		insertStmt.execute();
 		ResultSet rs = insertStmt.getGeneratedKeys();
 		if (rs != null && rs.next()) {

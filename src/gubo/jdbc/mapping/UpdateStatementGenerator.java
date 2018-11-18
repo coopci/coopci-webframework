@@ -30,12 +30,14 @@ public class UpdateStatementGenerator {
 
 	public StatementContext constructUpdate(Class<?> clazz)
 			throws NoSuchMethodException, SecurityException {
-		
+
 		return constructUpdate(clazz, null);
-		
+
 	}
-	public StatementContext constructUpdate(Class<?> clazz, Set<String> allowedCols)
-			throws NoSuchMethodException, SecurityException {
+
+	public StatementContext constructUpdate(Class<?> clazz,
+			Set<String> allowedCols) throws NoSuchMethodException,
+			SecurityException {
 		// 返回 ret 的 setters 的前面放要set的字段，后面放where 后面的条件。
 		// 所有 带@Column 和 @Id 的字段作为where的条件。
 		// 所有 带@Column 不带@Id 并且 @Column 的 updatable() == true 的字段作为被set的字段。
@@ -72,20 +74,18 @@ public class UpdateStatementGenerator {
 			if (column.updatable() == false) {
 				continue;
 			}
-			
+
 			String columnName = column.name();
 			if (columnName == null || columnName.length() == 0) {
 				columnName = field.getName();
 			}
-			if (allowedCols != null && 
-					(!allowedCols.contains(columnName))
-					) {
+			if (allowedCols != null && (!allowedCols.contains(columnName))) {
 				continue;
 			}
-			
+
 			ParameterSetter setter = new ParameterSetter();
 			setter.index = index;
-			setter.pojoField = field;
+			setter.setPojoField(field);
 			setter.columnName = columnName;
 			setter.preparedStatementSetMethod = PreparedStatement.class
 					.getMethod("setObject", int.class, Object.class);
@@ -119,7 +119,7 @@ public class UpdateStatementGenerator {
 			}
 			ParameterSetter setter = new ParameterSetter();
 			setter.index = index;
-			setter.pojoField = field;
+			setter.setPojoField(field);
 			setter.columnName = columnName;
 			setter.preparedStatementSetMethod = PreparedStatement.class
 					.getMethod("setObject", int.class, Object.class);
@@ -186,19 +186,17 @@ public class UpdateStatementGenerator {
 		stmt.executeUpdate();
 	}
 
-	
-	public static void update(Connection dbconn, Object pojo, Set<String> allowedCols)
-			throws IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException,
-			SecurityException, SQLException {
+	public static void update(Connection dbconn, Object pojo,
+			Set<String> allowedCols) throws IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, SQLException {
 
 		UpdateStatementGenerator generator = new UpdateStatementGenerator();
-		PreparedStatement stmt = generator.prepareUpdateStatement(dbconn, pojo,allowedCols,
-				Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement stmt = generator.prepareUpdateStatement(dbconn, pojo,
+				allowedCols, Statement.RETURN_GENERATED_KEYS);
 		stmt.executeUpdate();
 	}
-	
-	
+
 	public StatementContext getUpdateStatementContext(Class<?> clazz,
 			Set<String> allowedCols) throws NoSuchMethodException,
 			SecurityException {
@@ -208,11 +206,11 @@ public class UpdateStatementGenerator {
 	}
 
 	public PreparedStatement prepareUpdateStatement(Connection dbconn,
-			Object pojo, Set<String> allowedCols, int opt)
-			throws SQLException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException {
-		StatementContext ctx = this.getUpdateStatementContext(pojo.getClass(), allowedCols);
+			Object pojo, Set<String> allowedCols, int opt) throws SQLException,
+			IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException {
+		StatementContext ctx = this.getUpdateStatementContext(pojo.getClass(),
+				allowedCols);
 		PreparedStatement stmt = ctx.prepareStatement(dbconn, pojo, opt);
 		return stmt;
 	}

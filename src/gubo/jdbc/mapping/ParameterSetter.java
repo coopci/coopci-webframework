@@ -7,18 +7,29 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 
-
 public class ParameterSetter {
 	Method preparedStatementSetMethod;
 	int index;
-	Field pojoField;
+	private Field pojoField;
+
+	public Field getPojoField() {
+		return pojoField;
+	}
+
+	public void setPojoField(Field pojoField) {
+		this.pojoField = pojoField;
+		this.pojoField.setAccessible(true);
+	}
+
 	String columnName; // 数据库的列名。
-	
-	void set(PreparedStatement ps, Object pojo) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+
+	void set(PreparedStatement ps, Object pojo) throws IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException {
+
 		Object value = pojoField.get(pojo);
 		preparedStatementSetMethod.invoke(ps, this.index, value);
 	}
-	
+
 	public static void f(Object o) {
 		System.out.println("o:" + o);
 	}
@@ -27,7 +38,7 @@ public class ParameterSetter {
 			SQLException, ParseException {
 		Object o = 9;
 		f(o);
-		
+
 		return;
 	}
 }
