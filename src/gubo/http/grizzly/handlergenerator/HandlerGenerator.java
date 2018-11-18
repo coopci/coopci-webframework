@@ -137,10 +137,13 @@ public class HandlerGenerator {
 		handlerName = handlerName.substring(0, 1).toUpperCase()
 				+ handlerName.substring(1);
 
-		String imports = "import " + interfc.getCanonicalName()
-				+ "; // interface type\n" + "import " + parameterClass
-				+ "; // Parameter type\n"
-				+ "import org.glassfish.grizzly.http.server.Request;\n"
+		// String imports = "import " + interfc.getCanonicalName()
+		// + "; // interface type\n" + "import " + parameterClass
+		// + "; // Parameter type\n"
+		// + "import org.glassfish.grizzly.http.server.Request;\n"
+		// + "import org.glassfish.grizzly.http.server.Response;\n";
+
+		String imports = "import org.glassfish.grizzly.http.server.Request;\n"
 				+ "import org.glassfish.grizzly.http.server.Response;\n";
 
 		sb.append("\n");
@@ -163,10 +166,8 @@ public class HandlerGenerator {
 				+ "        Object res = this.%s().%s(p);\n"
 				+ "        return res;\n" + "    }\n";
 
-		String doXXX = String.format(doXXXTemplate,
-				method.getParameterTypes()[0].getName(),
-				method.getParameterTypes()[0].getName(),
-				interfaceGetter.getName(), method.getName());
+		String doXXX = String.format(doXXXTemplate, parameterClass,
+				parameterClass, interfaceGetter.getName(), method.getName());
 
 		sb.append(doXXX);
 
