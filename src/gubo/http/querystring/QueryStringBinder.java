@@ -2,6 +2,7 @@ package gubo.http.querystring;
 
 import gubo.exceptions.QueryStringParseException;
 import gubo.exceptions.RequiredParametersMissingException;
+import gubo.http.querystring.parsers.BigDecimalParser;
 import gubo.http.querystring.parsers.BooleanFieldParser;
 import gubo.http.querystring.parsers.DatetimeParser;
 import gubo.http.querystring.parsers.DoubleFieldParser;
@@ -11,7 +12,6 @@ import gubo.http.querystring.parsers.LongFieldParser;
 import gubo.http.querystring.parsers.NullParser;
 import gubo.http.querystring.parsers.StringFieldParser;
 import gubo.http.querystring.parsers.TimeParser;
-import gubo.http.querystring.parsers.BigDecimalParser;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -56,83 +56,84 @@ public class QueryStringBinder {
 			HashSet<Field> ret = (HashSet<Field>) requiredFields.clone();
 			return ret;
 		}
-		
-		public void tryAddField(Field f) throws InstantiationException, IllegalAccessException {
-		    if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
-                return;
-            }
 
-            QueryStringField anno = f.getAnnotation(QueryStringField.class);
+		public void tryAddField(Field f) throws InstantiationException,
+				IllegalAccessException {
+			if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
+				return;
+			}
 
-            if (anno == null) {
-                // System.out.println("anno == null: " + f.getName());
+			QueryStringField anno = f.getAnnotation(QueryStringField.class);
 
-                logger.debug("anno == null, class: {}, field name: {} ",
-                        clazz.getName(), f.getName());
-                return;
-            }
+			if (anno == null) {
+				// System.out.println("anno == null: " + f.getName());
 
-            String queryStrfieldName = f.getName();
+				logger.debug("anno == null, class: {}, field name: {} ",
+						clazz.getName(), f.getName());
+				return;
+			}
 
-            if (anno != null) {
-                if (anno.name() != null && anno.name().length() > 0) {
-                    queryStrfieldName = anno.name();
-                }
-                if (anno.required()) {
-                    this.requiredFields.add(f);
-                }
+			String queryStrfieldName = f.getName();
 
-            }
+			if (anno != null) {
+				if (anno.name() != null && anno.name().length() > 0) {
+					queryStrfieldName = anno.name();
+				}
+				if (anno.required()) {
+					this.requiredFields.add(f);
+				}
 
-            // System.out.println("queryStrfieldName = " + queryStrfieldName);
+			}
 
-            Class<? extends IQueryStringFieldParser> deserializerClass = anno
-                    .deserializer();
-            if (deserializerClass == NullParser.class) {
-                if (f.getType() == String.class) {
-                    deserializerClass = StringFieldParser.class;
-                } else if (f.getType() == Long.class) {
-                    deserializerClass = LongFieldParser.class;
-                } else if (f.getType() == long.class) {
-                    deserializerClass = LongFieldParser.class;
-                } else if (f.getType() == Integer.class) {
-                    deserializerClass = IntegerFieldParser.class;
-                } else if (f.getType() == int.class) {
-                    deserializerClass = IntegerFieldParser.class;
-                } else if (f.getType() == Boolean.class) {
-                    deserializerClass = BooleanFieldParser.class;
-                } else if (f.getType() == boolean.class) {
-                    deserializerClass = BooleanFieldParser.class;
-                } else if (f.getType() == Float.class) {
-                    deserializerClass = FloatFieldParser.class;
-                } else if (f.getType() == float.class) {
-                    deserializerClass = FloatFieldParser.class;
-                } else if (f.getType() == Double.class) {
-                    deserializerClass = DoubleFieldParser.class;
-                } else if (f.getType() == double.class) {
-                    deserializerClass = DoubleFieldParser.class;
-                } else if (f.getType().isAssignableFrom(Date.class)) {
-                    deserializerClass = DatetimeParser.class;
-                } else if (f.getType() == Time.class) {
-                    deserializerClass = TimeParser.class;
-                } else if (f.getType() == BigDecimal.class) {
-                    deserializerClass = BigDecimalParser.class;
-                }
-            }
+			// System.out.println("queryStrfieldName = " + queryStrfieldName);
 
-            // System.out.println("deserializerClass = " + deserializerClass);
+			Class<? extends IQueryStringFieldParser> deserializerClass = anno
+					.deserializer();
+			if (deserializerClass == NullParser.class) {
+				if (f.getType() == String.class) {
+					deserializerClass = StringFieldParser.class;
+				} else if (f.getType() == Long.class) {
+					deserializerClass = LongFieldParser.class;
+				} else if (f.getType() == long.class) {
+					deserializerClass = LongFieldParser.class;
+				} else if (f.getType() == Integer.class) {
+					deserializerClass = IntegerFieldParser.class;
+				} else if (f.getType() == int.class) {
+					deserializerClass = IntegerFieldParser.class;
+				} else if (f.getType() == Boolean.class) {
+					deserializerClass = BooleanFieldParser.class;
+				} else if (f.getType() == boolean.class) {
+					deserializerClass = BooleanFieldParser.class;
+				} else if (f.getType() == Float.class) {
+					deserializerClass = FloatFieldParser.class;
+				} else if (f.getType() == float.class) {
+					deserializerClass = FloatFieldParser.class;
+				} else if (f.getType() == Double.class) {
+					deserializerClass = DoubleFieldParser.class;
+				} else if (f.getType() == double.class) {
+					deserializerClass = DoubleFieldParser.class;
+				} else if (f.getType().isAssignableFrom(Date.class)) {
+					deserializerClass = DatetimeParser.class;
+				} else if (f.getType() == Time.class) {
+					deserializerClass = TimeParser.class;
+				} else if (f.getType() == BigDecimal.class) {
+					deserializerClass = BigDecimalParser.class;
+				}
+			}
 
-            IQueryStringFieldParser deserializerObj = deserializerClass
-                    .newInstance();
-            if (anno != null) {
-                deserializerObj.setIgnoreMalFormat(anno.ignoreMalFormat());
-                deserializerObj.setCanBeBlank(anno.canBeBlank());
-                deserializerObj.setDoTrim(anno.doTrim());
-            }
+			// System.out.println("deserializerClass = " + deserializerClass);
 
-            deserializerObj.setField(f);
-            this._cachedParses.put(queryStrfieldName, deserializerObj);
-		    
+			IQueryStringFieldParser deserializerObj = deserializerClass
+					.newInstance();
+			if (anno != null) {
+				deserializerObj.setIgnoreMalFormat(anno.ignoreMalFormat());
+				deserializerObj.setCanBeBlank(anno.canBeBlank());
+				deserializerObj.setDoTrim(anno.doTrim());
+			}
+
+			deserializerObj.setField(f);
+			this._cachedParses.put(queryStrfieldName, deserializerObj);
+
 		}
 	}
 
@@ -141,16 +142,16 @@ public class QueryStringBinder {
 		Binding binding = new Binding();
 		binding.clazz = clazz;
 
-        Field[] fields = clazz.getFields();
-        for (Field f : fields) {
-            binding.tryAddField(f);
-        }
+		Field[] fields = clazz.getFields();
+		for (Field f : fields) {
+			binding.tryAddField(f);
+		}
 
-        fields = clazz.getDeclaredFields();
-        for (Field f : fields) {
-            binding.tryAddField(f);
-        }
-        
+		fields = clazz.getDeclaredFields();
+		for (Field f : fields) {
+			binding.tryAddField(f);
+		}
+
 		return binding;
 	}
 
@@ -236,9 +237,11 @@ public class QueryStringBinder {
 		Map<String, String> data = extractParameters(req);
 		this.bind(data, pojo, allowedFields);
 	}
+
 	public void bind(Map<String, String> data, Object pojo) throws Exception {
 		this.bind(data, pojo, null);
 	}
+
 	public void bind(Map<String, String> data, Object pojo,
 			Set<String> allowedFields) throws Exception {
 		if (data == null) {
@@ -299,8 +302,9 @@ public class QueryStringBinder {
 		Class<? extends Object> clazz = pojo.getClass();
 		binding.clazz = clazz;
 
-		Field[] fields = clazz.getFields();
+		Field[] fields = clazz.getDeclaredFields();
 		for (Field f : fields) {
+			f.setAccessible(true);
 			if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
 				continue;
 			}
@@ -361,6 +365,7 @@ public class QueryStringBinder {
 
 	public static class JDBCWhere {
 		String whereClause = "";
+
 		public String getWhereClause() {
 			return whereClause;
 		}
@@ -390,11 +395,12 @@ public class QueryStringBinder {
 	}
 
 	/**
-	 * eq__a=& 这种写法的效果是忽略 eq__a
-	 * 如果筛选a==''，需要写: isblank__a=&
-	 * @param clazz 中作为筛选的字段需要用 {@link QueryStringField} 标注才行。
+	 * eq__a=& 这种写法的效果是忽略 eq__a 如果筛选a==''，需要写: isblank__a=&
 	 * 
-	 * 目前支持的操作符包括: eq__, lt__, lte__, gt__, gte__, neq__
+	 * @param clazz
+	 *            中作为筛选的字段需要用 {@link QueryStringField} 标注才行。
+	 * 
+	 *            目前支持的操作符包括: eq__, lt__, lte__, gt__, gte__, neq__
 	 **/
 	public JDBCWhere genJDBCWhere(Map<String, String> data,
 			Class<? extends Object> clazz, Set<String> allowedFields)
@@ -452,7 +458,7 @@ public class QueryStringBinder {
 					continue;
 				}
 
-				if (value.length() == 0 ) {
+				if (value.length() == 0) {
 					continue;
 				}
 				try {
@@ -479,15 +485,15 @@ public class QueryStringBinder {
 		}
 		return new JDBCWhere(sb.toString(), params.toArray());
 	}
-	public JDBCWhere genJDBCWhere(Request req,
-			Class<? extends Object> clazz, Set<String> allowedFields)
-			throws Exception {
-		
+
+	public JDBCWhere genJDBCWhere(Request req, Class<? extends Object> clazz,
+			Set<String> allowedFields) throws Exception {
+
 		Map<String, String> data = extractParameters(req);
 		return this.genJDBCWhere(data, clazz, allowedFields);
 	}
-	public JDBCWhere genJDBCWhere(Request req,
-			Class<? extends Object> clazz)
+
+	public JDBCWhere genJDBCWhere(Request req, Class<? extends Object> clazz)
 			throws Exception {
 		return this.genJDBCWhere(req, clazz, null);
 	}
