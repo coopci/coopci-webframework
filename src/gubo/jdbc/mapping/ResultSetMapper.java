@@ -53,6 +53,7 @@ public class ResultSetMapper<T> {
 				if (colname == null || colname.length() == 0) {
 					colname = field.getName();
 				}
+				field.setAccessible(true);
 				mapping.colnameToField.put(colname, field);
 			}
 		}
@@ -179,7 +180,7 @@ public class ResultSetMapper<T> {
 			dbconn.close();
 		}
 	}
-	
+
 	public static <T> T loadPoJo(DataSource ds, Class<?> outputClass,
 			String sql, Object... params) throws SQLException {
 
@@ -187,15 +188,13 @@ public class ResultSetMapper<T> {
 		try {
 			ResultSetMapper<T> mapper = new ResultSetMapper<T>();
 			T pojo = mapper.loadPojo(dbconn, outputClass, sql, params);
-			return pojo;	
+			return pojo;
 		} finally {
 			dbconn.close();
 		}
-		
+
 	}
-	
-	
-	
+
 	public static <T> T loadPoJo(Connection dbconn, Class<?> outputClass,
 			String sql, Object... params) throws SQLException {
 
@@ -227,14 +226,13 @@ public class ResultSetMapper<T> {
 		return pojoList;
 	}
 
-
 	public static long loadLong(Connection dbconn, String sql, Object... params)
 			throws SQLException {
 
 		PreparedStatement stmt = dbconn.prepareStatement(sql);
-		
+
 		for (int i = 0; i < params.length; ++i) {
-			stmt.setObject(i+1, params[i]);
+			stmt.setObject(i + 1, params[i]);
 		}
 		long ret = 0;
 		ResultSet rs = stmt.executeQuery();
@@ -244,14 +242,14 @@ public class ResultSetMapper<T> {
 		rs.close();
 		return ret;
 	}
-	
-	public static BigDecimal loadBigDecimal(Connection dbconn, String sql, Object... params)
-			throws SQLException {
+
+	public static BigDecimal loadBigDecimal(Connection dbconn, String sql,
+			Object... params) throws SQLException {
 
 		PreparedStatement stmt = dbconn.prepareStatement(sql);
-		
+
 		for (int i = 0; i < params.length; ++i) {
-			stmt.setObject(i+1, params[i]);
+			stmt.setObject(i + 1, params[i]);
 		}
 		BigDecimal ret = new BigDecimal(0);
 		ResultSet rs = stmt.executeQuery();
@@ -261,7 +259,7 @@ public class ResultSetMapper<T> {
 		rs.close();
 		return ret;
 	}
-	
+
 	/**
 	 * 
 	 * @param filter
