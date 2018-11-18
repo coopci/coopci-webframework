@@ -7,6 +7,7 @@ import gubo.jdbc.mapping.UpdateStatementGenerator;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -46,6 +47,25 @@ public class SimplePoJoDAO {
 			ResultSetMapper<T> mapper = new ResultSetMapper<T>();
 			T pojo = mapper.loadPojo(dbconn, this.clazz, sql, params);
 			return pojo;
+		} finally {
+			dbconn.close();
+		}
+	}
+
+	public <T> List<T> loadPojoList(Connection dbconn, String sql,
+			Object... params) throws SQLException {
+
+		ResultSetMapper<T> mapper = new ResultSetMapper<T>();
+		List<T> pojoList = mapper.loadPojoList(dbconn, this.clazz, sql, params);
+		return pojoList;
+	}
+
+	public <T> List<T> loadPojoList(DataSource ds, String sql, Object... params)
+			throws SQLException {
+		Connection dbconn = ds.getConnection();
+		try {
+			dbconn.setAutoCommit(true);
+			return this.loadPojoList(dbconn, sql, params);
 		} finally {
 			dbconn.close();
 		}
