@@ -32,8 +32,24 @@ public class JdbcTemplate {
 			}
 			ret.add(row);
 		}
+		rs.close();
 		return ret;
 	}
+	
+	public Object queryForObject(Connection dbconn, String sql,
+            Object... params) throws SQLException {
+        ResultSet rs = query(dbconn, sql, params);
+        int columnCount = rs.getMetaData().getColumnCount();
+        if (columnCount < 1) {
+            return null;
+        }
+        Object ret = null;
+        if (rs.next()) {
+            ret = rs.getObject(1);
+        }
+        rs.close();
+        return ret;
+    }
 
 	public Object[] queryForFirstRow(Connection dbconn, String sql,
 			Object... params) throws SQLException {
