@@ -227,7 +227,9 @@ public class TableClassGenerator {
 		case java.sql.Types.TIMESTAMP:
 			if (defaultValue == null) {
 				sb.append("null");
-			} else if (defaultValue.equals("current_timestamp()")) {
+			} else if (defaultValue.equalsIgnoreCase("current_timestamp()") ||
+			        defaultValue.equalsIgnoreCase("current_timestamp")
+			        ) {
 				sb.append("new Timestamp(System.currentTimeMillis())");
 			} else {
 
