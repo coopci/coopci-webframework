@@ -394,21 +394,32 @@ public class QueryStringBinder {
 
 	}
 
-	public static class JDBCOrderBy {
-	    
-	    String orderByClause = "";
-	    
-	}
-	public JDBCOrderBy genJDBCOrderBy(Map<String, String> data,
+    public static class JDBCOrderBy {
+        private String orderByClause = "";
+
+        public String getOrderByClause() {
+            return orderByClause;
+        }
+
+        public void setOrderByClause(String orderByClause) {
+            this.orderByClause = orderByClause;
+        }
+    }
+
+    /**
+     *  取出 key "order_by" 的值。
+     **/
+    public JDBCOrderBy genJDBCOrderBy(Map<String, String> data,
             Class<? extends Object> clazz, Set<String> allowedFields)
             throws Exception {
-	    // TODO add check for invalid columns, invalid direction(only desc and asc are allowed), and injection attack.
-	    JDBCOrderBy ret = new JDBCOrderBy();
-	    if (data.containsKey("order_by")) {
-	        ret.orderByClause = "order by " + data.get("order_by");
-	    }
-	    return ret;
-	}
+        // TODO add check for invalid columns, invalid direction(only desc and asc are allowed), and
+        // injection attack.
+        JDBCOrderBy ret = new JDBCOrderBy();
+        if (data.containsKey("order_by")) {
+            ret.orderByClause = "order by " + data.get("order_by");
+        }
+        return ret;
+    }
 	/**
 	 * eq__a=& 这种写法的效果是忽略 eq__a 如果筛选a==''，需要写: isblank__a=&
 	 * 

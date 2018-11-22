@@ -1,6 +1,8 @@
 package gubo.jdbc.mapping;
 
+import gubo.http.querystring.Person;
 import gubo.http.querystring.QueryStringBinder;
+import gubo.http.querystring.QueryStringBinder.JDBCOrderBy;
 import gubo.http.querystring.QueryStringBinder.JDBCWhere;
 import gubo.http.querystring.QueryStringField;
 
@@ -263,9 +265,10 @@ public class ResultSetMapper<T> {
 	/**
 	 * 
 	 * @param filter
-	 *            genJDBCWhere所能处理的筛选条件。
+	 *            genJDBCWhere所能处理的筛选条件。也包含 order_by
 	 * @param clazz
 	 *            中作为筛选的字段需要用 {@link QueryStringField} 标注才行。
+	 *          
 	 **/
 	public static <T> List<T> loadPoJoList(Connection dbconn,
 			Class<?> outputClass, Map<String, String> filter) throws Exception {
@@ -279,11 +282,13 @@ public class ResultSetMapper<T> {
 		QueryStringBinder binder = new QueryStringBinder();
 		JDBCWhere jdbcWhere = binder.genJDBCWhere(filter, outputClass, null);
 
+		JDBCOrderBy jdbcOrderBy = binder.genJDBCOrderBy(filter, Person.class, null);
+		
 		List<T> data = ResultSetMapper.loadPoJoList(
 				dbconn,
 				outputClass,
 				"select * from `" + tablename + "` "
-						+ jdbcWhere.getWhereClause(), jdbcWhere.getParams());
+						+ jdbcWhere.getWhereClause() + " " + jdbcOrderBy.getOrderByClause(), jdbcWhere.getParams());
 		return data;
 
 	}

@@ -40,9 +40,9 @@ public class QueryStringBinderTest {
         data.put("eq1__isVIP", "1");
         
         JDBCOrderBy jdbcOrderBy = testee.genJDBCOrderBy(data, Person.class, null);
-        System.out.println("orderByClause: " + jdbcOrderBy.orderByClause);
+        System.out.println("orderByClause: " + jdbcOrderBy.getOrderByClause());
         
-        assertEquals("order by isVIP desc, age", jdbcOrderBy.orderByClause);
+        assertEquals("order by isVIP desc, age", jdbcOrderBy.getOrderByClause());
         
     }
 }
