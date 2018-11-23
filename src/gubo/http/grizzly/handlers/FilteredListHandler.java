@@ -17,6 +17,14 @@ import org.glassfish.grizzly.http.server.Response;
 /**
  * 列出被@Entity的类对应的表中的数据。 带有筛选功能，筛选功能用 {@link QueryStringBinder } 的 genJDBCWhere
  * 实现。 作为筛选的字段需要用 {@link QueryStringField} 标注才行。
+ * 
+ * 筛选条件：
+ * 目前支持的操作符包括: eq__, lt__, lte__, gt__, gte__, neq__
+ * eq__a=& 这种写法的效果是忽略 eq__a 如果筛选a==''，需要写: isblank__a=&
+ * 
+ * 排序:
+ * 可以用 order_by  来指定按哪些字段排序，例如 col1， col2 desc ...
+ * 
  **/
 public class FilteredListHandler extends NannyHttpHandler {
 
