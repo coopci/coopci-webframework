@@ -1,6 +1,5 @@
 package gubo.jdbc.mapping;
 
-import gubo.http.querystring.Person;
 import gubo.http.querystring.QueryStringBinder;
 import gubo.http.querystring.QueryStringBinder.JDBCOrderBy;
 import gubo.http.querystring.QueryStringBinder.JDBCWhere;
@@ -282,7 +281,7 @@ public class ResultSetMapper<T> {
 		QueryStringBinder binder = new QueryStringBinder();
 		JDBCWhere jdbcWhere = binder.genJDBCWhere(filter, outputClass, null);
 
-		JDBCOrderBy jdbcOrderBy = binder.genJDBCOrderBy(filter, Person.class, null);
+		JDBCOrderBy jdbcOrderBy = binder.genJDBCOrderBy(filter, outputClass, null);
 		
 		List<T> data = ResultSetMapper.loadPoJoList(
 				dbconn,
