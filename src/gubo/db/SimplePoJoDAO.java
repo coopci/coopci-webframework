@@ -110,6 +110,15 @@ public class SimplePoJoDAO {
 		return pojo;
 	}
 
+	public <T extends ISimplePoJo> T insert(Connection dbconn, T pojo,
+			boolean autoId) throws Exception {
+		Long newid = InsertStatementGenerator.insertNew(dbconn, pojo);
+		if (autoId) {
+			pojo.setId(newid);
+		}
+		return pojo;
+	}
+
 	public <T extends ISimplePoJo> T insert(DataSource ds, T pojo)
 			throws Exception {
 		Connection dbconn = ds.getConnection();
