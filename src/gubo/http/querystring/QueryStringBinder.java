@@ -19,10 +19,12 @@ import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -301,8 +303,13 @@ public class QueryStringBinder {
 		Binding binding = new Binding();
 		Class<? extends Object> clazz = pojo.getClass();
 		binding.clazz = clazz;
-
-		Field[] fields = clazz.getDeclaredFields();
+		
+		Field[] fields1 = clazz.getFields();
+		Field[] fields2 = clazz.getDeclaredFields();
+		HashSet<Field> fields = new HashSet<Field>();
+		fields.addAll((Arrays.asList(fields1)));
+		fields.addAll((Arrays.asList(fields2)));
+		
 		for (Field f : fields) {
 			f.setAccessible(true);
 			if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
