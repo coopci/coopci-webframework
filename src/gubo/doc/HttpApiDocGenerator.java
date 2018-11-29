@@ -65,7 +65,7 @@ public class HttpApiDocGenerator {
             
             
         if ("POST".equals(httpMethod)) {
-            postData = " -d'" + ret + "' ";
+            postData = " -H'Content-Type: application/x-www-form-urlencoded' -d'" + ret + "' ";
             
         } else if ("GET".equals(httpMethod)) {
             querystring = "?"+ret;
