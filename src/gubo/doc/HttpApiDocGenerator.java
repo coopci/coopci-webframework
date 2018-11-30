@@ -3,6 +3,7 @@ package gubo.doc;
 import gubo.http.grizzly.handlergenerator.MappingToPath;
 import gubo.http.querystring.QueryStringBinder;
 import gubo.http.querystring.QueryStringField;
+import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -39,12 +40,7 @@ public class HttpApiDocGenerator {
     Object createForExample(Class<?> clazz) throws Exception {
         Object parameterObj = clazz.newInstance();
         
-        Field[] fields1 = clazz.getFields();
-        Field[] fields2 = clazz.getDeclaredFields();
-        HashSet<Field> fields = new HashSet<Field>();
-        fields.addAll((Arrays.asList(fields1)));
-        fields.addAll((Arrays.asList(fields2)));
-        
+        Field[] fields = FieldUtils.getAllFields(clazz);
         HashMap<String, String> data = new HashMap<String, String>();
         for (Field f : fields) {
             Comment comment = f.getAnnotation(Comment.class);
@@ -88,23 +84,43 @@ public class HttpApiDocGenerator {
         sb.append("method: " + httpMethod);sb.append("\n");
         sb.append(comment.value());sb.append("\n");
 
+        Class<?> parameterType = method.getParameters()[0].getType();
+        
+        Field[] fields = FieldUtils.getAllFields(parameterType);
+        for (Field f : fields) {
+            Comment fieldComment = f.getAnnotation(Comment.class);
+            if (fieldComment == null) {
+                continue;
+            }
+            
+            QueryStringField anno = f.getAnnotation(QueryStringField.class);
+            if (anno == null) {
+                continue;
+            }
+            String queryStrfieldName = f.getName();
+            if (anno != null) {
+                if (anno.name() != null && anno.name().length() > 0) {
+                    queryStrfieldName = anno.name();
+                }
+            }
+            
+            sb.append(queryStrfieldName + ": " + fieldComment.value());sb.append("\n");
+        }
+        
         String postData = "";
         String querystring = "";
-        
-        
-        Class<?> parameterType = method.getParameters()[0].getType();
         
         Object parameterObj = createForExample(parameterType);
         
         QueryStringBinder binder = new QueryStringBinder();
-        String ret = binder.toQueryString(parameterObj, null);
+        String querystringKVpairs = binder.toQueryString(parameterObj, null);
             
             
         if ("POST".equals(httpMethod)) {
-            postData = " -H'Content-Type: application/x-www-form-urlencoded' -d'" + ret + "' ";
+            postData = " -H'Content-Type: application/x-www-form-urlencoded' -d'" + querystringKVpairs + "' ";
             
         } else if ("GET".equals(httpMethod)) {
-            querystring = "?"+ret;
+            querystring = "?"+querystringKVpairs;
         }
         
         String curl = "curl -X" + httpMethod + postData + " '" + url + querystring + "'";
