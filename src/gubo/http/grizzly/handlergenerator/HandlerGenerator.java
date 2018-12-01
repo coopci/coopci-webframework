@@ -67,6 +67,11 @@ public class HandlerGenerator {
 
 		List<SourceFile> sourceFiles = new LinkedList<SourceFile>();
 		for (Method m : methods) {
+			MappingToPath[] mappings = m
+					.getAnnotationsByType(MappingToPath.class);
+			if (mappings.length == 0) {
+				continue;
+			}
 
 			SourceFile sf = generateSource(interfc, m, packageName);
 			if (sf == null) {
