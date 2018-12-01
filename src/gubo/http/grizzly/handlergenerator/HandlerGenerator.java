@@ -164,8 +164,17 @@ public class HandlerGenerator {
 
 		sb.append(ctor);
 
-		String doXXXTemplate = "    @Override\n"
-				+ "    public Object doPost(Request request, Response response) throws Exception {\n"
+		String httpmethod = "post";
+		MappingToPath[] mappings = method
+				.getAnnotationsByType(MappingToPath.class);
+		httpmethod = mappings[0].method().toLowerCase();
+
+		httpmethod = httpmethod.toUpperCase().substring(0, 1)
+				+ httpmethod.toLowerCase().substring(1);
+
+		String doXXXTemplate = "    @Override\n" + "    public Object do"
+				+ httpmethod
+				+ "(Request request, Response response) throws Exception {\n"
 				+ "        %s p = new %s();\n"
 				+ "        this.bindParameter(request, p);\n"
 				+ "        Object res = this.%s().%s(p);\n"
@@ -191,8 +200,6 @@ public class HandlerGenerator {
 				+ iftObjName.substring(1);
 
 		String path = method.getName();
-		MappingToPath[] mappings = method
-				.getAnnotationsByType(MappingToPath.class);
 		if (mappings.length > 0) {
 			path = mappings[0].value();
 		}
