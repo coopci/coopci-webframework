@@ -141,7 +141,7 @@ public class HttpApiDocGenerator {
 		String curl = "curl -X" + httpMethod + postData + " '" + url
 				+ querystring + "'";
 
-		sb.append("curl示例: " + curl);
+		sb.append("curl请求示例: " + curl);
 		sb.append("\n");
 
 		Class<?> returnType = method.getReturnType();
