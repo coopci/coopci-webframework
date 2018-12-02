@@ -31,8 +31,29 @@ public class SimpleHttpClient {
 		Request request = new Request.Builder().url(url).post(formBody2)
 				.build();
 		Response response = client.newCall(request).execute();
-		if (!response.isSuccessful())
+		if (!response.isSuccessful()) {
+			String body = new String(response.body().bytes());
 			throw new IOException("Unexpected code " + response);
+		}
+
+		Object ret;
+		ObjectMapper mapper = new ObjectMapper();
+		ret = mapper.readValue(response.body().string(), type);
+		return ret;
+	}
+
+	public Object get(String url, Object param, Class<?> type)
+			throws JsonParseException, JsonMappingException, IOException,
+			IllegalArgumentException, IllegalAccessException {
+		QueryStringBinder binder = new QueryStringBinder();
+		String qs = binder.toQueryString(param, dateFormatStr);
+		// RequestBody formBody2 = RequestBody.create(FORM, postBody);
+		Request request = new Request.Builder().url(url + "?" + qs).build();
+		Response response = client.newCall(request).execute();
+		if (!response.isSuccessful()) {
+			String body = new String(response.body().bytes());
+			throw new IOException("Unexpected code " + response);
+		}
 
 		Object ret;
 		ObjectMapper mapper = new ObjectMapper();
