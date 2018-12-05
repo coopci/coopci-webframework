@@ -50,6 +50,13 @@ public class MultipartHandler extends HttpHandler {
 
 					@Override
 					public void failed(Throwable throwable) {
+						final Writer writer = response.getWriter();
+						try {
+							writer.write(throwable.getMessage());
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						response.resume();
 					}
 
