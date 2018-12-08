@@ -11,7 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -19,7 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  **/
 public class HttpApiDocGenerator {
-
+    public static Logger logger = LoggerFactory.getLogger(HttpApiDocGenerator.class);
+    
 	/**
 	 * 为 interfc 上所有 同时被 {@link Comment} 和 {@link MappingToPath} 标注的 method
 	 * 生成文档。
@@ -33,9 +35,14 @@ public class HttpApiDocGenerator {
 
 		List<String> doc = new LinkedList<String>();
 		for (Method m : methods) {
-			String docForMethhod = this.generateDoc(m, urlPrefix);
-			doc.add(docForMethhod);
-			System.out.println(docForMethhod);
+		    try {
+        			String docForMethhod = this.generateDoc(m, urlPrefix);
+        			doc.add(docForMethhod);
+        			System.out.println(docForMethhod);
+		    } catch (Exception ex) {
+		        logger.error("" + m.toString(), ex);
+		        throw ex;
+		    }
 		}
 		return "";
 	}
