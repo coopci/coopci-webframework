@@ -39,6 +39,14 @@ public class MultipartHandler extends HttpHandler {
 							final Writer writer = response.getWriter();
 							writer.write(inMemoryMultipartEntryHandler
 									.toString());
+
+							String s1 = inMemoryMultipartEntryHandler
+									.getString("sfsd");
+							String s2 = inMemoryMultipartEntryHandler
+									.getString("fff");
+
+							writer.write(s1 + "\n");
+							writer.write(s2 + "\n");
 						} catch (IOException ignored) {
 						}
 

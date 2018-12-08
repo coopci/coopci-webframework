@@ -1,6 +1,7 @@
 package gubo.http.grizzly.handlers;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,13 +23,12 @@ import org.glassfish.grizzly.http.multipart.MultipartEntryHandler;
 public class InMemoryMultipartEntryHandler implements MultipartEntryHandler {
 
 	// TODO different size limit on different multipartEntry
-	// TODO make it even easier to use
 	class BytesReadHandler implements ReadHandler {
 		private final MultipartEntry multipartEntry;
 
 		private final NIOInputStream inputStream;
 
-		private final byte[] buf;
+		private byte[] buf;
 		int offset = 0;
 
 		byte[] data;
@@ -68,6 +68,7 @@ public class InMemoryMultipartEntryHandler implements MultipartEntryHandler {
 		public void onAllDataRead() throws Exception {
 			readAndSaveAvail();
 			this.data = Arrays.copyOfRange(this.buf, 0, offset);
+			this.buf = null;
 		}
 
 		private void readAndSaveAvail() throws IOException {
@@ -90,7 +91,47 @@ public class InMemoryMultipartEntryHandler implements MultipartEntryHandler {
 		}
 	}
 
-	public ConcurrentHashMap<String, BytesReadHandler> multipartEntries = new ConcurrentHashMap<String, BytesReadHandler>();
+	private final ConcurrentHashMap<String, BytesReadHandler> multipartEntries = new ConcurrentHashMap<String, BytesReadHandler>();
+
+	public ConcurrentHashMap<String, BytesReadHandler> getMultipartEntries() {
+		return multipartEntries;
+	}
+
+	public MultipartEntry getMultipartEntry(String name) {
+		if (!this.multipartEntries.contains(name)) {
+			return null;
+		}
+		return this.multipartEntries.get(name).multipartEntry;
+	}
+
+	public ContentDisposition getContentDisposition(String name) {
+		if (!this.multipartEntries.contains(name)) {
+			return null;
+		}
+		return this.multipartEntries.get(name).multipartEntry
+				.getContentDisposition();
+	}
+
+	public byte[] getBytes(String name) {
+		if (!this.multipartEntries.containsKey(name)) {
+			return null;
+		}
+		return this.multipartEntries.get(name).data;
+	}
+
+	public String getString(String name, String charset)
+			throws UnsupportedEncodingException {
+		byte[] bytes = this.getBytes(name);
+		if (bytes == null) {
+			return null;
+		}
+		String ret = new String(bytes, charset);
+		return ret;
+	}
+
+	public String getString(String name) throws UnsupportedEncodingException {
+		return this.getString(name, "utf-8");
+	}
 
 	@Override
 	public String toString() {
