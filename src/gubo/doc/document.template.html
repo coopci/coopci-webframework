@@ -1,0 +1,77 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style>
+table {
+  border-collapse: collapse;
+  margin-bottom: 15px;
+}
+table, th, td {
+  border: 1px solid black;
+}
+td {
+  padding: 2px;
+}
+</style>
+</head>
+<body>
+	{% for apiDocument in apiDocuments %}
+	<table>
+		<tr>
+			<td colspan=2>
+			<b>{{apiDocument.url}}</b>
+			</td>
+		</tr>
+
+		<tr>
+			<td>method: </td>
+			<td>{{apiDocument.httpMethod}}</td>
+		</tr>
+		<tr>
+			<td colspan=2>{{apiDocument.desc}}</td>
+		</tr>
+		<tr>
+			<td colspan=2>
+			输入参数:
+			</td>
+		</tr>
+		
+		{% for pd in apiDocument.parameterDocuments %}
+		<tr>
+			<td>{{pd.name}}: </td>
+			<td>{{pd.desc}}</td>
+		</tr>
+		
+		{% endfor %}
+		
+		<tr>
+			<td colspan=2>curl示例: {{ apiDocument.curl }}</td>
+		</tr>
+		
+		<tr>
+			<td colspan=2>
+			输出数据:
+			</td>
+		</tr>
+		
+		{% for pd in apiDocument.responseDocuments %}
+		<tr>
+			<td>{{pd.name}}: </td>
+			<td>{{pd.desc}}</td>
+		</tr>
+		
+		{% endfor %}
+		<tr>
+			<td colspan=2>输出数据示例:</td>
+		</tr>
+		<tr>
+			<td colspan=2>
+			<pre>{{ apiDocument.responseExampleJson }}</pre>
+			</td>
+		</tr>
+		
+		
+	</table>
+	{% endfor %}
+</body>
+</html>

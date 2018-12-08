@@ -4,6 +4,9 @@ import gubo.http.grizzly.handlergenerator.MappingToPath;
 import gubo.http.querystring.QueryStringBinder;
 import gubo.http.querystring.QueryStringField;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -47,9 +50,13 @@ public class HttpApiDocGenerator {
 			}
 		}
 
-		Renderer r = new Renderer();
+		JTwigRenderer r = new JTwigRenderer();
 
 		String ret = r.render(docs);
+
+		OutputStream os = new FileOutputStream(new File("documents.html"));
+		os.write(ret.getBytes());
+		os.close();
 		System.out.println(ret);
 		return ret;
 	}

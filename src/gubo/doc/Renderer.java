@@ -15,6 +15,8 @@ public class Renderer {
 
 		for (ApiDocument doc : apiDocuments) {
 			sb.append(render(doc));
+
+			sb.append("\n\n");
 		}
 		return sb.toString();
 	}

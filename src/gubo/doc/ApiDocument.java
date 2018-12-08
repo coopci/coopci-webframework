@@ -12,6 +12,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * 一个http API的文档。
  **/
@@ -30,6 +33,18 @@ public class ApiDocument {
 	String desc;
 	String curl;
 	String url;
+
+	String f() {
+		return "dsf";
+	}
+
+	String responseExampleJson() throws JsonProcessingException {
+		ObjectMapper om = new ObjectMapper();
+
+		String ret = om.writerWithDefaultPrettyPrinter().writeValueAsString(
+				responseExample);
+		return ret;
+	}
 
 	public static Object createForExample(Class<?> clazz) throws Exception {
 		Object parameterObj = clazz.newInstance();
