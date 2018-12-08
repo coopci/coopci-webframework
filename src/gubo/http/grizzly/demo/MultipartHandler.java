@@ -4,6 +4,7 @@ import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.HashMap;
 
 import org.glassfish.grizzly.EmptyCompletionHandler;
 import org.glassfish.grizzly.http.multipart.MultipartScanner;
@@ -11,6 +12,10 @@ import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 
+/**
+ * 
+ * 演示 用 InMemoryMultipartEntryHandler 处理 form-data。
+ **/
 public class MultipartHandler extends HttpHandler {
 
 	/**
@@ -20,7 +25,19 @@ public class MultipartHandler extends HttpHandler {
 	public void service(final Request request, final Response response)
 			throws Exception {
 		response.suspend();
-		final InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler = new InMemoryMultipartEntryHandler();
+		HashMap<String, Integer> sizeLimit = new HashMap<String, Integer>();
+		sizeLimit.put("ignore-this",
+				InMemoryMultipartEntryHandler.SIZE_LIMIT_IGNORE);
+		sizeLimit.put("reject-this",
+				InMemoryMultipartEntryHandler.SIZE_LIMIT_REJECT);
+		sizeLimit.put("big-one", 1024 * 1024);
+
+		// 拒绝叫做 reject-this 的参数。
+
+		final InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler = new InMemoryMultipartEntryHandler(
+				sizeLimit,
+				// 忽略 big-one 以外的所有参数。
+				InMemoryMultipartEntryHandler.SIZE_LIMIT_IGNORE);
 		// Start the asynchronous multipart request scanning...
 		MultipartScanner.scan(request, inMemoryMultipartEntryHandler,
 				new EmptyCompletionHandler<Request>() {
@@ -44,9 +61,12 @@ public class MultipartHandler extends HttpHandler {
 									.getString("sfsd");
 							String s2 = inMemoryMultipartEntryHandler
 									.getString("fff");
+							String s3 = inMemoryMultipartEntryHandler
+									.getString("big-one");
 
 							writer.write(s1 + "\n");
 							writer.write(s2 + "\n");
+							writer.write(s3 + "\n");
 						} catch (IOException ignored) {
 						}
 

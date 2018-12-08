@@ -3,6 +3,7 @@ package gubo.http.grizzly.handlers;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,7 +23,33 @@ import org.glassfish.grizzly.http.multipart.MultipartEntryHandler;
  **/
 public class InMemoryMultipartEntryHandler implements MultipartEntryHandler {
 
-	// TODO different size limit on different multipartEntry
+	/**
+	 * Ignore this multipart entry regardless its size.
+	 **/
+	public final static int SIZE_LIMIT_IGNORE = -2;
+
+	/**
+	 * Ignore this disposition regardless its size.
+	 **/
+	public final static int SIZE_LIMIT_REJECT = -3;
+
+	public InMemoryMultipartEntryHandler() {
+		this(null, 2048);
+	}
+
+	int defaulSizeLimit = 2048;
+	Map<String, Integer> sizeLimit;
+
+	public InMemoryMultipartEntryHandler(Map<String, Integer> sizeLimit) {
+		this(sizeLimit, 2048);
+	}
+
+	public InMemoryMultipartEntryHandler(Map<String, Integer> sizeLimit,
+			int defaulSizeLimit) {
+		this.defaulSizeLimit = defaulSizeLimit;
+		this.sizeLimit = sizeLimit;
+	}
+
 	class BytesReadHandler implements ReadHandler {
 		private final MultipartEntry multipartEntry;
 
@@ -146,18 +173,52 @@ public class InMemoryMultipartEntryHandler implements MultipartEntryHandler {
 		return sb.toString();
 	}
 
+	Integer getEffecitveSizeLimit(String name) {
+		Integer effecitveSizeLimit = this.defaulSizeLimit;
+		if (this.sizeLimit != null && this.sizeLimit.containsKey(name)) {
+			effecitveSizeLimit = this.sizeLimit.get(name);
+		}
+		return effecitveSizeLimit;
+	}
+
+	void checkReject(String name) {
+		Integer effecitveSizeLimit = this.getEffecitveSizeLimit(name);
+		if (SIZE_LIMIT_REJECT == effecitveSizeLimit) {
+			throw new IllegalArgumentException("parameter " + name
+					+ " is not allowed");
+		}
+	}
+
+	boolean checkIgnore(String name) {
+		Integer effecitveSizeLimit = this.getEffecitveSizeLimit(name);
+		if (SIZE_LIMIT_IGNORE == effecitveSizeLimit) {
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	public void handle(MultipartEntry multipartEntry) throws Exception {
 		final ContentDisposition contentDisposition = multipartEntry
 				.getContentDisposition();
 		final String name = contentDisposition
 				.getDispositionParamUnquoted("name");
-		BytesReadHandler brh = new BytesReadHandler(multipartEntry);
 
-		this.multipartEntries.put(name, brh);
-		final NIOInputStream inputStream = multipartEntry.getNIOInputStream();
+		this.checkReject(name);
 
-		inputStream.notifyAvailable(brh);
+		boolean ignore = this.checkIgnore(name);
+		if (ignore) {
+			multipartEntry.skip();
+		} else {
+			BytesReadHandler brh = new BytesReadHandler(multipartEntry,
+					this.getEffecitveSizeLimit(name));
+
+			this.multipartEntries.put(name, brh);
+			final NIOInputStream inputStream = multipartEntry
+					.getNIOInputStream();
+
+			inputStream.notifyAvailable(brh);
+		}
 	}
 
 }
