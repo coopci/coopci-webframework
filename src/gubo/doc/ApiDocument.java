@@ -18,8 +18,8 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 public class ApiDocument {
 
 	public static class ParameterDocument {
-		String name;
-		String desc;
+		public String name;
+		public String desc;
 	}
 
 	List<ParameterDocument> parameterDocuments;
@@ -134,7 +134,7 @@ public class ApiDocument {
 		// 下面是回复的文档
 
 		Class<?> returnType = method.getReturnType();
-		ret.responseDocuments = buildParameterDocuments(parameterType);
+		ret.responseDocuments = buildParameterDocuments(returnType);
 
 		ret.responseExample = createForExample(returnType);
 		return ret;
