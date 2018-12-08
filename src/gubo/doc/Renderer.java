@@ -2,10 +2,22 @@ package gubo.doc;
 
 import gubo.doc.ApiDocument.ParameterDocument;
 
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Renderer {
+
+	String render(List<ApiDocument> apiDocuments) throws Exception {
+
+		StringBuilder sb = new StringBuilder();
+
+		for (ApiDocument doc : apiDocuments) {
+			sb.append(render(doc));
+		}
+		return sb.toString();
+	}
 
 	String render(ApiDocument apiDocument) throws JsonProcessingException {
 		StringBuilder sb = new StringBuilder();

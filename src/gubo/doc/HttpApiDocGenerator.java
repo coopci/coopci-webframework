@@ -33,19 +33,25 @@ public class HttpApiDocGenerator {
 			throws Exception {
 		Method[] methods = interfc.getMethods();
 
-		List<String> doc = new LinkedList<String>();
+		List<ApiDocument> docs = new LinkedList<ApiDocument>();
 		for (Method m : methods) {
 			try {
-				String docForMethhod = this.generateDoc(m, urlPrefix);
-				doc.add(docForMethhod);
-				System.out.println(docForMethhod);
-				System.out.println("");
+				ApiDocument apiDocument = this.generateDoc(m, urlPrefix);
+				if (apiDocument == null) {
+					continue;
+				}
+				docs.add(apiDocument);
 			} catch (Exception ex) {
 				logger.error("" + m.toString(), ex);
 				throw ex;
 			}
 		}
-		return "";
+
+		Renderer r = new Renderer();
+
+		String ret = r.render(docs);
+		System.out.println(ret);
+		return ret;
 	}
 
 	Object createForExample(Class<?> clazz) throws Exception {
@@ -106,12 +112,12 @@ public class HttpApiDocGenerator {
 		return sb;
 	}
 
-	public String generateDoc(Method method, String urlPrefix) throws Exception {
+	public ApiDocument generateDoc(Method method, String urlPrefix)
+			throws Exception {
 		ApiDocument apiDocument = ApiDocument.build(method, urlPrefix);
 		if (apiDocument == null) {
-			return "";
+			return null;
 		}
-		Renderer r = new Renderer();
-		return r.render(apiDocument);
+		return apiDocument;
 	}
 }
