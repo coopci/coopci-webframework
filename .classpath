@@ -50,9 +50,19 @@
 	<classpathentry exported="true" kind="lib" path="lib/concurrentlinkedhashmap-lru-1.4.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/curvesapi-1.04.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/fluent-hc-4.5.3.jar"/>
-	<classpathentry kind="lib" path="lib/mockwebserver-3.12.0.jar" sourcepath="C:/Users/cooper/AppData/Local/Temp/.org.sf.feeling.decompiler1543746823852/source/mockwebserver-3.12.0-sources.jar"/>
-	<classpathentry kind="lib" path="lib/okhttp-3.12.0.jar"/>
-	<classpathentry kind="lib" path="lib/okio-1.15.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mockwebserver-3.12.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/okhttp-3.12.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/okio-1.15.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/antlr4-runtime-4.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cqengine-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/kryo-5.0.0-RC1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/kryo-serializers-0.42.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/minlog-1.3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/reflectasm-1.11.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sqlite-jdbc-3.23.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/typetools-0.5.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/concurrent-trees-2.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javassist-3.22.0-GA.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
