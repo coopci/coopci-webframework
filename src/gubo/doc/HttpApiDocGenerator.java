@@ -38,9 +38,11 @@ public class HttpApiDocGenerator {
 
 		List<ApiDocument> docs = new LinkedList<ApiDocument>();
 		for (Method m : methods) {
+			logger.warn("Try method: {}", m);
 			try {
 				ApiDocument apiDocument = this.generateDoc(m, urlPrefix);
 				if (apiDocument == null) {
+					logger.warn("Ignoring method: {}", m);
 					continue;
 				}
 				docs.add(apiDocument);
