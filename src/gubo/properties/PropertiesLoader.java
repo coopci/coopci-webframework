@@ -5,7 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class PropertiesLoader {
+	Logger logger = LoggerFactory.getLogger(PropertiesLoader.class);
+    
 
 	public Properties load(String... filepaths) {
 		Properties ret = new Properties();
@@ -18,7 +23,7 @@ public class PropertiesLoader {
 				prop.load(input);
 				ret.putAll(prop);
 			} catch (IOException ex) {
-				ex.printStackTrace();
+				logger.error("Not fatal, filepath: " + filepath , ex);
 			} finally {
 				if (input != null) {
 					try {
