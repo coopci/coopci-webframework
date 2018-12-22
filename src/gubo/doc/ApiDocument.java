@@ -14,6 +14,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 
 /**
  * 一个http API的文档。
@@ -34,6 +35,8 @@ public class ApiDocument {
 	String curl;
 	String url;
 
+	boolean deprecated = false;
+	String deprecatedBy = "";
 	String f() {
 		return "dsf";
 	}
@@ -118,7 +121,12 @@ public class ApiDocument {
 		if (mappingToPath == null) {
 			return null;
 		}
-
+		if (!Strings.isNullOrEmpty(comment.deprecatedBy())) {
+			ret.deprecated = true;
+			ret.deprecatedBy = comment.deprecatedBy();
+					
+		}
+		
 		ret.url = urlPrefix + mappingToPath.value();
 		ret.httpMethod = mappingToPath.method().toUpperCase();
 		ret.desc = comment.value();
