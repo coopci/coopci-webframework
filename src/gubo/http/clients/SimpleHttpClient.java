@@ -32,7 +32,7 @@ public class SimpleHttpClient {
 				.build();
 		Response response = client.newCall(request).execute();
 		if (!response.isSuccessful()) {
-			String body = new String(response.body().bytes());
+			// String body = new String(response.body().bytes());
 			throw new IOException("Unexpected code " + response);
 		}
 
@@ -51,7 +51,7 @@ public class SimpleHttpClient {
 		Request request = new Request.Builder().url(url + "?" + qs).build();
 		Response response = client.newCall(request).execute();
 		if (!response.isSuccessful()) {
-			String body = new String(response.body().bytes());
+			// String body = new String(response.body().bytes());
 			throw new IOException("Unexpected code " + response);
 		}
 
