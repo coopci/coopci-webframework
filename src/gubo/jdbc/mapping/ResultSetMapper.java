@@ -283,11 +283,14 @@ public class ResultSetMapper<T> {
 
 		JDBCOrderBy jdbcOrderBy = binder.genJDBCOrderBy(filter, outputClass, null);
 		
+		String pagination = new PaginatorGenerator().generate(dbconn, filter);
 		List<T> data = ResultSetMapper.loadPoJoList(
 				dbconn,
 				outputClass,
 				"select * from `" + tablename + "` "
-						+ jdbcWhere.getWhereClause() + " " + jdbcOrderBy.getOrderByClause(), jdbcWhere.getParams());
+						+ jdbcWhere.getWhereClause() + " "
+						+ jdbcOrderBy.getOrderByClause() + " " + pagination,
+				jdbcWhere.getParams());
 		return data;
 
 	}
