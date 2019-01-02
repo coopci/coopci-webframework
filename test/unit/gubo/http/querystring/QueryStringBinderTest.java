@@ -1,10 +1,10 @@
 package gubo.http.querystring;
 
-import static org.junit.Assert.assertEquals;
-
+import static org.junit.Assert.*;
 import gubo.http.querystring.QueryStringBinder.JDBCOrderBy;
 import gubo.http.querystring.QueryStringBinder.JDBCWhere;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,4 +45,22 @@ public class QueryStringBinderTest {
         assertEquals("order by isVIP desc, age", jdbcOrderBy.getOrderByClause());
         
     }
+	class Animal {
+		@QueryStringField()
+		public String bloodColor="red";
+	}
+	
+	class Dog extends Animal {
+		@QueryStringField()
+		public int logsNum = 4;
+	}
+	@Test
+	public void test_toQueryString() throws IllegalArgumentException, IllegalAccessException, UnsupportedEncodingException {
+		Dog dog = new Dog();
+		QueryStringBinder binder = new QueryStringBinder();
+		assertTrue(binder.toQueryString(dog, null).contains("bloodColor=red&"));
+		assertTrue(binder.toQueryString(dog, null).contains("logsNum=4&"));
+	}
+	
+	
 }

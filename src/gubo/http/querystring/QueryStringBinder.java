@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.glassfish.grizzly.http.server.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -299,16 +299,9 @@ public class QueryStringBinder {
 		SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormatStr);
 
 		StringBuilder sb = new StringBuilder();
-		Binding binding = new Binding();
 		Class<? extends Object> clazz = pojo.getClass();
-		binding.clazz = clazz;
 		
-		Field[] fields1 = clazz.getFields();
-		Field[] fields2 = clazz.getDeclaredFields();
-		HashSet<Field> fields = new HashSet<Field>();
-		fields.addAll((Arrays.asList(fields1)));
-		fields.addAll((Arrays.asList(fields2)));
-		
+		Field[] fields = FieldUtils.getAllFields(clazz);
 		for (Field f : fields) {
 			f.setAccessible(true);
 			if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
