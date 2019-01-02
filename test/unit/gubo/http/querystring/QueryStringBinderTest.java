@@ -61,6 +61,14 @@ public class QueryStringBinderTest {
 		assertTrue(binder.toQueryString(dog, null).contains("bloodColor=red&"));
 		assertTrue(binder.toQueryString(dog, null).contains("legs_num=4&"));
 	}
+	
+	@Test
+	public void test_toHashMap() throws IllegalArgumentException, IllegalAccessException, UnsupportedEncodingException {
+		Dog dog = new Dog();
+		QueryStringBinder binder = new QueryStringBinder();
+		assertTrue(binder.toHashMap(dog, null).containsKey("bloodColor"));
+		assertTrue(binder.toHashMap(dog, null).containsKey("legs_num"));
+	}
 	@Test
 	public void test_constructBinding() throws IllegalArgumentException, IllegalAccessException, UnsupportedEncodingException, InstantiationException {
 		Dog dog = new Dog();

@@ -357,6 +357,73 @@ public class QueryStringBinder {
 		return ret;
 	}
 
+	public HashMap<String, String> toHashMap(Object pojo, String dateFormatStr)
+			throws IllegalArgumentException, IllegalAccessException,
+			UnsupportedEncodingException {
+		if (dateFormatStr == null)
+			dateFormatStr = "yyyy-MM-dd HH:mm:ss";
+		SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormatStr);
+		HashMap<String, String> ret = new HashMap<String, String>();
+		// StringBuilder sb = new StringBuilder();
+		Class<? extends Object> clazz = pojo.getClass();
+		
+		Field[] fields = FieldUtils.getAllFields(clazz);
+		for (Field f : fields) {
+			f.setAccessible(true);
+			if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
+				continue;
+			}
+			QueryStringField anno = f.getAnnotation(QueryStringField.class);
+			if (anno == null) {
+				continue;
+			}
+			String queryStrfieldName = f.getName();
+			if (anno != null) {
+				if (anno.name() != null && anno.name().length() > 0) {
+					queryStrfieldName = anno.name();
+				}
+			}
+			String k = queryStrfieldName;
+			String v = "";
+			if (f.getType() == long.class) {
+				v = Long.toString(f.getLong(pojo));
+			} else if (f.getType() == int.class) {
+				v = Long.toString(f.getLong(pojo));
+			} else if (f.getType() == boolean.class) {
+				v = Boolean.toString(f.getBoolean(pojo));
+			} else if (f.getType() == float.class) {
+				v = Float.toString(f.getFloat(pojo));
+			} else if (f.getType() == double.class) {
+				v = Double.toString(f.getDouble(pojo));
+			} else if (Date.class.isAssignableFrom(f.getType())) {
+				Date d = (Date) f.get(pojo);
+				if (d == null) {
+					v = "";
+				} else {
+					v = dateFormatter.format(d);
+				}
+			} else if (f.getType().isAssignableFrom(Date.class)) {
+				Date d = (Date) f.get(pojo);
+				if (d == null) {
+					v = "";
+				} else {
+					v = dateFormatter.format(d);
+				}
+			} else {
+				Object o = f.get(pojo);
+				if (o == null)
+					v = "";
+				else
+					v = java.net.URLEncoder.encode(f.get(pojo).toString(),
+							"UTF-8");
+			}
+			ret.put(k, v);
+			
+		}
+
+		return ret;
+	}
+	
 	public static class JDBCWhere {
 		String whereClause = "";
 
