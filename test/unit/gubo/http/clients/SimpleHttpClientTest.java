@@ -1,6 +1,6 @@
 package gubo.http.clients;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import gubo.http.querystring.demo.Person;
 
 import java.io.IOException;
@@ -35,10 +35,15 @@ public class SimpleHttpClientTest {
 		assertEquals(100, res.age);
 
 		RecordedRequest request1 = server.takeRequest();
-		assertEquals(
-				"register_time=&tier=0&height=0.0&age=100&isVIP=false&name=&",
-				request1.getBody().readString(Charset.forName("utf-8")));
-
+		String resBody = request1.getBody().readString(Charset.forName("utf-8"));
+		
+		assertTrue(resBody.contains("register_time=&"));
+		assertTrue(resBody.contains("tier=0&"));
+		assertTrue(resBody.contains("height=0.0&"));
+		assertTrue(resBody.contains("age=100&"));
+		assertTrue(resBody.contains("isVIP=false&"));
+		assertTrue(resBody.contains("name=&"));
+			
 		server.shutdown();
 		server.close();
 	}
