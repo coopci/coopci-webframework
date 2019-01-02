@@ -72,4 +72,14 @@ public class QueryStringBinderTest {
 		assertEquals(Dog.class, binding.clazz);
 	}
 	
+	@Test
+	public void test_bind() throws Exception {
+		Dog dog = new Dog();
+		assertEquals(4, dog.legsNum);
+		assertEquals("red", dog.bloodColor);
+		QueryStringBinder binder = new QueryStringBinder();
+		binder.bind("legs_num=3&bloodColor=blue", dog);
+		assertEquals(3, dog.legsNum);
+		assertEquals("blue", dog.bloodColor);
+	}
 }
