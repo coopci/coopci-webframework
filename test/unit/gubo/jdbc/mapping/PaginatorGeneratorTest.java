@@ -19,7 +19,7 @@ public class PaginatorGeneratorTest {
 		filter.put("page_size", "20");
 		filter.put("page_num", "5");
 		String pagination = g.generate(null, filter);
-		assertEquals(" LIMIT 80, 100", pagination);
+		assertEquals(" LIMIT 80, 20", pagination);
 		
 		filter.put("page_size", "-20");
 		filter.put("page_num", "5");

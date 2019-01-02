@@ -10,7 +10,7 @@ import java.util.Map;
 public class PaginatorGenerator {
 
 	/**
-	 *	
+	 * 目前这个只会输出mysql语法的。
 	 * @param dbconn 可能需要从这个参数判断数据库语法。
 	 * @param data  需要同时包含 page_size 和 page_num，否则返回  ""; page_num 从 1开始
 	 **/
@@ -23,8 +23,7 @@ public class PaginatorGenerator {
 			}
 			
 			int start = (pageNum-1) * pageSize;
-			int end = start + pageSize;
-			return " LIMIT " + start + ", " + end;
+			return " LIMIT " + start + ", " + pageSize;
 		} catch (Exception ex) {
 			return "";
 		}
