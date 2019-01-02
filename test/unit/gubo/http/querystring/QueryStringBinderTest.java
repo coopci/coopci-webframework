@@ -51,16 +51,25 @@ public class QueryStringBinderTest {
 	}
 	
 	class Dog extends Animal {
-		@QueryStringField()
-		public int logsNum = 4;
+		@QueryStringField(name="legs_num")
+		public int legsNum = 4;
 	}
 	@Test
 	public void test_toQueryString() throws IllegalArgumentException, IllegalAccessException, UnsupportedEncodingException {
 		Dog dog = new Dog();
 		QueryStringBinder binder = new QueryStringBinder();
 		assertTrue(binder.toQueryString(dog, null).contains("bloodColor=red&"));
-		assertTrue(binder.toQueryString(dog, null).contains("logsNum=4&"));
+		assertTrue(binder.toQueryString(dog, null).contains("legs_num=4&"));
 	}
-	
+	@Test
+	public void test_constructBinding() throws IllegalArgumentException, IllegalAccessException, UnsupportedEncodingException, InstantiationException {
+		Dog dog = new Dog();
+		QueryStringBinder binder = new QueryStringBinder();
+		QueryStringBinder.Binding binding = binder.constructBinding(dog);
+		assertEquals(2, binding._cachedParses.size());
+		assertTrue(binding._cachedParses.containsKey("bloodColor"));
+		assertTrue(binding._cachedParses.containsKey("legs_num"));
+		assertEquals(Dog.class, binding.clazz);
+	}
 	
 }
