@@ -142,13 +142,8 @@ public class QueryStringBinder {
 			throws InstantiationException, IllegalAccessException {
 		Binding binding = new Binding();
 		binding.clazz = clazz;
-
-		Field[] fields = clazz.getFields();
-		for (Field f : fields) {
-			binding.tryAddField(f);
-		}
-
-		fields = clazz.getDeclaredFields();
+		
+		Field[] fields = FieldUtils.getAllFields(clazz);
 		for (Field f : fields) {
 			binding.tryAddField(f);
 		}
