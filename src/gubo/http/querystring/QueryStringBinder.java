@@ -306,6 +306,9 @@ public class QueryStringBinder {
 			if (anno == null) {
 				continue;
 			}
+			if (anno.hidden() == true) {
+				continue;
+			}
 			String queryStrfieldName = f.getName();
 			if (anno != null) {
 				if (anno.name() != null && anno.name().length() > 0) {
