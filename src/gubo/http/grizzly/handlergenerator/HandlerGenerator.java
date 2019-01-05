@@ -1,7 +1,5 @@
 package gubo.http.grizzly.handlergenerator;
 
-import gubo.http.grizzly.NannyHttpHandler;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,6 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.google.common.base.Preconditions;
+
+import gubo.http.grizzly.NannyHttpHandler;
 
 /**
  * 给定一个java接口，为每个方法生成一个对应的 NannyHttpHandler的子类。
@@ -149,7 +149,9 @@ public class HandlerGenerator {
 		// + "import org.glassfish.grizzly.http.server.Response;\n";
 
 		String imports = "import org.glassfish.grizzly.http.server.Request;\n"
-				+ "import org.glassfish.grizzly.http.server.Response;\n";
+				+ "import org.glassfish.grizzly.http.server.Response;\n"
+				+ "import org.slf4j.Logger;\n"  
+				+ "import org.slf4j.LoggerFactory;\n";
 
 		sb.append("\n");
 		sb.append(imports);
@@ -162,6 +164,7 @@ public class HandlerGenerator {
 				+ "        this.%s(itf);\n" + "    }\n", handlerName,
 				interfc.getName(), interfaceSetter.getName());
 
+		sb.append("    Logger logger = LoggerFactory.getLogger(getClass());\r\n");
 		sb.append(ctor);
 
 		String httpmethod = "post";
@@ -175,6 +178,8 @@ public class HandlerGenerator {
 		String doXXXTemplate = "    @Override\n" + "    public Object do"
 				+ httpmethod
 				+ "(Request request, Response response) throws Exception {\n"
+				+ "        logger.info(\"request received, uri: {}, request data: {}\", request.getRequestURI(),\r\n" + 
+				"				request.getInputBuffer().getBuffer().toStringContent());\n"
 				+ "        %s p = new %s();\n"
 				+ "        this.bindParameter(request, p);\n"
 				+ "        Object res = this.%s().%s(p);\n"
