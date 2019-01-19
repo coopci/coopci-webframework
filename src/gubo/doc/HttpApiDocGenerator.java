@@ -32,7 +32,7 @@ public class HttpApiDocGenerator {
 	 * @throws Exception
 	 * 
 	 **/
-	public String generateDoc(Class<?> interfc, String urlPrefix)
+	public List<ApiDocument> generateDoc(Class<?> interfc, String urlPrefix)
 			throws Exception {
 		Method[] methods = interfc.getMethods();
 
@@ -52,6 +52,12 @@ public class HttpApiDocGenerator {
 			}
 		}
 
+		return docs;
+	}
+	
+	public String renderDocument(List<ApiDocument> docs)
+			throws Exception {
+
 		JTwigRenderer r = new JTwigRenderer();
 
 		String ret = r.render(docs);
@@ -62,6 +68,7 @@ public class HttpApiDocGenerator {
 		System.out.println(ret);
 		return ret;
 	}
+	
 
 	Object createForExample(Class<?> clazz) throws Exception {
 		Object parameterObj = clazz.newInstance();
