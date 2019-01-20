@@ -12,7 +12,11 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.jtwig.JtwigModel;
+import org.jtwig.JtwigTemplate;
+
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 import gubo.http.grizzly.NannyHttpHandler;
 
@@ -25,7 +29,10 @@ public class HandlerGenerator {
 		String filename;
 		String source;
 		String addHandlerCode;
-
+		
+		// install handler 时用的 interface 的对象的名字。
+		String itfObjName;
+		
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
@@ -60,7 +67,7 @@ public class HandlerGenerator {
 	}
 
 	public String generateSource(String srcRoot, Class<?> interfc,
-			String packageName, boolean doWriteFile) throws SQLException,
+			String packageName, boolean doWriteFile, String installerClassName) throws SQLException,
 			IOException {
 
 		Method[] methods = interfc.getMethods();
@@ -102,7 +109,54 @@ public class HandlerGenerator {
 		for (SourceFile sf : sourceFiles) {
 			System.out.println(sf.addHandlerCode);
 		}
+		
+		
+		if (!Strings.isNullOrEmpty(installerClassName)) {
+
+			OutputStream outs = openInstallerClassForWrite(srcRoot, packageName, installerClassName);
+			
+			
+			JtwigTemplate jtwigTemplate = JtwigTemplate
+					.classpathTemplate("gubo/http/grizzly/handlergenerator/handler-installer.template");
+			JtwigModel model = new JtwigModel();
+
+			model.with("packageName", packageName);
+			model.with("installerClassname", installerClassName);
+			model.with("interfaceFullname", interfc.getName());
+			
+			if (sourceFiles.size() > 0) {
+				model.with("interfaceVarname", sourceFiles.get(0).itfObjName);	
+			} else {
+				model.with("interfaceVarname", "itfObj");
+			}
+			
+			
+			LinkedList<String> addHandlers = new LinkedList<String>();
+			for (SourceFile sf : sourceFiles) {
+				addHandlers.add(sf.addHandlerCode);
+			}
+				
+			model.with("addHandlers", addHandlers);
+			String ret = jtwigTemplate.render(model);
+			
+			outs.write(ret.getBytes());
+			outs.close();
+		}
+		
 		return "";
+	}
+	
+	OutputStream openInstallerClassForWrite(String srcRoot, String packageName, String installerClassName) throws IOException {
+		Path packagePath = Paths.get(srcRoot,
+				packageName.replace(".", "/"));
+		Path filePath = Paths.get(packagePath.toString(), installerClassName+".java");
+		File file = filePath.toFile();
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+		
+		OutputStream outs = new FileOutputStream(file);
+		return outs;
 	}
 
 	public SourceFile generateSource(Class<?> interfc, Method method,
@@ -197,12 +251,12 @@ public class HandlerGenerator {
 		sf.filename = handlerName + ".java";
 		sf.source = sb.toString();
 
-		String iftObjName = interfaceSetter.getName();
-		if (iftObjName.startsWith("set")) {
-			iftObjName = iftObjName.substring(3);
+		String itfObjName = interfaceSetter.getName();
+		if (itfObjName.startsWith("set")) {
+			itfObjName = itfObjName.substring(3);
 		}
-		iftObjName = iftObjName.substring(0, 1).toLowerCase()
-				+ iftObjName.substring(1);
+		itfObjName = itfObjName.substring(0, 1).toLowerCase()
+				+ itfObjName.substring(1);
 
 		String path = method.getName();
 		if (mappings.length > 0) {
@@ -212,9 +266,10 @@ public class HandlerGenerator {
 		String addHandlerCode = String.format(
 				"server.getServerConfiguration()\r\n"
 						+ "        .addHttpHandler(new %s(%s), \"%s\");",
-				handlerName, iftObjName, path);
-
+				handlerName, itfObjName, path);
+		
 		sf.addHandlerCode = addHandlerCode;
+		sf.itfObjName = itfObjName;
 		return sf;
 	}
 }
