@@ -265,7 +265,7 @@ public class HandlerGenerator {
 
 		String addHandlerCode = String.format(
 				"server.getServerConfiguration()\r\n"
-						+ "        .addHttpHandler(new %s(%s), \"%s\");",
+						+ "        .addHttpHandler(new %s(%s), prefix + \"%s\");",
 				handlerName, itfObjName, path);
 		
 		sf.addHandlerCode = addHandlerCode;
