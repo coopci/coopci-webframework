@@ -59,7 +59,7 @@ public class QueryStringBinderTest {
 		Dog dog = new Dog();
 		QueryStringBinder binder = new QueryStringBinder();
 		assertTrue(binder.toQueryString(dog, null).contains("bloodColor=red&"));
-		assertTrue(binder.toQueryString(dog, null).contains("legs_num=4&"));
+		assertTrue(binder.toQueryString(dog, null).contains("legs_num=4"));
 	}
 	
 	@Test

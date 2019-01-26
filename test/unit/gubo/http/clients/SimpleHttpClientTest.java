@@ -39,7 +39,7 @@ public class SimpleHttpClientTest {
 		
 		assertTrue(resBody.contains("register_time=&"));
 		assertTrue(resBody.contains("tier=0&"));
-		assertTrue(resBody.contains("height=0.0&"));
+		assertTrue(resBody.contains("height=0.0"));
 		assertTrue(resBody.contains("age=100&"));
 		assertTrue(resBody.contains("isVIP=false&"));
 		assertTrue(resBody.contains("name=&"));

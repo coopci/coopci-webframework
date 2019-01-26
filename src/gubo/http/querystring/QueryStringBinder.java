@@ -24,15 +24,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
 import org.glassfish.grizzly.http.server.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 
 public class QueryStringBinder {
 	public static Logger logger = LoggerFactory
@@ -289,16 +295,12 @@ public class QueryStringBinder {
 		return;
 	}
 	public String toQueryString(Map<String, String> data) {
-		StringBuilder sb = new StringBuilder();
-		for (Entry<String, String> entry: data.entrySet()) {
-			sb.append(entry.getKey());
-			sb.append("=");
-			sb.append(entry.getValue());
-			sb.append("&");	
-			
+	    List<BasicNameValuePair> pairs = new LinkedList<BasicNameValuePair>();
+	    for (Entry<String, String> entry: data.entrySet()) {
+	    	pairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
 		}
-		String ret = sb.toString();
-		ret.replaceAll("\\+", "%20");
+		
+		String ret = URLEncodedUtils.format(pairs, "utf-8");
 		return ret;
 	}
 
