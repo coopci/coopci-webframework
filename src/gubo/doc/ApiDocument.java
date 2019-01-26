@@ -28,6 +28,7 @@ public class ApiDocument {
 
 	List<ParameterDocument> parameterDocuments;
 	List<ParameterDocument> responseDocuments;
+	HashMap<String, String> parameterExample;
 	Object requestExample;
 	Object responseExample;
 	String httpMethod;
@@ -140,6 +141,8 @@ public class ApiDocument {
 		ret.requestExample = createForExample(parameterType);
 
 		QueryStringBinder binder = new QueryStringBinder();
+		ret.parameterExample = binder.toHashMap(ret.requestExample,
+				null);
 		String querystringKVpairs = binder.toQueryString(ret.requestExample,
 				null);
 
