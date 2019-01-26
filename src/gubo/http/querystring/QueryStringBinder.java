@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -287,11 +288,27 @@ public class QueryStringBinder {
 		}
 		return;
 	}
+	public String toQueryString(Map<String, String> data) {
+		StringBuilder sb = new StringBuilder();
+		for (Entry<String, String> entry: data.entrySet()) {
+			sb.append(entry.getKey());
+			sb.append("=");
+			sb.append(entry.getValue());
+			sb.append("&");	
+			
+		}
+		String ret = sb.toString();
+		ret.replaceAll("\\+", "%20");
+		return ret;
+	}
 
 	// 只是开发的时候生成测试用例用，没做cache，如果需要生产用，需要加上cache功能。
 	public String toQueryString(Object pojo, String dateFormatStr)
 			throws IllegalArgumentException, IllegalAccessException,
 			UnsupportedEncodingException {
+		Map<String, String> data = this.toHashMap(pojo, dateFormatStr);
+		return this.toQueryString(data);
+		/*
 		if (dateFormatStr == null)
 			dateFormatStr = "yyyy-MM-dd HH:mm:ss";
 		SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormatStr);
@@ -361,8 +378,10 @@ public class QueryStringBinder {
 		String ret = sb.toString();
 		ret.replaceAll("\\+", "%20");
 		return ret;
+		*/
 	}
 
+	
 	public HashMap<String, String> toHashMap(Object pojo, String dateFormatStr)
 			throws IllegalArgumentException, IllegalAccessException,
 			UnsupportedEncodingException {
