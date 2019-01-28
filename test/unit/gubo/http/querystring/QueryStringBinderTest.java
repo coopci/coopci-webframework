@@ -63,6 +63,15 @@ public class QueryStringBinderTest {
 	}
 	
 	@Test
+    public void test_MapToQueryString() throws IllegalArgumentException, IllegalAccessException, UnsupportedEncodingException {
+        Map<String, String> data = new HashMap<String, String>();
+        data.put("key1", "value1");
+        QueryStringBinder binder = new QueryStringBinder();
+        binder.toQueryString(data);
+        assertTrue(binder.toQueryString(data).contains("key1=value1"));
+    }
+	
+	@Test
 	public void test_toHashMap() throws IllegalArgumentException, IllegalAccessException, UnsupportedEncodingException {
 		Dog dog = new Dog();
 		QueryStringBinder binder = new QueryStringBinder();
