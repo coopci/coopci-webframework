@@ -2,6 +2,10 @@ package gubo.postman;
 
 import java.util.List;
 
+/**
+ * 根据“https://www.postmanlabs.com/postman-collection/tutorial-concepts.html”官方文档。
+ *
+ */
 public class Request {
 	public String url;
 	public String method;

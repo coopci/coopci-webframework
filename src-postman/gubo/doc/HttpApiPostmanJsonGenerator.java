@@ -24,6 +24,7 @@ import gubo.postman.Request.Body.Urlencoded;
 
 /**
  * 给出java接口，用以生成Postman collection格式的json文件。 暂时未实现建立ItemGroup进行分类。
+ * 根据“https://www.postmanlabs.com/postman-collection/tutorial-concepts.html”官方文档。
  *
  */
 public class HttpApiPostmanJsonGenerator {
