@@ -117,7 +117,9 @@ public class HttpApiPostmanJsonGenerator {
 			request.description = doc.desc;
 		} else {
 			logger.warn("Failed generate this method: {}", doc.httpMethod);
+			request.url = doc.url;
 			request.method = doc.httpMethod;
+			request.description = doc.desc;
 		}
 		item.name = doc.url;
 		item.request = request;
