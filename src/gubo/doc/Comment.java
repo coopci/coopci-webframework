@@ -16,4 +16,9 @@ public @interface Comment {
     
     String deprecatedBy() default "";
     String deprecatedSince() default "";
+    
+    // 如果被注释的主体是API，那么可以用这个给API命名。
+    String name() default "";
+    // 如果被注释的主体是API，那么可以用这个给API划分组别。例如映射到postman的ItemGroup。
+    String group() default "";
 }
