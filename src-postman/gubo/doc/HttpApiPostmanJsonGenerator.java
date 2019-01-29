@@ -25,19 +25,19 @@ import gubo.postman.Request.Body.Urlencoded;
 /**
  * 给出java接口，用以生成Postman collection格式的json文件。 暂时未实现建立ItemGroup进行分类。
  * 根据“https://www.postmanlabs.com/postman-collection/tutorial-concepts.html”
- * 官方文档的示例构建数据结构。
+ * 文档的示例构建数据结构。
  *
  */
 public class HttpApiPostmanJsonGenerator {
 	public static Logger logger = LoggerFactory.getLogger(HttpApiPostmanJsonGenerator.class);
 
 	/**
-	 * 
 	 * @param docs 所有http API的文档
-	 * @param name 文件名及collection使用的名字
+	 * @param fileName 文件名
+	 * @param collectionName collection name
 	 * @throws Exception
 	 */
-	public void generateCollectionJson(List<ApiDocument> docs, String name) throws Exception {
+	public void generateCollectionJson(List<ApiDocument> docs, String fileName, String collectionName) throws Exception {
 
 		List<Item> itemList = new LinkedList<Item>();
 		Item item = new Item();
@@ -57,12 +57,12 @@ public class HttpApiPostmanJsonGenerator {
 			logger.error("Generate collection failed, ", e);
 		}
 
-		Collection collection = this.buildCollection(name);
+		Collection collection = this.buildCollection(collectionName);
 		collection.item = itemList;
 
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(collection);
-		File file = new File(name + ".json");
+		File file = new File(fileName + ".json");
 		JsonFactory jfactory = new JsonFactory();
 		JsonGenerator jGenerator = jfactory.createGenerator(file, JsonEncoding.UTF8);
 		SerializedString rawString = new SerializedString(jsonStr);
@@ -109,17 +109,17 @@ public class HttpApiPostmanJsonGenerator {
 			request.description = doc.desc;
 			request.header = headerList;
 			request.body = body;
-		}
-
-		if (doc.httpMethod.equals("GET")) {
+		} else if (doc.httpMethod.equals("GET")) {
 			QueryStringBinder binder = new QueryStringBinder();
 			String parameter = binder.toQueryString(doc.parameterExample);
 			request.url = doc.url + "?" + parameter;
 			request.method = doc.httpMethod;
 			request.description = doc.desc;
+		} else {
+			logger.warn("Failed generate this method: {}", doc.httpMethod);
+			request.method = doc.httpMethod;
 		}
-
-		item.name = doc.url.substring(22);
+		item.name = doc.url;
 		item.request = request;
 
 		return item;
