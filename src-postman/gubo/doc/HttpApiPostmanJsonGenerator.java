@@ -33,12 +33,12 @@ public class HttpApiPostmanJsonGenerator {
 
 	/**
 	 * 生成postman collection 格式的json文件。
-	 * @param docs 所有http API的文档
-	 * @param fileName 生成的json文件使用的名字
-	 * @param collectionName collection使用的名字
+	 * @param docs 所有http API的文档。
+	 * @param filePath 文件路径,只写文件名则表示建在当前项目根目录下。
+	 * @param collectionName collection使用的名字。
 	 * @throws Exception
 	 */
-	public void generateCollectionJson(List<ApiDocument> docs, String fileName, String collectionName) throws Exception {
+	public void generateCollectionJson(List<ApiDocument> docs, String filePath, String collectionName) throws Exception {
 
 		List<Item> itemList = new LinkedList<Item>();
 		Item item = new Item();
@@ -63,7 +63,7 @@ public class HttpApiPostmanJsonGenerator {
 
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(collection);
-		File file = new File(fileName + ".json");
+		File file = new File(filePath);
 		JsonFactory jfactory = new JsonFactory();
 		JsonGenerator jGenerator = jfactory.createGenerator(file, JsonEncoding.UTF8);
 		SerializedString rawString = new SerializedString(jsonStr);
