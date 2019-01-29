@@ -24,13 +24,20 @@ import gubo.postman.Request.Body.Urlencoded;
 
 /**
  * 给出java接口，用以生成Postman collection格式的json文件。 暂时未实现建立ItemGroup进行分类。
- * 根据“https://www.postmanlabs.com/postman-collection/tutorial-concepts.html”官方文档。
+ * 根据“https://www.postmanlabs.com/postman-collection/tutorial-concepts.html”
+ * 官方文档的示例构建数据结构。
  *
  */
 public class HttpApiPostmanJsonGenerator {
 	public static Logger logger = LoggerFactory.getLogger(HttpApiPostmanJsonGenerator.class);
 
-	public void generateCollectionJson(List<ApiDocument> docs, String urlPrefix, String name) throws Exception {
+	/**
+	 * 
+	 * @param docs 所有http API的文档
+	 * @param name 文件名及collection使用的名字
+	 * @throws Exception
+	 */
+	public void generateCollectionJson(List<ApiDocument> docs, String name) throws Exception {
 
 		List<Item> itemList = new LinkedList<Item>();
 		Item item = new Item();
@@ -39,7 +46,7 @@ public class HttpApiPostmanJsonGenerator {
 				if (doc.deprecated) {
 					continue;
 				}
-				item = this.buildItem(doc, urlPrefix);
+				item = this.buildItem(doc);
 				if (item == null) {
 					logger.warn("Ignoring doc: {}", doc);
 					continue;
@@ -77,11 +84,10 @@ public class HttpApiPostmanJsonGenerator {
 	/**
 	 * 构建每一个请求条目。
 	 * @param doc
-	 * @param urlPrefix
 	 * @return
 	 * @throws Exception
 	 */
-	public Item buildItem(ApiDocument doc, String urlPrefix) throws Exception {
+	public Item buildItem(ApiDocument doc) throws Exception {
 		Request request = new Request();
 		Item item = new Item();
 		if (doc.httpMethod.equals("POST")) {

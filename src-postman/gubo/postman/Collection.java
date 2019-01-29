@@ -3,7 +3,8 @@ package gubo.postman;
 import java.util.List;
 
 /**
- * 根据“https://www.postmanlabs.com/postman-collection/tutorial-concepts.html”官方文档。
+ * 根据“https://www.postmanlabs.com/postman-collection/tutorial-concepts.html”
+ * 官方文档的Collection建立。
  *
  */
 public class Collection {
