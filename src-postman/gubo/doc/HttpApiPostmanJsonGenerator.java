@@ -32,9 +32,10 @@ public class HttpApiPostmanJsonGenerator {
 	public static Logger logger = LoggerFactory.getLogger(HttpApiPostmanJsonGenerator.class);
 
 	/**
+	 * 生成postman collection 格式的json文件。
 	 * @param docs 所有http API的文档
-	 * @param fileName 文件名
-	 * @param collectionName collection name
+	 * @param fileName 生成的json文件使用的名字
+	 * @param collectionName collection使用的名字
 	 * @throws Exception
 	 */
 	public void generateCollectionJson(List<ApiDocument> docs, String fileName, String collectionName) throws Exception {
