@@ -36,6 +36,15 @@ public class ApiDocument {
 	String curl;
 	String url;
 
+	/**
+	 * {@link Comment} 的group属性。
+	 **/
+	String group;
+	
+	/**
+     * {@link Comment} 的name属性。
+     **/
+	String name;
 	boolean deprecated = false;
 	String deprecatedBy = "";
 	String f() {
@@ -131,7 +140,8 @@ public class ApiDocument {
 		ret.url = urlPrefix + mappingToPath.value();
 		ret.httpMethod = mappingToPath.method().toUpperCase();
 		ret.desc = comment.value();
-
+		ret.name = comment.name();
+		ret.group = comment.group();
 		Class<?> parameterType = method.getParameters()[0].getType();
 		ret.parameterDocuments = buildParameterDocuments(parameterType);
 
