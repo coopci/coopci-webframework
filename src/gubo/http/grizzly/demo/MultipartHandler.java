@@ -7,6 +7,8 @@ import java.io.Writer;
 import java.util.HashMap;
 
 import org.glassfish.grizzly.EmptyCompletionHandler;
+import org.glassfish.grizzly.http.multipart.ContentDisposition;
+import org.glassfish.grizzly.http.multipart.MultipartEntry;
 import org.glassfish.grizzly.http.multipart.MultipartScanner;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
@@ -31,12 +33,13 @@ public class MultipartHandler extends HttpHandler {
 		sizeLimit.put("reject-this",
 				InMemoryMultipartEntryHandler.SIZE_LIMIT_REJECT);
 		sizeLimit.put("big-one", 1024 * 1024);
+		sizeLimit.put("fff", 1024 * 1024);
 
 		// 拒绝叫做 reject-this 的参数。
 
 		final InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler = new InMemoryMultipartEntryHandler(
 				sizeLimit,
-				// 忽略 big-one 以外的所有参数。
+				// 忽略 big-one 和 fff 以外的所有参数。
 				InMemoryMultipartEntryHandler.SIZE_LIMIT_IGNORE);
 		// Start the asynchronous multipart request scanning...
 		MultipartScanner.scan(request, inMemoryMultipartEntryHandler,
@@ -61,12 +64,18 @@ public class MultipartHandler extends HttpHandler {
 									.getString("sfsd");
 							String s2 = inMemoryMultipartEntryHandler
 									.getString("fff");
+							MultipartEntry multipartEntry = inMemoryMultipartEntryHandler.getMultipartEntry("fff");
+							ContentDisposition contentDisposition = inMemoryMultipartEntryHandler.getContentDisposition("fff");
+							
+							String filename = contentDisposition.getDispositionParam("filename");
+							
 							String s3 = inMemoryMultipartEntryHandler
 									.getString("big-one");
 
 							writer.write(s1 + "\n");
-							writer.write(s2 + "\n");
 							writer.write(s3 + "\n");
+							writer.write("filename: " + filename + "\n");
+							writer.write("fileconent: " + s2 + "\n");
 						} catch (IOException ignored) {
 						}
 
