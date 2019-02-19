@@ -15,6 +15,10 @@ import java.util.HashMap;
 /**
  * 
  * 用 InMemoryMultipartEntryHandler 处理 form-data。
+ * 子类 只需要实现 onMultipartScanCompleted。
+ * DemoInMemoryMultipartHttpHandler 是一个demo。
+ * gubo.http.grizzly.demo.Main 是demo的启动程序。
+ * 
  **/
 abstract public class InMemoryMultipartHttpHandler extends HttpHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
