@@ -45,7 +45,9 @@ public class Main {
 		server.getServerConfiguration()
 				.addHttpHandler(new AddHandler(), "/add");
 		// http://localhost:8777/multipart
-		server.getServerConfiguration().addHttpHandler(new MultipartHandler(),
+		server.getServerConfiguration().addHttpHandler(
+		        // new MultipartHandler(),
+		        new DemoInMemoryMultipartHttpHandler(),
 				"/multipart");
 
 		// curl -XPOST -d'a=1&b=11' 'http://localhost:8777/jtwig-html'

@@ -52,7 +52,7 @@ public class InMemoryMultipartEntryHandler implements MultipartEntryHandler {
 
 	class BytesReadHandler implements ReadHandler {
 		private final MultipartEntry multipartEntry;
-
+		private final ContentDisposition contentDisposition;
 		private final NIOInputStream inputStream;
 
 		private byte[] buf;
@@ -70,16 +70,17 @@ public class InMemoryMultipartEntryHandler implements MultipartEntryHandler {
 
 		// private ByteBuffer bb;
 
-		private BytesReadHandler(final MultipartEntry multipartEntry,
+		private BytesReadHandler(final MultipartEntry multipartEntry, ContentDisposition contentDisposition,
 				int bufSize) {
 			this.multipartEntry = multipartEntry;
+			this.contentDisposition = contentDisposition;
 			this.inputStream = this.multipartEntry.getNIOInputStream();
 			buf = new byte[bufSize];
 			// bb = ByteBuffer.allocate(bufSize);
 		}
 
 		private BytesReadHandler(final MultipartEntry multipartEntry) {
-			this(multipartEntry, 2048);
+			this(multipartEntry, multipartEntry.getContentDisposition(), 2048);
 		}
 
 		@Override
@@ -125,18 +126,17 @@ public class InMemoryMultipartEntryHandler implements MultipartEntryHandler {
 	}
 
 	public MultipartEntry getMultipartEntry(String name) {
-		if (!this.multipartEntries.contains(name)) {
+		if (!this.multipartEntries.containsKey(name)) {
 			return null;
 		}
 		return this.multipartEntries.get(name).multipartEntry;
 	}
 
 	public ContentDisposition getContentDisposition(String name) {
-		if (!this.multipartEntries.contains(name)) {
+		if (!this.multipartEntries.containsKey(name)) {
 			return null;
 		}
-		return this.multipartEntries.get(name).multipartEntry
-				.getContentDisposition();
+		return this.multipartEntries.get(name).contentDisposition;
 	}
 
 	public byte[] getBytes(String name) {
@@ -211,6 +211,7 @@ public class InMemoryMultipartEntryHandler implements MultipartEntryHandler {
 			multipartEntry.skip();
 		} else {
 			BytesReadHandler brh = new BytesReadHandler(multipartEntry,
+					multipartEntry.getContentDisposition(),
 					this.getEffecitveSizeLimit(name));
 
 			this.multipartEntries.put(name, brh);
