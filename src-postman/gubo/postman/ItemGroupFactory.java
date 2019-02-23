@@ -23,6 +23,7 @@ public class ItemGroupFactory {
 		}
 		String[] groupList = groupPath.split("/");
 		generateItemGroup(groupList, groupList.length - 1);
+		cachedItemGroupMap.put(groupPath, itemObj);
 		return itemObj;
 	}
 
