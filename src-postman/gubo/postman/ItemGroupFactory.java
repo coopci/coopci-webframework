@@ -2,6 +2,8 @@ package gubo.postman;
 
 import java.util.HashMap;
 
+import com.google.common.base.Strings;
+
 /**
  * 根据“https://www.postmanlabs.com/postman-collection/tutorial-concepts.html”
  * 文档的ItemGroup建立,用以生成Collection中文件夹形式的json结构。
@@ -10,10 +12,19 @@ import java.util.HashMap;
 public class ItemGroupFactory {
 	private HashMap<String, ItemGroup> cachedItemGroupMap = new HashMap<String, ItemGroup>();
 	private ItemGroup itemObj = new ItemGroup();
+	private String groupPathKey;
+
+	public HashMap<String, ItemGroup> getCachedItemGroupMap() {
+		return cachedItemGroupMap;
+	}
+
+	public void setCachedItemGroupMap(HashMap<String, ItemGroup> cachedItemGroupMap) {
+		this.cachedItemGroupMap = cachedItemGroupMap;
+	}
 
 	/**
-	 * 获取或者创建ItemGroup。
-	 * 对于一个"A/B"，首先判断是不是已经有"A/B"了，如果有就返回已经有的这个"A/B"， 否则就新建"A/B"。
+	 * 获取或者创建ItemGroup。 对于一个"A/B"，首先判断是不是已经有"A/B"了，如果有就返回已经有的这个"A/B"， 否则就新建"A/B"。
+	 * 
 	 * @param groupPath
 	 * @return
 	 */
@@ -23,7 +34,7 @@ public class ItemGroupFactory {
 		}
 		String[] groupList = groupPath.split("/");
 		generateItemGroup(groupList, groupList.length - 1);
-		cachedItemGroupMap.put(groupPath, itemObj);
+		groupPathKey = "";
 		return itemObj;
 	}
 
@@ -39,10 +50,22 @@ public class ItemGroupFactory {
 			parentItem.setItem(itemObj);
 		}
 		itemObj = parentItem;
+		cachedItemGroupMap(groupList[groupList.length - 1 - n]);
 		if (n < 1) {
 			return;
 		}
+
 		generateItemGroup(groupList, n - 1);
+	}
+
+	private void cachedItemGroupMap(String group) {
+		if (!Strings.isNullOrEmpty(groupPathKey)) {
+			groupPathKey = groupPathKey + "/" + group;
+		} else {
+			groupPathKey = group;
+		}
+		
+		cachedItemGroupMap.put(groupPathKey, itemObj);
 	}
 
 }
