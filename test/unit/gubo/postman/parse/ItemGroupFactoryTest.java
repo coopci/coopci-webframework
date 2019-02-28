@@ -10,7 +10,6 @@ import gubo.postman.ItemGroup;
 import gubo.postman.ItemGroupFactory;
 
 public class ItemGroupFactoryTest {
-
 	@Test
 	public void testGetOrCreateItemGroup() throws JsonProcessingException {
 		ItemGroupFactory fac = new ItemGroupFactory();

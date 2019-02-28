@@ -4,8 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Based on
- * “https://www.postmanlabs.com/postman-collection/tutorial-concepts.html”. 
+ * Based on “https://www.postmanlabs.com/postman-collection/tutorial-concepts.html”. 
  * An ItemGroup is a simple container for Items. Literally, a Collection is just an
  * ItemGroup with a special information block.
  *
