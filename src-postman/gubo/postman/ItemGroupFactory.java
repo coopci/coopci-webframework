@@ -14,7 +14,6 @@ public class ItemGroupFactory {
 
 	/**
 	 * 获取或者创建ItemGroup。 对于一个"A/B"，首先判断是不是已经有"A/B"了，如果有就返回已经有的这个"A/B"， 否则就新建"A/B"。
-	 * 
 	 * @param groupPath
 	 * @return
 	 */

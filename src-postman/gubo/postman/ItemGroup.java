@@ -27,4 +27,5 @@ public class ItemGroup {
 		this._postman_isSubFolder = isSub;
 		this.item = new LinkedList<>();
 	}
+	
 }
