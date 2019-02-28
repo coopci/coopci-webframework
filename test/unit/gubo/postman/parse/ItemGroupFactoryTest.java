@@ -13,7 +13,6 @@ public class ItemGroupFactoryTest {
 
 	@Test
 	public void testGetOrCreateItemGroup() throws JsonProcessingException {
-
 		ItemGroupFactory fac = new ItemGroupFactory();
 		ItemGroup item1 = fac.getOrCreateItemGroup("A/B/C");
 		ItemGroup item2 = fac.getOrCreateItemGroup("A/B/C");

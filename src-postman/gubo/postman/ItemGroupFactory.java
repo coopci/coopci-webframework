@@ -40,7 +40,6 @@ public class ItemGroupFactory {
 	public ItemGroup generateItemGroup(String[] groupPathList) {
 		ItemGroup childItem;
 		ItemGroup parentItem;
-
 		if (groupPathList.length < 2) {
 			parentItem = new ItemGroup(groupPathList[0], false);
 		} else {
