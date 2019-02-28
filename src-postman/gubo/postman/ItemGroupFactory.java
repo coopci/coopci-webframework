@@ -1,6 +1,7 @@
 package gubo.postman;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map.Entry;
 
 /**
@@ -45,7 +46,8 @@ public class ItemGroupFactory {
 		} else {
 			childItem = new ItemGroup(groupPathList[groupPathList.length - 1], true);
 			parentItem = new ItemGroup(groupPathList[groupPathList.length - 2], true);
-			parentItem.setItem(childItem);
+			parentItem.item = new LinkedList<Object>();
+			parentItem.item.add(childItem);
 		}
 
 		return parentItem;
@@ -76,6 +78,7 @@ public class ItemGroupFactory {
 			groupStr.append(groupPathList[i] + "/");
 		}
 		groupStr.setLength(groupStr.length() - 1);
+		
 		return cachedItemGroupMap.get(groupStr.toString());
 	}
 

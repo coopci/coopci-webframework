@@ -17,16 +17,8 @@ public class ItemGroup {
 	public String description;
 	// 判断是否是子文件夹
 	public boolean _postman_isSubFolder;
-	public List<Object> item = new LinkedList<>();
+	public List<Object> item;
 
-	public void setItem(ItemGroup item) {
-		this.item.add(item);
-	}
-	
-	public List<Object> getItem() {
-		return this.item;
-	}
-	
 	public ItemGroup() {
 		this.item = new LinkedList<>();
 	}

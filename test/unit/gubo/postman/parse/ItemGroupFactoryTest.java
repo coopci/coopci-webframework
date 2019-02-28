@@ -19,6 +19,7 @@ public class ItemGroupFactoryTest {
 		ItemGroup item2 = fac.getOrCreateItemGroup("A/B/C");
 		ItemGroup item3 = fac.getOrCreateItemGroup("A/B");
 		ItemGroup item4 = fac.getOrCreateItemGroup("A/B/D");
+		
 		// 验证目录相同的情况下，是否是同一对象
 		assertEquals(item1, item2);
 		// 验证ItemGroup的父目录相同的情况下是不是同一对象
