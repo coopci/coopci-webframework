@@ -10,10 +10,18 @@ import java.util.Map.Entry;
  *
  */
 public class ItemGroupFactory {
-	private HashMap<String, ItemGroup> cachedItemGroupMap = new HashMap<String, ItemGroup>();
+	/**
+	 * 存放路径及其对应的ItemGroup对象；对于一个"A/B/C"，就会有"A","A/B","A/B/C"及其对应的ItemGroup
+	 */
+	private static HashMap<String, ItemGroup> cachedItemGroupMap = new HashMap<String, ItemGroup>();
+
+	public HashMap<String, ItemGroup> getCachedItemGroupMap() {
+		return cachedItemGroupMap;
+	}
 
 	/**
 	 * 获取或者创建ItemGroup。 对于一个"A/B"，首先判断是不是已经有"A/B"了，如果有就返回已经有的这个"A/B"， 否则就新建"A/B"。
+	 * 
 	 * @param groupPath
 	 * @return
 	 */
@@ -64,11 +72,11 @@ public class ItemGroupFactory {
 		return cachedItemGroupMap.get(groupPath);
 	}
 
-	public ItemGroup getParentItemGroup(ItemGroup item) {
+	public ItemGroup hasChild(ItemGroup item) {
 		String key = "";
 		for (Entry<String, ItemGroup> m : cachedItemGroupMap.entrySet()) {
 			if (m.getValue().equals(item)) {
-				key = m.getKey();
+				key = m.getKey(); 
 			}
 		}
 		StringBuffer groupStr = new StringBuffer();
@@ -77,7 +85,7 @@ public class ItemGroupFactory {
 			groupStr.append(groupPathList[i] + "/");
 		}
 		groupStr.setLength(groupStr.length() - 1);
-		
+
 		return cachedItemGroupMap.get(groupStr.toString());
 	}
 

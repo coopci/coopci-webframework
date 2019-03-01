@@ -1,6 +1,8 @@
 package gubo.postman.parse;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -18,14 +20,18 @@ public class ItemGroupFactoryTest {
 		ItemGroup item2 = fac.getOrCreateItemGroup("A/B/C");
 		ItemGroup item3 = fac.getOrCreateItemGroup("A/B");
 		ItemGroup item4 = fac.getOrCreateItemGroup("A/B/D");
-		
+		ItemGroup item5 = fac.getOrCreateItemGroup("A");
 		// 验证目录相同的情况下，是否是同一对象
 		assertEquals(item1, item2);
-		// 验证ItemGroup的父目录相同的情况下是不是同一对象
-		assertEquals(fac.getParentItemGroup(item1), fac.getParentItemGroup(item4));
-		// 验证和已有目录的父目录一样的情况下，是否是同一对象
-		assertEquals(fac.getParentItemGroup(item4), item3);
-
+		// 验证某一目录是另一目录的子目录时，是不是同一对象
+		assertTrue(item3.hasChild(item1));
+		assertTrue(item3.hasChild(item2));
+		assertTrue(item3.hasChild(item4));
+		assertTrue(item5.hasChild(item1));
+		assertTrue(item5.hasChild(item2));
+		assertTrue(item5.hasChild(item3));
+		assertFalse(item1.hasChild(item4));
+		
 	}
 
 }
