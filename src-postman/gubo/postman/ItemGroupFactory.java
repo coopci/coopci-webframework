@@ -2,7 +2,6 @@ package gubo.postman;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map.Entry;
 
 /**
  * 根据“https://www.postmanlabs.com/postman-collection/tutorial-concepts.html”
@@ -70,23 +69,6 @@ public class ItemGroupFactory {
 
 	public ItemGroup getItemGroup(String groupPath) {
 		return cachedItemGroupMap.get(groupPath);
-	}
-
-	public ItemGroup hasChild(ItemGroup item) {
-		String key = "";
-		for (Entry<String, ItemGroup> m : cachedItemGroupMap.entrySet()) {
-			if (m.getValue().equals(item)) {
-				key = m.getKey(); 
-			}
-		}
-		StringBuffer groupStr = new StringBuffer();
-		String[] groupPathList = key.split("/");
-		for (int i = 0; i < groupPathList.length - 1; i++) {
-			groupStr.append(groupPathList[i] + "/");
-		}
-		groupStr.setLength(groupStr.length() - 1);
-
-		return cachedItemGroupMap.get(groupStr.toString());
 	}
 
 }

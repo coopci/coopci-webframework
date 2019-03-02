@@ -32,7 +32,6 @@ public class ItemGroupFactoryTest {
 		assertTrue(item5.hasChild(item3));
 		assertFalse(item5.hasChild(item4));
 		assertFalse(item1.hasChild(item4));
-		
 	}
 
 }

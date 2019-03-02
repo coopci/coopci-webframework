@@ -55,7 +55,6 @@ public class ItemGroup {
 				thisGroupPath = m.getKey();
 			}
 		}
-		
 		ItemGroup itemObj = fac.getCachedItemGroupMap().get(groupStr.toString());
 		ItemGroup thisObj = fac.getCachedItemGroupMap().get(thisGroupPath);
 		if (itemObj == thisObj) {
