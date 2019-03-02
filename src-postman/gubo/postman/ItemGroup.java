@@ -40,6 +40,13 @@ public class ItemGroup {
 				itemGroupPath = m.getKey();
 			}
 		}
+		//获取item上级目录的路径
+		String[] itemGroupPathList = itemGroupPath.split("/");
+		StringBuffer groupStr = new StringBuffer();
+		for (int i = 0; i < itemGroupPathList.length - 1; i++) {
+			groupStr.append(itemGroupPathList[i] + "/");
+		}
+		groupStr.setLength(groupStr.length() - 1);
 		
 		String thisGroupPath = "";
 		// 从cachedItemGroupMap中获取该对象对应的键
@@ -48,31 +55,14 @@ public class ItemGroup {
 				thisGroupPath = m.getKey();
 			}
 		}
-		String group = itemGroupPath.substring(0, thisGroupPath.length());
-		ItemGroup itemObj = fac.getCachedItemGroupMap().get(group);
-		if (itemObj != null && itemObj == this) {
+		
+		ItemGroup itemObj = fac.getCachedItemGroupMap().get(groupStr.toString());
+		ItemGroup thisObj = fac.getCachedItemGroupMap().get(thisGroupPath);
+		if (itemObj == thisObj) {
 			return true;
 		} else {
 			return false;
 		}
-	}
-	
-	public ItemGroup getChild(ItemGroup item) {
-		ItemGroupFactory fac = new ItemGroupFactory();
-		String key = "";
-		for (Entry<String, ItemGroup> m : fac.getCachedItemGroupMap().entrySet()) {
-			if (m.getValue().equals(item)) {
-				key = m.getKey(); 
-			}
-		}
-		StringBuffer groupStr = new StringBuffer();
-		String[] groupPathList = key.split("/");
-		for (int i = 0; i < groupPathList.length - 1; i++) {
-			groupStr.append(groupPathList[i] + "/");
-		}
-		groupStr.setLength(groupStr.length() - 1);
-
-		return fac.getCachedItemGroupMap().get(groupStr.toString());
 	}
 
 }
