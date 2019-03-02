@@ -23,13 +23,14 @@ public class ItemGroupFactoryTest {
 		ItemGroup item5 = fac.getOrCreateItemGroup("A");
 		// 验证目录相同的情况下，是否是同一对象
 		assertEquals(item1, item2);
-		// 验证某一目录是另一目录的子目录时，是不是同一对象
+		// 验证某一目录是另一目录的上级目录时，是不是同一对象
 		assertTrue(item3.hasChild(item1));
 		assertTrue(item3.hasChild(item2));
 		assertTrue(item3.hasChild(item4));
-		assertTrue(item5.hasChild(item1));
-		assertTrue(item5.hasChild(item2));
+		assertFalse(item5.hasChild(item1));
+		assertFalse(item5.hasChild(item2));
 		assertTrue(item5.hasChild(item3));
+		assertFalse(item5.hasChild(item4));
 		assertFalse(item1.hasChild(item4));
 		
 	}
