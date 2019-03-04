@@ -2,7 +2,6 @@ package gubo.postman;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 
 /**
  * Based on
@@ -32,36 +31,25 @@ public class ItemGroup {
 	}
 
 	public boolean hasChild(ItemGroup item) {
-		ItemGroupFactory fac = new ItemGroupFactory();
-		String itemGroupPath = "";
-		// 从cachedItemGroupMap中获取item对应的键
-		for (Entry<String, ItemGroup> m : fac.getCachedItemGroupMap().entrySet()) {
-			if (m.getValue().equals(item)) {
-				itemGroupPath = m.getKey();
+		for (int i = 0; i < this.item.size(); i++) {
+			if (this.item.get(i).equals(item)) {
+				return true;
 			}
 		}
-		//获取item上级目录的路径
-		String[] itemGroupPathList = itemGroupPath.split("/");
+		return false;
+	}
+
+	// 获取路径的上级路径
+	public String getParentPath(String groupPath) {
+		String[] groupPathList = groupPath.split("/");
 		StringBuffer groupStr = new StringBuffer();
-		for (int i = 0; i < itemGroupPathList.length - 1; i++) {
-			groupStr.append(itemGroupPathList[i] + "/");
+		for (int i = 0; i < groupPathList.length - 1; i++) {
+			groupStr.append(groupPathList[i] + "/");
 		}
-		groupStr.setLength(groupStr.length() - 1);
-		
-		String thisGroupPath = "";
-		// 从cachedItemGroupMap中获取该对象对应的键
-		for (Entry<String, ItemGroup> m : fac.getCachedItemGroupMap().entrySet()) {
-			if (m.getValue().equals(this)) {
-				thisGroupPath = m.getKey();
-			}
+		if (groupPathList.length - 1 != 0) {
+			groupStr.setLength(groupStr.length() - 1);
 		}
-		ItemGroup itemObj = fac.getCachedItemGroupMap().get(groupStr.toString());
-		ItemGroup thisObj = fac.getCachedItemGroupMap().get(thisGroupPath);
-		if (itemObj == thisObj) {
-			return true;
-		} else {
-			return false;
-		}
+		return groupStr.toString();
 	}
 
 }
