@@ -19,7 +19,7 @@ public class ItemGroupFactory {
 
 	/**
 	 * 获取或者创建ItemGroup。 对于一个"A/B"，首先判断是不是已经有"A/B"了，如果有就返回已经有的这个"A/B"。 否则就新建"A/B"， 调用
-	 * getOrCreateGroup("A") ，得到A后把A/B放到A里。
+	 * getOrCreateItemGroup("A") ，得到A后把A/B放到A里。
 	 * 
 	 * @param groupPath
 	 * @return
@@ -29,26 +29,20 @@ public class ItemGroupFactory {
 		if (cachedItemGroupMap.containsKey(groupPath)) {
 			return cachedItemGroupMap.get(groupPath);
 		}
-
-		String[] groupList = groupPath.split("/");
-		ItemGroup childItemGroup;
+		ItemGroup ret;
 		ItemGroup parentItemGroup;
 
-		if (ItemGroup.isTopLevel(groupList)) {
-			childItemGroup = new ItemGroup(groupList[0], false);
+		if (ItemGroup.isTopLevel(groupPath)) {
+			ret = new ItemGroup(groupPath, false);
+			cachedItemGroupMap.put(groupPath, ret);
+			return ret;
 		} else {
-			childItemGroup = new ItemGroup(groupList[groupList.length - 1], true);
-		}
-
-		if (!ItemGroup.isTopLevel(groupList)) {
+			ret = new ItemGroup(groupPath, true);
 			String parentPath = ItemGroup.getParentPath(groupPath);
 			parentItemGroup = getOrCreateItemGroup(parentPath);
-			parentItemGroup.item.add(childItemGroup);
-			cachedItemGroupMap.put(groupPath, childItemGroup);
-			return childItemGroup;
-		} else {
-			cachedItemGroupMap.put(groupPath, childItemGroup);
-			return childItemGroup;
+			parentItemGroup.item.add(ret);
+			cachedItemGroupMap.put(groupPath, ret);
+			return ret;
 		}
 
 	}

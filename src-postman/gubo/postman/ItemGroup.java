@@ -24,8 +24,13 @@ public class ItemGroup {
 		this.item = new LinkedList<>();
 	}
 
-	public ItemGroup(String name, boolean isSub) {
-		this.name = name;
+	public ItemGroup(String groupPath, boolean isSub) {
+		String[] groupList = groupPath.split("/");
+		if (!isSub) {
+			this.name = groupList[0];
+		} else {
+			this.name = groupList[groupList.length - 1];
+		}
 		this._postman_isSubFolder = isSub;
 		this.item = new LinkedList<>();
 	}
@@ -52,10 +57,11 @@ public class ItemGroup {
 	}
 
 	// 判断是否为顶层目录
-	static boolean isTopLevel(String[] groupList) {
+	static boolean isTopLevel(String groupPath) {
+		String[] groupList = groupPath.split("/");
 		if (groupList.length < 2) {
 			return true;
-		}else {
+		} else {
 			return false;
 		}
 	}
