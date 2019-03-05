@@ -2,6 +2,7 @@ package gubo.postman.parse;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -34,7 +35,16 @@ public class ItemGroupFactoryTest {
 		assertFalse(item5.hasChild(item2));
 		assertFalse(item5.hasChild(item4));
 		assertFalse(item1.hasChild(item4));
-
+		
+		ItemGroupFactory fac2 = new ItemGroupFactory();
+		ItemGroup item6 = fac2.getOrCreateItemGroup("A/B/C");
+		ItemGroup item7 = fac2.getOrCreateItemGroup("A/B/D");
+		ItemGroup item8 = fac2.getOrCreateItemGroup("A");
+		
+		assertNotEquals(item1, item6);
+		assertNotEquals(item4, item7);
+		assertNotEquals(item5, item8);
+		
 	}
 
 }

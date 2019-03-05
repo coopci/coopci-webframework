@@ -13,10 +13,6 @@ public class ItemGroupFactory {
 	 */
 	private HashMap<String, ItemGroup> cachedItemGroupMap = new HashMap<String, ItemGroup>();
 
-	public HashMap<String, ItemGroup> getCachedItemGroupMap() {
-		return cachedItemGroupMap;
-	}
-
 	/**
 	 * 获取或者创建ItemGroup。 对于一个"A/B"，首先判断是不是已经有"A/B"了，如果有就返回已经有的这个"A/B"。 否则就新建"A/B"， 调用
 	 * getOrCreateItemGroup("A") ，得到A后把A/B放到A里。
@@ -45,10 +41,6 @@ public class ItemGroupFactory {
 			return ret;
 		}
 
-	}
-
-	public ItemGroup getItemGroup(String groupPath) {
-		return cachedItemGroupMap.get(groupPath);
 	}
 
 }
