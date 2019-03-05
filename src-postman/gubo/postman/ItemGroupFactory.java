@@ -25,25 +25,27 @@ public class ItemGroupFactory {
 	 * @return
 	 */
 	public ItemGroup getOrCreateItemGroup(String groupPath) {
+		// 如果groupPath已存在，则直接返回cachedItemGroupMap里缓存的对象
 		if (cachedItemGroupMap.containsKey(groupPath)) {
 			return cachedItemGroupMap.get(groupPath);
 		}
 
-		String[] groupPathList = groupPath.split("/");
+		String[] groupList = groupPath.split("/");
 		ItemGroup postmanItem;
-		if (groupPathList.length < 2) {
-			postmanItem = new ItemGroup(groupPathList[0], false);
+		// 当groupList.length < 2 说明此时为第一级目录，_postman_isSubFolder需要为false
+		if (groupList.length < 2) {
+			postmanItem = new ItemGroup(groupList[0], false);
 		} else {
-			postmanItem = new ItemGroup(groupPathList[groupPathList.length - 1], true);
+			postmanItem = new ItemGroup(groupList[groupList.length - 1], true);
 		}
-		if (groupPathList.length > 1) {
+		// 当groupList.length > 1 时才有上级目录
+		if (groupList.length > 1) {
 			String parentPath = postmanItem.getParentPath(groupPath);
 			getOrCreateItemGroup(parentPath);
 		}
 		cachedItemGroupMap.put(groupPath, postmanItem);
 		ItemGroup itemGroup = generateItemGroup(groupPath);
 		return itemGroup;
-
 	}
 
 	/**
@@ -57,7 +59,9 @@ public class ItemGroupFactory {
 			for (String groupTwo : cachedItemGroupMap.keySet()) {
 				String[] groupOneList = groupOne.split("/");
 				String[] groupTwoList = groupTwo.split("/");
+				// 判断两个groupPath是否只差一级
 				if (groupOneList.length - groupTwoList.length == 1) {
+					// 判断层级多的groupPath的父目录是否和另一个一样
 					if (groupOne.substring(0, groupTwo.length()).equals(groupTwo)) {
 						cachedItemGroupMap.get(groupTwo).item.add(cachedItemGroupMap.get(groupOne));
 					}

@@ -15,7 +15,7 @@ public class ItemGroup {
 	public String name;
 	// 文件夹描述
 	public String description;
-	// 判断是否是子文件夹
+	// 判断是否是子目录
 	public boolean _postman_isSubFolder;
 	// 存放ItemGroup或者Request
 	public List<Object> item;
@@ -31,6 +31,7 @@ public class ItemGroup {
 	}
 
 	public boolean hasChild(ItemGroup item) {
+		// 一个文件夹下可能有多个文件夹，所以需要循环判断
 		for (int i = 0; i < this.item.size(); i++) {
 			if (this.item.get(i).equals(item)) {
 				return true;
@@ -46,9 +47,7 @@ public class ItemGroup {
 		for (int i = 0; i < groupPathList.length - 1; i++) {
 			groupStr.append(groupPathList[i] + "/");
 		}
-		if (groupPathList.length - 1 != 0) {
-			groupStr.setLength(groupStr.length() - 1);
-		}
+		groupStr.setLength(groupStr.length() - 1);
 		return groupStr.toString();
 	}
 
