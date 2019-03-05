@@ -18,8 +18,8 @@ public class ItemGroupFactory {
 	}
 
 	/**
-	 * 获取或者创建ItemGroup。 对于一个"A/B"，首先判断是不是已经有"A/B"了，如果有就返回已经有的这个"A/B"， 否则就新建"A/B"。
-	 * getOrCreateGroup("A/B")的时候调用 getOrCreateGroup("A") ，得到A后把A/B放到A里。
+	 * 获取或者创建ItemGroup。 对于一个"A/B"，首先判断是不是已经有"A/B"了，如果有就返回已经有的这个"A/B"。 否则就新建"A/B"， 调用
+	 * getOrCreateGroup("A") ，得到A后把A/B放到A里。
 	 * 
 	 * @param groupPath
 	 * @return
@@ -31,44 +31,26 @@ public class ItemGroupFactory {
 		}
 
 		String[] groupList = groupPath.split("/");
-		ItemGroup postmanItem;
-		// 当groupList.length < 2 说明此时为第一级目录，_postman_isSubFolder需要为false
-		if (groupList.length < 2) {
-			postmanItem = new ItemGroup(groupList[0], false);
-		} else {
-			postmanItem = new ItemGroup(groupList[groupList.length - 1], true);
-		}
-		// 当groupList.length > 1 时才有上级目录
-		if (groupList.length > 1) {
-			String parentPath = postmanItem.getParentPath(groupPath);
-			getOrCreateItemGroup(parentPath);
-		}
-		cachedItemGroupMap.put(groupPath, postmanItem);
-		ItemGroup itemGroup = generateItemGroup(groupPath);
-		return itemGroup;
-	}
+		ItemGroup childItemGroup;
+		ItemGroup parentItemGroup;
 
-	/**
-	 * 实现把A/B放到A里这一步。比如："A/B/C"就将"A/B/C"放进"A/B"里，再把"A/B"放进"A"里。
-	 * 
-	 * @param groupPath
-	 * @return
-	 */
-	public ItemGroup generateItemGroup(String groupPath) {
-		for (String groupOne : cachedItemGroupMap.keySet()) {
-			for (String groupTwo : cachedItemGroupMap.keySet()) {
-				String[] groupOneList = groupOne.split("/");
-				String[] groupTwoList = groupTwo.split("/");
-				// 判断两个groupPath是否只差一级
-				if (groupOneList.length - groupTwoList.length == 1) {
-					// 判断层级多的groupPath的父目录是否和另一个一样
-					if (groupOne.substring(0, groupTwo.length()).equals(groupTwo)) {
-						cachedItemGroupMap.get(groupTwo).item.add(cachedItemGroupMap.get(groupOne));
-					}
-				}
-			}
+		if (ItemGroup.isTopLevel(groupList)) {
+			childItemGroup = new ItemGroup(groupList[0], false);
+		} else {
+			childItemGroup = new ItemGroup(groupList[groupList.length - 1], true);
 		}
-		return cachedItemGroupMap.get(groupPath);
+
+		if (!ItemGroup.isTopLevel(groupList)) {
+			String parentPath = ItemGroup.getParentPath(groupPath);
+			parentItemGroup = getOrCreateItemGroup(parentPath);
+			parentItemGroup.item.add(childItemGroup);
+			cachedItemGroupMap.put(groupPath, childItemGroup);
+			return childItemGroup;
+		} else {
+			cachedItemGroupMap.put(groupPath, childItemGroup);
+			return childItemGroup;
+		}
+
 	}
 
 	public ItemGroup getItemGroup(String groupPath) {

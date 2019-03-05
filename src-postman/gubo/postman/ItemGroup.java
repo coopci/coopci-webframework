@@ -41,7 +41,7 @@ public class ItemGroup {
 	}
 
 	// 获取路径的上级路径
-	public String getParentPath(String groupPath) {
+	public static String getParentPath(String groupPath) {
 		String[] groupPathList = groupPath.split("/");
 		StringBuffer groupStr = new StringBuffer();
 		for (int i = 0; i < groupPathList.length - 1; i++) {
@@ -49,6 +49,15 @@ public class ItemGroup {
 		}
 		groupStr.setLength(groupStr.length() - 1);
 		return groupStr.toString();
+	}
+
+	// 判断是否为顶层目录
+	static boolean isTopLevel(String[] groupList) {
+		if (groupList.length < 2) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 
 }
