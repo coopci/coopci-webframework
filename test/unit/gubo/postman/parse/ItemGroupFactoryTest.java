@@ -25,7 +25,7 @@ public class ItemGroupFactoryTest {
 		ItemGroup item5 = fac.getOrCreateItemGroup("A");
 		// 验证目录相同的情况下，是否是同一对象
 		assertEquals(item1, item2);
-		
+
 		// 验证某一目录是否是另一目录的下级目录
 		assertTrue(item3.hasChild(item1));
 		assertTrue(item3.hasChild(item2));
@@ -35,16 +35,17 @@ public class ItemGroupFactoryTest {
 		assertFalse(item5.hasChild(item2));
 		assertFalse(item5.hasChild(item4));
 		assertFalse(item1.hasChild(item4));
-		
+
 		ItemGroupFactory fac2 = new ItemGroupFactory();
 		ItemGroup item6 = fac2.getOrCreateItemGroup("A/B/C");
 		ItemGroup item7 = fac2.getOrCreateItemGroup("A/B/D");
 		ItemGroup item8 = fac2.getOrCreateItemGroup("A");
-		
+
+		// 验证不同ItemGroupFactory对于同一path生成的ItemGroup实际上是不一样的
 		assertNotEquals(item1, item6);
 		assertNotEquals(item4, item7);
 		assertNotEquals(item5, item8);
-		
+
 	}
 
 }

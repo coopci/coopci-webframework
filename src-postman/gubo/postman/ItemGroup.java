@@ -24,14 +24,15 @@ public class ItemGroup {
 		this.item = new LinkedList<>();
 	}
 
-	public ItemGroup(String groupPath, boolean isSub) {
+	public ItemGroup(String groupPath) {
 		String[] groupList = groupPath.split("/");
-		if (!isSub) {
+		if (isTopLevel(groupPath)) {
 			this.name = groupList[0];
+			this._postman_isSubFolder = false;
 		} else {
 			this.name = groupList[groupList.length - 1];
+			this._postman_isSubFolder = true;
 		}
-		this._postman_isSubFolder = isSub;
 		this.item = new LinkedList<>();
 	}
 
