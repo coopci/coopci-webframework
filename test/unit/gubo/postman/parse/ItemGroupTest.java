@@ -10,16 +10,20 @@ public class ItemGroupTest {
 
 	@Test
 	public void testGetParentPath() {
-		String groupPath = "A/B/C";
-		String parentPath = ItemGroup.getParentPath(groupPath);
+		String parentPath = ItemGroup.getParentPath("A/B/C");
 		assertEquals("A/B", parentPath);
-		// 路径开头和结尾不能有“/”
-		assertNotEquals("A/B/", parentPath);
-		assertNotEquals("/A/B", parentPath);
-
-		String parentPath2 = ItemGroup.getParentPath("A//B//C");
-		// 路径中间只能有一个“/”
-		assertNotEquals("A/B", parentPath2);
+		
+		// 验证各层级之间如果有多个"/"，不会影响getParentPath()和isTopLevel()
+		String parentPath1 = ItemGroup.getParentPath("A///B///C");
+		assertEquals("A///B//", parentPath1);
+		String parentPath2 = ItemGroup.getParentPath(parentPath1);
+		assertEquals("A//", parentPath2);
+		assertTrue(ItemGroup.isTopLevel(parentPath2));
+		
+		// 验证路径结尾可以有"/"
+		String parentPath3 = ItemGroup.getParentPath("A/B/C/");
+		assertEquals("A/B", parentPath3);
+		
 	}
 
 	@Test
