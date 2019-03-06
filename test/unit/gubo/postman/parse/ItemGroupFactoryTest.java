@@ -47,5 +47,5 @@ public class ItemGroupFactoryTest {
 		assertNotEquals(item5, item8);
 
 	}
-
+	
 }

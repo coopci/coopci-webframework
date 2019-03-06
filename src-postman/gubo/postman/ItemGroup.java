@@ -58,7 +58,7 @@ public class ItemGroup {
 	}
 
 	// 判断是否为顶层目录
-	static boolean isTopLevel(String groupPath) {
+	public static boolean isTopLevel(String groupPath) {
 		String[] groupList = groupPath.split("/");
 		if (groupList.length < 2) {
 			return true;
