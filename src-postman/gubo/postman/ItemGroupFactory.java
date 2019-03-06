@@ -34,7 +34,6 @@ public class ItemGroupFactory {
 			String parentPath = ItemGroup.getParentPath(groupPath);
 			ItemGroup parentItemGroup = getOrCreateItemGroup(parentPath);
 			parentItemGroup.item.add(ret);
-			cachedItemGroupMap.put(groupPath, ret);
 			return ret;
 		}
 

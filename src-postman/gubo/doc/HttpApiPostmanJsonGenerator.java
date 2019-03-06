@@ -14,11 +14,14 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.io.SerializedString;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 
 import gubo.doc.ApiDocument.ParameterDocument;
 import gubo.http.querystring.QueryStringBinder;
 import gubo.postman.Collection;
 import gubo.postman.Item;
+import gubo.postman.ItemGroup;
+import gubo.postman.ItemGroupFactory;
 import gubo.postman.Request;
 import gubo.postman.Request.Body.Urlencoded;
 
@@ -33,15 +36,21 @@ public class HttpApiPostmanJsonGenerator {
 
 	/**
 	 * 生成postman collection 格式的json文件。
-	 * @param docs 所有http API的文档。
-	 * @param filePath 文件路径,只写文件名则表示建在当前项目根目录下。
-	 * @param collectionName collection使用的名字。
+	 * 
+	 * @param docs
+	 *            所有http API的文档。
+	 * @param filePath
+	 *            文件路径,只写文件名则表示建在当前项目根目录下。
+	 * @param collectionName
+	 *            collection使用的名字。
 	 * @throws Exception
 	 */
-	public void generateCollectionJson(List<ApiDocument> docs, String filePath, String collectionName) throws Exception {
+	public void generateCollectionJson(List<ApiDocument> docs, String filePath, String collectionName)
+			throws Exception {
 
-		List<Item> itemList = new LinkedList<Item>();
+		List<Object> itemList = new LinkedList<Object>();
 		Item item = new Item();
+		ItemGroupFactory fac = new ItemGroupFactory();
 		try {
 			for (ApiDocument doc : docs) {
 				if (doc.deprecated) {
@@ -52,12 +61,28 @@ public class HttpApiPostmanJsonGenerator {
 					logger.warn("Ignoring doc: {}", doc);
 					continue;
 				}
+				if (!Strings.isNullOrEmpty(doc.group)) {
+					ItemGroup itemGroup = fac.getOrCreateItemGroup(doc.group);
+					// 路径层级大于1时，不需要放进collection中，只需增加item条目
+					if (doc.group.split("/").length > 1) {
+						itemGroup.item.add(item);
+						continue;
+					}
+					// 如果itemList中已经有该itemGroup，就不再往里增加， 只需增加item条目
+					if (itemList.contains(itemGroup)) {
+						itemGroup.item.add(item);
+					} else {
+						itemGroup.item.add(item);
+						itemList.add(itemGroup);
+					}
+					continue;
+				}
+
 				itemList.add(item);
 			}
 		} catch (Exception e) {
 			logger.error("Generate collection failed, ", e);
 		}
-
 		Collection collection = this.buildCollection(collectionName);
 		collection.item = itemList;
 
@@ -84,6 +109,7 @@ public class HttpApiPostmanJsonGenerator {
 
 	/**
 	 * 构建每一个请求条目。
+	 * 
 	 * @param doc
 	 * @return
 	 * @throws Exception
@@ -130,6 +156,7 @@ public class HttpApiPostmanJsonGenerator {
 
 	/**
 	 * 构建每一个请求用到的参数。
+	 * 
 	 * @param fields
 	 * @param fieldsMap
 	 * @return
