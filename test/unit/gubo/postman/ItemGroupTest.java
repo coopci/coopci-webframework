@@ -1,4 +1,4 @@
-package gubo.postman.parse;
+package gubo.postman;
 
 import static org.junit.Assert.*;
 
