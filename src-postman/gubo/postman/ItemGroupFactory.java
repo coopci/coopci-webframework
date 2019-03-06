@@ -26,14 +26,13 @@ public class ItemGroupFactory {
 			return cachedItemGroupMap.get(groupPath);
 		}
 		ItemGroup ret = new ItemGroup(groupPath);
-		ItemGroup parentItemGroup;
 
 		if (ItemGroup.isTopLevel(groupPath)) {
 			cachedItemGroupMap.put(groupPath, ret);
 			return ret;
 		} else {
 			String parentPath = ItemGroup.getParentPath(groupPath);
-			parentItemGroup = getOrCreateItemGroup(parentPath);
+			ItemGroup parentItemGroup = getOrCreateItemGroup(parentPath);
 			parentItemGroup.item.add(ret);
 			cachedItemGroupMap.put(groupPath, ret);
 			return ret;
