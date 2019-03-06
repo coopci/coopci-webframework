@@ -20,10 +20,6 @@ public class ItemGroup {
 	// 存放ItemGroup或者Request
 	public List<Object> item;
 
-	public ItemGroup() {
-		this.item = new LinkedList<>();
-	}
-
 	public ItemGroup(String groupPath) {
 		String[] groupList = groupPath.split("/");
 		if (isTopLevel(groupPath)) {
