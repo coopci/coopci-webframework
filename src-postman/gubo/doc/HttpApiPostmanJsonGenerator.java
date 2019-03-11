@@ -64,11 +64,11 @@ public class HttpApiPostmanJsonGenerator {
 				if (!Strings.isNullOrEmpty(doc.group)) {
 					ItemGroup itemGroup = fac.getOrCreateItemGroup(doc.group);
 					// 路径层级大于1时，不需要放进collection中，只需增加item条目
-					if (doc.group.split("/").length > 1) {
+					if (!ItemGroup.isTopLevel(doc.group)) {
 						itemGroup.item.add(item);
 						continue;
 					}
-					// 如果itemList中已经有该itemGroup，就不再往里增加， 只需增加item条目
+					// 如果itemList中已经有该itemGroup，就不再增加该itemGroup， 只需往里增加item条目
 					if (itemList.contains(itemGroup)) {
 						itemGroup.item.add(item);
 					} else {
