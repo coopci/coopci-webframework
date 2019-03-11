@@ -47,7 +47,7 @@ public class HttpApiPostmanJsonGenerator {
 	 */
 	public void generateCollectionJson(List<ApiDocument> docs, String filePath, String collectionName)
 			throws Exception {
-
+		// 存放顶层的Item及ItemGroup
 		List<Object> itemList = new LinkedList<Object>();
 		Item item = new Item();
 		ItemGroupFactory fac = new ItemGroupFactory();
@@ -68,13 +68,11 @@ public class HttpApiPostmanJsonGenerator {
 						itemGroup.item.add(item);
 						continue;
 					}
-					// 如果itemList中已经有该itemGroup，就不再增加该itemGroup， 只需往里增加item条目
-					if (itemList.contains(itemGroup)) {
-						itemGroup.item.add(item);
-					} else {
-						itemGroup.item.add(item);
+					// 如果itemList中没有该itemGroup，则往里增加该itemGroup；否则，只需往里增加item条目
+					if (!itemList.contains(itemGroup)) {
 						itemList.add(itemGroup);
 					}
+					itemGroup.item.add(item);
 					continue;
 				}
 
