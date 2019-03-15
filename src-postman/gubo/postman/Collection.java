@@ -3,8 +3,8 @@ package gubo.postman;
 import java.util.List;
 
 /**
- * 根据“https://www.postmanlabs.com/postman-collection/tutorial-concepts.html”
- * 文档的Collection建立。
+ * Based on “https://www.postmanlabs.com/postman-collection/tutorial-concepts.html”.
+ * A collection can contain a number of Items, ItemGroups and can have a single information block.
  *
  */
 public class Collection {
@@ -16,6 +16,6 @@ public class Collection {
 	}
 	
 	public Information info;
-	public List<Item> item;
+	public List<?> item;
 	
 }

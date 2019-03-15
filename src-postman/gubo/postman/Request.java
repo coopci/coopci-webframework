@@ -3,8 +3,10 @@ package gubo.postman;
 import java.util.List;
 
 /**
- * 根据“https://www.postmanlabs.com/postman-collection/tutorial-concepts.html”
- * 文档的Request建立。
+ * Based on “https://www.postmanlabs.com/postman-collection/tutorial-concepts.html”. 
+ * A Request represents an HTTP request. Usually, a Request belongs to an Item.
+ * Requests can be specified as a string (check the example above) or as a JSON
+ * Object. If specified as a string, it is assumed to be a GET request.
  *
  */
 public class Request {
