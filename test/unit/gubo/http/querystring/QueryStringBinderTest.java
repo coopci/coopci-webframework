@@ -57,18 +57,22 @@ public class QueryStringBinderTest {
 	@Test
 	public void test_toQueryString() throws IllegalArgumentException, IllegalAccessException, UnsupportedEncodingException {
 		Dog dog = new Dog();
+		dog.bloodColor="re d";
 		QueryStringBinder binder = new QueryStringBinder();
-		assertTrue(binder.toQueryString(dog, null).contains("bloodColor=red&"));
+		String qs = binder.toQueryString(dog, null);
+		System.out.println(qs);
+		assertTrue(binder.toQueryString(dog, null).contains("bloodColor=re%20d&"));
 		assertTrue(binder.toQueryString(dog, null).contains("legs_num=4"));
 	}
 	
 	@Test
     public void test_MapToQueryString() throws IllegalArgumentException, IllegalAccessException, UnsupportedEncodingException {
         Map<String, String> data = new HashMap<String, String>();
-        data.put("key1", "value1");
+        data.put("key1", "value 1+2");
         QueryStringBinder binder = new QueryStringBinder();
-        binder.toQueryString(data);
-        assertTrue(binder.toQueryString(data).contains("key1=value1"));
+        String qs = binder.toQueryString(data);
+        System.out.println(qs);
+        assertTrue(qs.contains("key1=value%201"));
     }
 	
 	@Test
@@ -95,8 +99,8 @@ public class QueryStringBinderTest {
 		assertEquals(4, dog.legsNum);
 		assertEquals("red", dog.bloodColor);
 		QueryStringBinder binder = new QueryStringBinder();
-		binder.bind("legs_num=3&bloodColor=blue", dog);
+		binder.bind("legs_num=3&bloodColor=bl%20ue", dog);
 		assertEquals(3, dog.legsNum);
-		assertEquals("blue", dog.bloodColor);
+		assertEquals("bl ue", dog.bloodColor);
 	}
 }

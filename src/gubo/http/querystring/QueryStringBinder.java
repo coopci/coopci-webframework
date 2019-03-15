@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.net.UrlEscapers;
 
 public class QueryStringBinder {
 	public static Logger logger = LoggerFactory
@@ -294,13 +295,18 @@ public class QueryStringBinder {
 		}
 		return;
 	}
-	public String toQueryString(Map<String, String> data) {
-	    List<BasicNameValuePair> pairs = new LinkedList<BasicNameValuePair>();
-	    for (Entry<String, String> entry: data.entrySet()) {
-	    	pairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-		}
-		
-		String ret = URLEncodedUtils.format(pairs, "utf-8");
+	public String toQueryString(Map<String, String> data) throws UnsupportedEncodingException {
+		StringBuilder sb = new StringBuilder();
+		for (Entry<String, String> entry: data.entrySet()) {
+            sb.append(entry.getKey());
+            sb.append("=");
+            //sb.append(java.net.URLEncoder.encode(entry.getValue(), "utf-8"));
+            sb.append(entry.getValue());
+            sb.append("&");
+        } 
+		String ret = sb.toString();
+		// ret = java.net.URLEncoder.encode(ret, "utf-8");
+		ret = UrlEscapers.urlFragmentEscaper().escape(ret);
 		return ret;
 	}
 
@@ -440,9 +446,11 @@ public class QueryStringBinder {
 				Object o = f.get(pojo);
 				if (o == null)
 					v = "";
-				else
-					v = java.net.URLEncoder.encode(f.get(pojo).toString(),
-							"UTF-8");
+				else {
+//					v = java.net.URLEncoder.encode(f.get(pojo).toString(),
+//							"UTF-8");
+        				v = f.get(pojo).toString();
+				}
 			}
 			ret.put(k, v);
 			
