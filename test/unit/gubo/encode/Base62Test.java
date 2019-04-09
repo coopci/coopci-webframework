@@ -22,6 +22,7 @@ public class Base62Test {
 		
 		long num = 4723945325L;
 		String encoded = base62.encodeBase10(num);
+		System.out.println("encoded=" + encoded);
 		assertEquals(num, base62.decodeBase62(encoded));		
 	}
 }
