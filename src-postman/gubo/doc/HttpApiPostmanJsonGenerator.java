@@ -91,6 +91,8 @@ public class HttpApiPostmanJsonGenerator {
 		JsonGenerator jGenerator = jfactory.createGenerator(file, JsonEncoding.UTF8);
 		SerializedString rawString = new SerializedString(jsonStr);
 		jGenerator.writeRaw(rawString);
+		jGenerator.flush();
+        jGenerator.close();
 	}
 
 	public Collection buildCollection(String fileName) {
