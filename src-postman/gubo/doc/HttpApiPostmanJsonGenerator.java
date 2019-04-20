@@ -92,7 +92,7 @@ public class HttpApiPostmanJsonGenerator {
 		SerializedString rawString = new SerializedString(jsonStr);
 		jGenerator.writeRaw(rawString);
 		jGenerator.flush();
-        jGenerator.close();
+		jGenerator.close();
 	}
 
 	public Collection buildCollection(String fileName) {
