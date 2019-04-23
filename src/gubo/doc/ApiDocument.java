@@ -11,6 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -119,6 +121,20 @@ public class ApiDocument {
 		return ret;
 	}
 
+	// 选择grizzly的request 和 response以外的参数。
+	static Class<?> getParameterClass(Method method) {
+		for (Class<?> c : method.getParameterTypes()) {
+			if (c.equals(Request.class)) {
+				continue;
+			} else if (c.equals(Response.class)) {
+				continue;
+			} else {
+				return c;
+			}
+		}
+		return null;
+	}
+		
 	public static ApiDocument build(Method method, String urlPrefix)
 			throws Exception {
 		ApiDocument ret = new ApiDocument();
@@ -142,7 +158,7 @@ public class ApiDocument {
 		ret.desc = comment.value();
 		ret.name = comment.name();
 		ret.group = comment.group();
-		Class<?> parameterType = method.getParameters()[0].getType();
+		Class<?> parameterType = getParameterClass(method);
 		ret.parameterDocuments = buildParameterDocuments(parameterType);
 
 		String postData = "";
