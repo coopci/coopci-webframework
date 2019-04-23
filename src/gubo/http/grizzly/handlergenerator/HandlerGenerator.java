@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
 import org.jtwig.JtwigModel;
 import org.jtwig.JtwigTemplate;
 
@@ -159,6 +161,37 @@ public class HandlerGenerator {
 		return outs;
 	}
 
+	boolean needGrizzlyRequest(Method method) {
+		for (Class<?> c : method.getParameterTypes()) {
+			if (c.equals(Request.class)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	boolean needGrizzlyResponse(Method method) {
+		for (Class<?> c : method.getParameterTypes()) {
+			if (c.equals(Response.class)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	// 选择grizzly的request 和 response以外的参数。
+	String getParameterClass(Method method) {
+		for (Class<?> c : method.getParameterTypes()) {
+			if (c.equals(Request.class)) {
+				continue;
+			} else if (c.equals(Response.class)) {
+				continue;
+			} else {
+				String parameterClass = c.getCanonicalName();
+				return parameterClass;
+			}
+		}
+		return null;
+	}
 	public SourceFile generateSource(Class<?> interfc, Method method,
 			String packageName) throws SQLException {
 
@@ -189,8 +222,7 @@ public class HandlerGenerator {
 		sb.append("// This file is generated with "
 				+ this.getClass().getCanonicalName());
 
-		String parameterClass = method.getParameterTypes()[0]
-				.getCanonicalName();
+		String parameterClass = getParameterClass(method);
 
 		String handlerName = method.getName() + "Handler";
 		handlerName = handlerName.substring(0, 1).toUpperCase()
@@ -236,11 +268,15 @@ public class HandlerGenerator {
 				"				request.getInputBuffer().getBuffer().toStringContent());\n"
 				+ "        %s p = new %s();\n"
 				+ "        this.bindParameter(request, p);\n"
-				+ "        Object res = this.%s().%s(p);\n"
+				+ "        Object res = this.%s().%s(%s %s p);\n"
 				+ "        return res;\n" + "    }\n";
 
 		String doXXX = String.format(doXXXTemplate, parameterClass,
-				parameterClass, interfaceGetter.getName(), method.getName());
+				parameterClass, interfaceGetter.getName(), method.getName(),
+				needGrizzlyRequest(method)?"request,":"",
+				needGrizzlyResponse(method)?"request,":""
+				
+				);
 
 		sb.append(doXXX);
 
