@@ -77,16 +77,21 @@ public class SimplePoJoDAO {
 		Connection dbconn = ds.getConnection();
 		try {
 			dbconn.setAutoCommit(true);
-			ResultSetMapper<T> mapper = new ResultSetMapper<T>();
-			String sql = "select * from " + this.tablename + " where " + pkName
-					+ " = ?";
-			T pojo = mapper.loadPojo(dbconn, this.clazz, sql, pkValue);
-			return pojo;
+			return this.loadPoJoByPK(dbconn,  pkName,  pkValue);
 		} finally {
 			dbconn.close();
 		}
 	}
+	public <T> T loadPoJoByPK(Connection dbconn, String pkName, Object pkValue)
+			throws SQLException {
 
+		ResultSetMapper<T> mapper = new ResultSetMapper<T>();
+		String sql = "select * from " + this.tablename + " where " + pkName
+				+ " = ?";
+		T pojo = mapper.loadPojo(dbconn, this.clazz, sql, pkValue);
+		return pojo;
+		
+	}
 	public <T> T loadPoJoByUniqueKey(DataSource ds, String keyName,
 			Object pkValue) throws SQLException {
 
