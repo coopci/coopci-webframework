@@ -6,7 +6,11 @@ import gubo.exceptions.PermissionDeniedException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
 
 // T 是 用户类的class
@@ -23,4 +27,25 @@ public class PermissionManager {
 		}
 		
 	}
+
+	
+	@Entity(name="v_user_permission")
+	class PermissionCodeWrapper {
+		@Column(name = "permission_code")
+		String permissionCode;
+	}
+	
+	public List<String> getPermissionCodes(Connection dbconn, long userid) throws SQLException, PermissionDeniedException {
+		DaoManager daoManager = new DaoManager();
+		
+		SimplePoJoDAO dao = daoManager.getDao(UserPermission.class);
+		List<PermissionCodeWrapper> codeList = dao.loadPojoList(dbconn, "select * from v_user_permission where user_id=?", userid);
+		
+		List<String> ret = new LinkedList<String>();
+		for (PermissionCodeWrapper w :codeList) {
+			ret.add(w.permissionCode);
+		}
+		return ret;
+	}
+	
 }
