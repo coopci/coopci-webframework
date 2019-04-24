@@ -107,6 +107,15 @@ public class SimplePoJoDAO {
 			dbconn.close();
 		}
 	}
+	
+	public <T> T loadPoJoByUniqueKey(Connection dbconn, String keyName,
+			Object pkValue) throws SQLException {
+		ResultSetMapper<T> mapper = new ResultSetMapper<T>();
+		String sql = "select * from " + this.tablename + " where "
+				+ keyName + " = ?";
+		T pojo = mapper.loadPojo(dbconn, this.clazz, sql, pkValue);
+		return pojo;
+	}
 
 	public <T extends ISimplePoJo> T insert(Connection dbconn, T pojo)
 			throws Exception {
