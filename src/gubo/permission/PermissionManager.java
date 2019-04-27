@@ -27,13 +27,6 @@ public class PermissionManager {
 		}
 		
 	}
-
-	
-	@Entity(name="v_user_permission")
-	class PermissionCodeWrapper {
-		@Column(name = "permission_code")
-		String permissionCode;
-	}
 	
 	public List<String> getPermissionCodes(Connection dbconn, long userid) throws SQLException, PermissionDeniedException {
 		DaoManager daoManager = new DaoManager();
