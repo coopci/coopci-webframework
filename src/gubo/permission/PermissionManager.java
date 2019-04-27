@@ -39,11 +39,11 @@ public class PermissionManager {
 		DaoManager daoManager = new DaoManager();
 		
 		SimplePoJoDAO dao = daoManager.getDao(UserPermission.class);
-		List<PermissionCodeWrapper> codeList = dao.loadPojoList(dbconn, "select * from v_user_permission where user_id=?", userid);
+		List<UserPermission> codeList = dao.loadPojoList(dbconn, "select * from v_user_permission where user_id=?", userid);
 		
 		List<String> ret = new LinkedList<String>();
-		for (PermissionCodeWrapper w :codeList) {
-			ret.add(w.permissionCode);
+		for (UserPermission up :codeList) {
+			ret.add(up.permission_code);
 		}
 		return ret;
 	}
