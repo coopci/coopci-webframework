@@ -55,6 +55,18 @@ public class HttpApiDocGenerator {
 		return docs;
 	}
 	
+	public List<ApiDocument> generateDoc(String urlPrefix, Class<?> ... interfaces )
+            throws Exception {
+	    List<ApiDocument> ret = new LinkedList<ApiDocument>();
+	    for (Class<?> interfc : interfaces) {
+	        List<ApiDocument> docs = this.generateDoc(interfc, urlPrefix);
+	        if(docs != null) {
+	            ret.addAll(docs);
+	        }
+	    }
+        return ret;
+    }
+	
 	public String renderDocument(List<ApiDocument> docs)
 			throws Exception {
 
