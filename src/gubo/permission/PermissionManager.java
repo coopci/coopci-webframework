@@ -21,7 +21,7 @@ public class PermissionManager {
 		DaoManager daoManager = new DaoManager();
 		
 		SimplePoJoDAO dao = daoManager.getDao(UserPermission.class);
-		List<UserPermission> upList = dao.loadPojoList(dbconn, "select * from v_user_permission where user_id=? and permission = ? ", userid, permission);
+		List<UserPermission> upList = dao.loadPojoList(dbconn, "select * from v_user_permission where user_id=? and permission_code = ? ", userid, permission);
 		if(upList.isEmpty()) {
 			throw new PermissionDeniedException("Permission: " + permission + ", user_id: " + userid);
 		}
