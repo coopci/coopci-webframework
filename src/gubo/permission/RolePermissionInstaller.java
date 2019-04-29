@@ -4,6 +4,7 @@ import gubo.db.DaoManager;
 import gubo.db.SimplePoJoDAO;
 
 import java.sql.Connection;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -83,7 +84,7 @@ public class RolePermissionInstaller {
 			
 			try {
 				rpDao.insert(dbconn, rolePermission);
-			} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException ex) {
+			} catch (SQLIntegrityConstraintViolationException ex) {
 				if (ex.getMessage().startsWith("Duplicate entry ")) {
 					// 如果已经存在就不用管了。	
 				} else {

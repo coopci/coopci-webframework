@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
@@ -25,7 +26,7 @@ import org.glassfish.grizzly.http.util.HttpStatus;
 import org.jtwig.JtwigTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+// import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 
 public class NannyHttpHandler extends HttpHandler {
 	SessonManager sessonManager = new SessonManager();
@@ -340,9 +341,9 @@ public class NannyHttpHandler extends HttpHandler {
 
 	public void handleException(Exception ex, Request req, Response res)
 			throws Exception {
-		if (ex instanceof MySQLIntegrityConstraintViolationException) {
+		if (ex instanceof SQLIntegrityConstraintViolationException) {
 			this.handleException(
-					(MySQLIntegrityConstraintViolationException) ex, req, res);
+					(SQLIntegrityConstraintViolationException) ex, req, res);
 		} else if (ex instanceof SessionNotFoundException) {
 			this.handleException((SessionNotFoundException) ex, req, res);
 		} else if (ex instanceof QueryStringParseException) {
@@ -380,7 +381,7 @@ public class NannyHttpHandler extends HttpHandler {
 		return;
 	}
 
-	public void handleException(MySQLIntegrityConstraintViolationException ex,
+	public void handleException(SQLIntegrityConstraintViolationException ex,
 			Request req, Response res) throws Exception {
 		if (ex.getSQLState().equals("23000")) {
 			String msg = ex.getMessage();
