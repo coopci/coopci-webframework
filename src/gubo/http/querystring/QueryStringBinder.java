@@ -13,6 +13,7 @@ import gubo.http.querystring.parsers.NullParser;
 import gubo.http.querystring.parsers.StringFieldParser;
 import gubo.http.querystring.parsers.TimeParser;
 import gubo.http.querystring.parsers.TimestampParser;
+
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -24,21 +25,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
 import org.glassfish.grizzly.http.server.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.net.UrlEscapers;
 
 public class QueryStringBinder {

@@ -8,7 +8,6 @@ import java.util.HashMap;
 
 import org.glassfish.grizzly.EmptyCompletionHandler;
 import org.glassfish.grizzly.http.multipart.ContentDisposition;
-import org.glassfish.grizzly.http.multipart.MultipartEntry;
 import org.glassfish.grizzly.http.multipart.MultipartScanner;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
@@ -64,7 +63,7 @@ public class MultipartHandler extends HttpHandler {
 									.getString("sfsd");
 							String s2 = inMemoryMultipartEntryHandler
 									.getString("fff");
-							MultipartEntry multipartEntry = inMemoryMultipartEntryHandler.getMultipartEntry("fff");
+							// MultipartEntry multipartEntry = inMemoryMultipartEntryHandler.getMultipartEntry("fff");
 							ContentDisposition contentDisposition = inMemoryMultipartEntryHandler.getContentDisposition("fff");
 							
 							String filename = contentDisposition.getDispositionParam("filename");
