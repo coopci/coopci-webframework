@@ -18,6 +18,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -484,6 +486,12 @@ public class QueryStringBinder {
 			this.params = params;
 		}
 
+		public void setParamters(PreparedStatement stmt) throws SQLException {
+			for (int i = 0; i < this.params.length; ++i) {
+				stmt.setObject(i+1, this.params[i]);
+			}
+			
+		}
 	}
 
     public static class JDBCOrderBy {
