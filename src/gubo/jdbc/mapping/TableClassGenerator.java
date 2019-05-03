@@ -13,11 +13,13 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.persistence.GeneratedValue;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
@@ -255,9 +257,12 @@ public class TableClassGenerator {
 		case java.sql.Types.TINYINT:
 			return;
 		case java.sql.Types.BIT:
-			if ("1".equals(defaultValue)) {
+			if (defaultValue == null) {
+				sb.append("null");
+			}
+			else if (defaultValue.contains("1")) {
 				sb.append("true");
-			} else if ("0".equals(defaultValue)) {
+			} else if (defaultValue.contains("0")) {
 				sb.append("false");
 			}
 			return;
@@ -298,6 +303,14 @@ public class TableClassGenerator {
 				schemaName, tableName, "%");
 
 		while (rs.next()) {
+			
+			ResultSetMetaData rsmd = rs.getMetaData();
+			for( int i = 1; i <= rsmd.getColumnCount(); i++) {
+				String name = rsmd.getColumnName(i);
+				// System.out.println("[" + i + "] ColumnName: " + name);
+			}
+			
+			 
 			String colName = rs.getString("COLUMN_NAME");
 			String isAutoInc = rs.getString("IS_AUTOINCREMENT");
 
@@ -314,10 +327,25 @@ public class TableClassGenerator {
 			}
 			if ("YES".equals(isAutoInc)) {
 				sb.append(this.indent + "@Id()\r\n");
-				sb.append(this.indent + "@GeneratedValue()\r\n");
+				// sb.append(this.indent + "@GeneratedValue()\r\n");
 			}
 
 			sb.append(this.indent + "@Column(name = \"" + colName + "\")\r\n");
+			boolean needGeneratedValueAnno = false;
+			try {
+				if ("YES".equals(rs.getString("IS_AUTOINCREMENT"))) {
+					needGeneratedValueAnno = true;
+				}
+				if ("YES".equals(rs.getString("IS_GENERATEDCOLUMN"))) {
+					needGeneratedValueAnno = true;
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			
+			if (needGeneratedValueAnno) {
+				sb.append(this.indent + "@GeneratedValue\r\n");
+			}
 			sb.append(this.indent + "public ");
 			sb.append(this.dataTypeToJajaType(dataType) + " ");
 
