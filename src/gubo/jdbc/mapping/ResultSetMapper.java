@@ -123,6 +123,52 @@ public class ResultSetMapper<T> {
 			return new ArrayList<T>();
 		return outputList;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public T mapRersultSetToOneObject(ResultSet rs, Class<?> outputClass) {
+		if (rs == null) {
+			return null;
+		}
+		if (!outputClass.isAnnotationPresent(Entity.class)) {
+			return null;
+		}
+		Mapping mapping = ResultSetMapper.getMapping(outputClass);
+
+		try {
+			ResultSetMetaData rsmd = rs.getMetaData();
+
+			int colCount = rsmd.getColumnCount();
+			
+			T bean = (T) outputClass.newInstance();
+			for (int _iterator = 0; _iterator < colCount; _iterator++) {
+				// getting the SQL column name
+				// String columnName = rsmd
+				// .getColumnName(_iterator + 1);
+				String columnName = rsmd.getColumnLabel(_iterator + 1);
+
+				Object columnValue = rs.getObject(_iterator + 1);
+
+				Field field = mapping.colnameToField.get(columnName);
+				if (field == null) { // 这个resultset中的列没有对应的pojo 字段。
+					continue;
+				} else {
+					// field.set(bean, columnValue);
+					set(field, bean, columnValue);
+
+				}
+			}
+			return bean;
+			
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
 
 	static protected void set(Field field, Object bean, Object columnValue)
 			throws IllegalArgumentException, IllegalAccessException {
