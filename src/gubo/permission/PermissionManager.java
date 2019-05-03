@@ -9,9 +9,6 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-
 
 // T 是 用户类的class
 public class PermissionManager {
