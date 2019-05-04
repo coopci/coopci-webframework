@@ -39,6 +39,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.net.UrlEscapers;
 
+/**
+ * 把http query string 指定的参数bind到pojo的 @QueryStringField 的字段上。
+ * jdbc相关的是遗留功能，以后会被取代。 
+ **/
 public class QueryStringBinder {
 	public static Logger logger = LoggerFactory
 			.getLogger(QueryStringBinder.class);
