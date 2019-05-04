@@ -461,6 +461,10 @@ public class QueryStringBinder {
 		return ret;
 	}
 	
+	/**
+	 * 改用QueryBuilder.JDBCWhere
+	 **/
+	@Deprecated
 	public static class JDBCWhere {
 		String whereClause = "";
 
@@ -497,7 +501,10 @@ public class QueryStringBinder {
 			
 		}
 	}
-
+	/**
+	 * 改用QueryBuilder.JDBCOrderBy
+	 **/
+	@Deprecated
     public static class JDBCOrderBy {
         private String orderByClause = "";
 
@@ -511,8 +518,9 @@ public class QueryStringBinder {
     }
 
     /**
-     *  取出 key "order_by" 的值。
+     *  改用QueryBuilder.genJDBCOrderBy
      **/
+	@Deprecated
     public JDBCOrderBy genJDBCOrderBy(Map<String, String> data,
             Class<? extends Object> clazz, Set<String> allowedFields)
             throws Exception {
@@ -525,13 +533,9 @@ public class QueryStringBinder {
         return ret;
     }
 	/**
-	 * eq__a=& 这种写法的效果是忽略 eq__a 如果筛选a==''，需要写: isblank__a=&
-	 * 
-	 * @param clazz
-	 *            中作为筛选的字段需要用 {@link QueryStringField} 标注才行。
-	 * 
-	 *            目前支持的操作符包括: eq__, lt__, lte__, gt__, gte__, neq__
-	 **/
+     *  改用QueryBuilder.genJDBCWhere
+     **/
+	@Deprecated
 	public JDBCWhere genJDBCWhere(Map<String, String> data,
 			Class<? extends Object> clazz, Set<String> allowedFields)
 			throws Exception {
@@ -615,14 +619,20 @@ public class QueryStringBinder {
 		}
 		return new JDBCWhere(sb.toString(), params.toArray());
 	}
-
+	/**
+     *  改用QueryBuilder.genJDBCWhere
+     **/
+	@Deprecated
 	public JDBCWhere genJDBCWhere(Request req, Class<? extends Object> clazz,
 			Set<String> allowedFields) throws Exception {
 
 		Map<String, String> data = extractParameters(req);
 		return this.genJDBCWhere(data, clazz, allowedFields);
 	}
-
+	/**
+     *  改用QueryBuilder.genJDBCWhere
+     **/
+	@Deprecated
 	public JDBCWhere genJDBCWhere(Request req, Class<? extends Object> clazz)
 			throws Exception {
 		return this.genJDBCWhere(req, clazz, null);
