@@ -23,7 +23,7 @@ public class FieldCopy {
 	}
 	/**
 	 * Copy fields from `from` to `to`
-	 * e.g. do to.a = from.a if from.a is assignable from to.a and a is not static nor synthetic 
+	 * e.g. do to.a = from.a if to.a is assignable from from.a and a is not static nor synthetic 
 	 * @throws IllegalAccessException 
 	 * @throws IllegalArgumentException 
 	 **/
