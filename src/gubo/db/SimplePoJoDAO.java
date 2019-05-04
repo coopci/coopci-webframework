@@ -117,6 +117,9 @@ public class SimplePoJoDAO {
 		return pojo;
 	}
 
+	/**
+	 * id字段由mysql autoinrement，这里把生成的id赋值 给pojo.id之后才返回。 
+	 **/
 	public <T extends ISimplePoJo> T insert(Connection dbconn, T pojo)
 			throws Exception {
 		Long newid = InsertStatementGenerator.insertNew(dbconn, pojo);
