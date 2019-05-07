@@ -1,10 +1,5 @@
 package gubo.jdbc.mapping;
 
-import gubo.http.querystring.QueryStringBinder;
-import gubo.http.querystring.QueryStringBinder.JDBCOrderBy;
-import gubo.http.querystring.QueryStringBinder.JDBCWhere;
-import gubo.http.querystring.QueryStringField;
-
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -24,6 +19,11 @@ import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import gubo.db.QueryBuilder;
+import gubo.db.QueryBuilder.JDBCOrderBy;
+import gubo.db.QueryBuilder.JDBCWhere;
+import gubo.http.querystring.QueryStringField;
 
 public class ResultSetMapper<T> {
 	public static Logger logger = LoggerFactory
@@ -324,7 +324,7 @@ public class ResultSetMapper<T> {
 			tablename = outputClass.getName();
 		}
 
-		QueryStringBinder binder = new QueryStringBinder();
+		QueryBuilder binder = new QueryBuilder();
 		JDBCWhere jdbcWhere = binder.genJDBCWhere(filter, outputClass, null);
 
 		JDBCOrderBy jdbcOrderBy = binder.genJDBCOrderBy(filter, outputClass, null);
