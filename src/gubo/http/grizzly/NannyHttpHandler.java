@@ -527,6 +527,11 @@ public class NannyHttpHandler extends HttpHandler {
 							send(ret, request, response);
 						} catch (Exception ex) {
 							logger.error("onMultipartScanCompleted", ex);
+							try {
+								handleException(ex, request, response);
+							} catch (Exception e) {
+								logger.error("handleException failed.", e);
+							}
 						} finally {
 							completedCalled = true;
 							response.resume();
