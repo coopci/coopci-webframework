@@ -1,6 +1,7 @@
 package gubo.doc;
 
 import gubo.http.grizzly.handlergenerator.MappingToPath;
+import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
 import gubo.http.querystring.QueryStringBinder;
 import gubo.http.querystring.QueryStringField;
 
@@ -127,6 +128,8 @@ public class ApiDocument {
 			if (c.equals(Request.class)) {
 				continue;
 			} else if (c.equals(Response.class)) {
+				continue;
+			} else if (c.equals(InMemoryMultipartEntryHandler.class)) {
 				continue;
 			} else {
 				return c;
