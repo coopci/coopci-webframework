@@ -6,11 +6,13 @@ import gubo.exceptions.BadParameterException;
 import gubo.exceptions.QueryStringParseException;
 import gubo.exceptions.RequiredParameterException;
 import gubo.exceptions.SessionNotFoundException;
+import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
 import gubo.http.querystring.QueryStringBinder;
 import gubo.jdbc.mapping.InsertStatementGenerator;
 import gubo.session.SessonManager;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -18,17 +20,24 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
+import org.glassfish.grizzly.EmptyCompletionHandler;
 import org.glassfish.grizzly.http.Method;
+import org.glassfish.grizzly.http.multipart.MultipartScanner;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.jtwig.JtwigTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 // import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 
 public class NannyHttpHandler extends HttpHandler {
+	private static final Logger logger = LoggerFactory
+			.getLogger(NannyHttpHandler.class);
 	SessonManager sessonManager = new SessonManager();
 
 	public SessonManager getNannySessionManager() {
@@ -59,8 +68,14 @@ public class NannyHttpHandler extends HttpHandler {
 	}
 
 	public void servePost(Request req, Response res) throws Exception {
-		Object ret = this.doPost(req, res);
-		this.send(ret, req, res);
+		String contentType = req.getContentType();
+		if (contentType.startsWith("multipart/form-data")) {
+			this.serveMultipart(req, res);
+		} else {
+			Object ret = this.doPost(req, res);
+			this.send(ret, req, res);
+		}
+
 	}
 
 	public void servePut(Request req, Response res) throws Exception {
@@ -342,8 +357,8 @@ public class NannyHttpHandler extends HttpHandler {
 	public void handleException(Exception ex, Request req, Response res)
 			throws Exception {
 		if (ex instanceof SQLIntegrityConstraintViolationException) {
-			this.handleException(
-					(SQLIntegrityConstraintViolationException) ex, req, res);
+			this.handleException((SQLIntegrityConstraintViolationException) ex,
+					req, res);
 		} else if (ex instanceof SessionNotFoundException) {
 			this.handleException((SessionNotFoundException) ex, req, res);
 		} else if (ex instanceof QueryStringParseException) {
@@ -454,6 +469,76 @@ public class NannyHttpHandler extends HttpHandler {
 		final QueryStringBinder binder = new QueryStringBinder();
 		binder.bind(req, p);
 		return;
+	}
+
+	/**
+	 * see gubo.http.grizzly.demo.Main /multipart-nanny for example.
+	 * 
+	 **/
+	public Object doPost(final Request request, final Response response,
+			final InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler)
+			throws IOException {
+		return "Not implemented: " + this.getClass().toString();
+	}
+
+	public HashMap<String, Integer> getSizeLimit() {
+		return null;
+	}
+
+	public int getDefaultSizeLimit() {
+		return InMemoryMultipartEntryHandler.SIZE_LIMIT_IGNORE;
+	}
+
+	public void serveMultipart(final Request request, final Response response)
+			throws Exception {
+		System.out.println("serveMultipart");
+		response.suspend();
+
+		final InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler = new InMemoryMultipartEntryHandler(
+				getSizeLimit(),
+
+				getDefaultSizeLimit());
+
+		// Start the asynchronous multipart request scanning...
+		MultipartScanner.scan(request, inMemoryMultipartEntryHandler,
+				new EmptyCompletionHandler<Request>() {
+
+					boolean completedCalled = false;
+
+					// CompletionHandler is called once HTTP request processing
+					// is completed
+					// or failed.
+					@Override
+					public void completed(final Request request) {
+						if (completedCalled) {
+							return;
+						}
+						try {
+							Object ret = doPost(request, response,
+									inMemoryMultipartEntryHandler);
+							send(ret, request, response);
+						} catch (Exception ex) {
+							logger.error("onMultipartScanCompleted", ex);
+						} finally {
+							completedCalled = true;
+							response.resume();
+						}
+					}
+
+					@Override
+					public void failed(Throwable throwable) {
+						final Writer writer = response.getWriter();
+						try {
+							writer.write(throwable.getMessage());
+						} catch (IOException e) {
+							logger.error("Failed scanning multipart request.",
+									e);
+						} finally {
+							response.resume();
+						}
+					}
+
+				});
 	}
 
 }

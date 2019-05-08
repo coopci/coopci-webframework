@@ -1,11 +1,15 @@
 package gubo.http.grizzly.demo;
 
 import gubo.http.grizzly.NannyHttpHandler;
+import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import org.glassfish.grizzly.http.multipart.ContentDisposition;
+import org.glassfish.grizzly.http.multipart.MultipartEntry;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.Request;
@@ -49,6 +53,41 @@ public class Main {
 		        // new MultipartHandler(),
 		        new DemoInMemoryMultipartHttpHandler(),
 				"/multipart");
+		
+		server.getServerConfiguration().addHttpHandler(
+		        // new MultipartHandler(),
+		        new NannyHttpHandler() {
+		        	@Override
+		        	public int getDefaultSizeLimit() {
+		        		// return InMemoryMultipartEntryHandler.SIZE_LIMIT_IGNORE;
+		        		return 10000;
+		        	}
+		        	@Override
+		        	public Object doPost(final Request request, final Response response,
+		        			final InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler) throws UnsupportedEncodingException {
+		        		
+		        		
+
+		                String s1 = inMemoryMultipartEntryHandler
+		                        .getString("sfsd");
+		                String s2 = inMemoryMultipartEntryHandler
+		                        .getString("fff");
+		                
+		                @SuppressWarnings("unused")
+		                MultipartEntry multipartEntry = inMemoryMultipartEntryHandler.getMultipartEntry("fff");
+		                ContentDisposition contentDisposition = inMemoryMultipartEntryHandler.getContentDisposition("fff");
+		                
+		                String filename = contentDisposition.getDispositionParam("filename");
+		                
+
+		                
+		                System.out.println("filename: " + filename);
+		                System.out.println("filecontent: " + s2);
+		                
+		        		return "from gubo.http.grizzly.demo.Main. ";
+		        	}
+		        },
+				"/multipart-nanny");
 
 		// curl -XPOST -d'a=1&b=11' 'http://localhost:8777/jtwig-html'
 		server.getServerConfiguration().addHttpHandler(new HtmlHandler(),

@@ -33,7 +33,9 @@ public class DemoInMemoryMultipartHttpHandler extends InMemoryMultipartHttpHandl
     
     @Override
     public void onMultipartScanCompleted(Request request, Response response, InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler) throws IOException {
-        response.setContentType("text/plain");
+        
+    	System.out.println("request.getContentType(): " + request.getContentType());
+    	response.setContentType("text/plain");
         final Writer writer = response.getWriter();
         writer.write(inMemoryMultipartEntryHandler
                 .toString());
