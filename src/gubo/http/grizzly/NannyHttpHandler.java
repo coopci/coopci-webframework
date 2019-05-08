@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.glassfish.grizzly.EmptyCompletionHandler;
 import org.glassfish.grizzly.http.Method;
@@ -470,6 +471,13 @@ public class NannyHttpHandler extends HttpHandler {
 		binder.bind(req, p);
 		return;
 	}
+	
+	public void bindParameter(Map<String, String> params, Object p) throws Exception {
+
+		final QueryStringBinder binder = new QueryStringBinder();
+		binder.bind(params, p);
+		return;
+	}
 
 	/**
 	 * see gubo.http.grizzly.demo.Main /multipart-nanny for example.
@@ -477,7 +485,7 @@ public class NannyHttpHandler extends HttpHandler {
 	 **/
 	public Object doPost(final Request request, final Response response,
 			final InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler)
-			throws IOException {
+			throws Exception {
 		return "Not implemented: " + this.getClass().toString();
 	}
 

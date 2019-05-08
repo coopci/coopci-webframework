@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 import gubo.http.grizzly.NannyHttpHandler;
+import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
 
 /**
  * 给定一个java接口，为每个方法生成一个对应的 NannyHttpHandler的子类。
@@ -178,12 +179,26 @@ public class HandlerGenerator {
 		}
 		return false;
 	}
+	
+	
+	boolean needInMemoryMultipartEntryHandler(Method method) {
+		for (Class<?> c : method.getParameterTypes()) {
+			if (c.equals(InMemoryMultipartEntryHandler.class)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
 	// 选择grizzly的request 和 response以外的参数。
 	String getParameterClass(Method method) {
 		for (Class<?> c : method.getParameterTypes()) {
 			if (c.equals(Request.class)) {
 				continue;
 			} else if (c.equals(Response.class)) {
+				continue;
+			} else if (c.equals(InMemoryMultipartEntryHandler.class)) {
 				continue;
 			} else {
 				String parameterClass = c.getCanonicalName();
@@ -238,7 +253,10 @@ public class HandlerGenerator {
 				+ "import org.glassfish.grizzly.http.server.Response;\n"
 				+ "import org.slf4j.Logger;\n"  
 				+ "import org.slf4j.LoggerFactory;\n";
-
+		if (this.needInMemoryMultipartEntryHandler(method)) {
+			imports += "import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;\n";
+		}
+		
 		sb.append("\n");
 		sb.append(imports);
 
@@ -277,6 +295,27 @@ public class HandlerGenerator {
 				needGrizzlyResponse(method)?"request,":""
 				
 				);
+		if (this.needInMemoryMultipartEntryHandler(method)) {
+			doXXXTemplate = "    @Override\n" + "    public Object do"
+					+ httpmethod
+					+ "(Request request, Response response, InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler) throws Exception {\n"
+					+ "        logger.info(\"request received, uri: {}, request data: {}\", request.getRequestURI(),\r\n" + 
+					"				request.getInputBuffer().getBuffer().toStringContent());\n"
+					+ "        %s p = new %s();\n"
+					+ "        this.bindParameter(inMemoryMultipartEntryHandler.getMap(), p);\n"
+					+ "        Object res = this.%s().%s(%s %s %s p);\n"
+					+ "        return res;\n" + "    }\n";
+
+			doXXX = String.format(doXXXTemplate, parameterClass,
+					parameterClass, interfaceGetter.getName(), method.getName(),
+					needGrizzlyRequest(method)?"request,":"",
+					needGrizzlyResponse(method)?"request,":"",
+					"inMemoryMultipartEntryHandler,"
+					);
+			
+			
+			
+		}
 
 		sb.append(doXXX);
 
