@@ -221,5 +221,23 @@ public class InMemoryMultipartEntryHandler implements MultipartEntryHandler {
 			inputStream.notifyAvailable(brh);
 		}
 	}
+	
+	/**
+	 * Only return the string entries, not return the file entries. 
+	 * 
+	 **/
+	public Map<String, String> getMap() throws UnsupportedEncodingException {
+		Map<String, String> ret = new ConcurrentHashMap<String, String>(); 
+		for(Entry<String, BytesReadHandler> entry : this.multipartEntries.entrySet()) {
+			ContentDisposition dispo = entry.getValue().contentDisposition;
+			if (dispo != null && dispo.getDispositionParams().contains("filename")) {
+				continue;
+			}
+			String k = entry.getKey();
+			String v = getString(k);
+			ret.put(k, v);
+		}
+		return ret;
+	}
 
 }

@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import org.glassfish.grizzly.http.multipart.ContentDisposition;
 import org.glassfish.grizzly.http.multipart.MultipartEntry;
@@ -80,11 +81,11 @@ public class Main {
 		                String filename = contentDisposition.getDispositionParam("filename");
 		                
 
-		                
+		                Map<String, String> params = inMemoryMultipartEntryHandler.getMap();
 		                System.out.println("filename: " + filename);
 		                System.out.println("filecontent: " + s2);
 		                
-		        		return "from gubo.http.grizzly.demo.Main. ";
+		        		return params;
 		        	}
 		        },
 				"/multipart-nanny");
