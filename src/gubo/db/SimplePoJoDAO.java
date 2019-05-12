@@ -59,6 +59,17 @@ public class SimplePoJoDAO {
 		List<T> pojoList = mapper.loadPojoList(dbconn, this.clazz, sql, params);
 		return pojoList;
 	}
+	
+	public <T> T loadPojo(Connection dbconn, String sql,
+			Object... params) throws SQLException {
+
+		List<T>  l = loadPojoList( dbconn,  sql, params);
+		if (l.isEmpty()) {
+			return null;
+		} else {
+			return l.get(0);
+		}
+	}
 
 	public <T> List<T> loadPojoList(DataSource ds, String sql, Object... params)
 			throws SQLException {
