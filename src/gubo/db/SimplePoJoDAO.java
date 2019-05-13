@@ -70,6 +70,13 @@ public class SimplePoJoDAO {
 			return l.get(0);
 		}
 	}
+	
+	public <T> T loadPojo(DataSource ds, String sql,
+			Object... params) throws SQLException {
+		try(Connection dbconn = ds.getConnection()) {
+			return loadPojo(dbconn, sql, params);
+		}
+	}
 
 	public <T> List<T> loadPojoList(DataSource ds, String sql, Object... params)
 			throws SQLException {
