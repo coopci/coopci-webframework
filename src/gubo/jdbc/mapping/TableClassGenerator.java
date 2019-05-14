@@ -330,7 +330,7 @@ public class TableClassGenerator {
 				// sb.append(this.indent + "@GeneratedValue()\r\n");
 			}
 
-			sb.append(this.indent + "@Column(name = \"" + colName + "\")\r\n");
+			
 			boolean needGeneratedValueAnno = false;
 			try {
 				if ("YES".equals(rs.getString("IS_AUTOINCREMENT"))) {
@@ -345,6 +345,9 @@ public class TableClassGenerator {
 			
 			if (needGeneratedValueAnno) {
 				sb.append(this.indent + "@GeneratedValue\r\n");
+				sb.append(this.indent + "@Column(name = \"" + colName + "\", updatable=false, insertable=false)\r\n");
+			} else {
+				sb.append(this.indent + "@Column(name = \"" + colName + "\")\r\n");
 			}
 			sb.append(this.indent + "public ");
 			sb.append(this.dataTypeToJajaType(dataType) + " ");
