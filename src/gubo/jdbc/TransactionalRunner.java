@@ -9,7 +9,7 @@ import java.sql.SQLException;
 public interface TransactionalRunner {
 
     public Connection getConnection() throws SQLException;
-    default public void runInTransaction(TrasactionalRunnable runnable) throws Exception {
+    default public void runInTransaction(TransactionalRunnable runnable) throws Exception {
         try(Connection dbconn = this.getConnection()) {
             dbconn.setAutoCommit(false);
             runnable.run(dbconn);
@@ -17,7 +17,7 @@ public interface TransactionalRunner {
         }
     }
     
-    default public <V> V callInTransaction(TrasactionalCallable<V> callable) throws Exception {
+    default public <V> V callInTransaction(TransactionalCallable<V> callable) throws Exception {
         
         try(Connection dbconn = this.getConnection()) {
             dbconn.setAutoCommit(false);
