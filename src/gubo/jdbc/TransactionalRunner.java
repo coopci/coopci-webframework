@@ -3,6 +3,9 @@ package gubo.jdbc;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * 我服了，让“工程师”把事务写全了确实是“太高”的要求，所以加上这个了。
+ **/
 public interface TransactionalRunner {
 
     public Connection getConnection() throws SQLException;
