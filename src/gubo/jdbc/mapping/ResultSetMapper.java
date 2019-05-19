@@ -1,6 +1,7 @@
 package gubo.jdbc.mapping;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,6 +18,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +48,16 @@ public class ResultSetMapper<T> {
 
 	static Mapping constructMapping(Class<?> clazz) {
 		Mapping mapping = new Mapping();
-		Field[] fields = clazz.getDeclaredFields();
+		// Field[] fields = clazz.getDeclaredFields();
+		Field[] fields = FieldUtils.getAllFields(clazz);
 		for (Field field : fields) {
+			if (field.isSynthetic()) {
+				continue;
+			}
+			int modifiers = field.getModifiers();
+			if (Modifier.isStatic(modifiers)) {
+				continue;
+			}
 			if (field.isAnnotationPresent(Column.class)) {
 				Column column = field.getAnnotation(Column.class);
 				String colname = column.name();
