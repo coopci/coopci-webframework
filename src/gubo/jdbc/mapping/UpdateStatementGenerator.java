@@ -14,6 +14,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public class UpdateStatementGenerator {
 		}
 
 		StatementContext ret = new StatementContext();
-		Field[] fields = clazz.getDeclaredFields();
+		Field[] fields = FieldUtils.getAllFields(clazz);
 
 		LinkedList<Field> values = new LinkedList<Field>();
 		LinkedList<Field> ids = new LinkedList<Field>();
