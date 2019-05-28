@@ -2,6 +2,7 @@ package gubo.http.grizzly.demo;
 
 import gubo.http.grizzly.NannyHttpHandler;
 import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
+import gubo.http.grizzly.handlers.mapping.service.ServiceRegistry;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -94,6 +95,7 @@ public class Main {
 		server.getServerConfiguration().addHttpHandler(new HtmlHandler(),
 				"/jtwig-html");
 
+		ServiceRegistry.register(new DemoService(), server, "");
 		try {
 
 			server.start();
