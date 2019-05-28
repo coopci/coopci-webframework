@@ -20,7 +20,9 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
     private Class<?> pclazz; // 接口方法的参数类型。
     private Method method;   // 接口方法。
     
-    
+    public int getDefaultSizeLimit() {
+        return 1024*1024*10;
+    }
     public AnnotationAwareHandler(Object service, Method method) {
         this.service = service;
         this.method = method;
