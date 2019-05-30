@@ -7,6 +7,7 @@ import java.sql.Connection;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.sql.DataSource;
 
 public class SimplePoJoWithCRUD implements ISimplePoJo {
 
@@ -25,6 +26,14 @@ public class SimplePoJoWithCRUD implements ISimplePoJo {
 	public void insert(Connection dbconn) throws Exception {
 		SimplePoJoDAO dao = daoManager.getDao(this.getClass());
 		dao.insert(dbconn, this);
+	}
+
+
+	public void insert(DataSource ds) throws Exception {
+		try(Connection dbconn = ds.getConnection()) {
+			SimplePoJoDAO dao = daoManager.getDao(this.getClass());
+			dao.insert(dbconn, this);
+		}
 	}
 	
 	public void update(Connection dbconn) throws Exception {
