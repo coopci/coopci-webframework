@@ -8,6 +8,8 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 public class PropertiesLoader {
 	Logger logger = LoggerFactory.getLogger(PropertiesLoader.class);
     
@@ -15,6 +17,9 @@ public class PropertiesLoader {
 	public Properties load(String... filepaths) {
 		Properties ret = new Properties();
 		for (String filepath : filepaths) {
+			if (Strings.isNullOrEmpty(filepath)) {
+				continue;
+			}
 			Properties prop = new Properties();
 			InputStream input = null;
 			try {
