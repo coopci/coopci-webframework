@@ -319,7 +319,7 @@ public class NannyHttpHandler extends HttpHandler {
 	}
 
 	public Object doGet(Request req, Response res) throws Exception {
-		return null;
+		throw new ApiException("Method not allowed.");
 	}
 
 	public Object doPost(Request req, Response res) throws Exception {
