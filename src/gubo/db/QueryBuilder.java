@@ -340,6 +340,94 @@ public class QueryBuilder {
 		}
 		return new JDBCWhere(sb.toString(), params.toArray());
 	}
+	
+	public JDBCWhere genJDBCWhere2(Map<String, Object> data,
+			Class<? extends Object> clazz, Set<String> allowedFields)
+			throws Exception {
+		if (data == null) {
+			return new JDBCWhere();
+		}
+		StringBuilder sb = new StringBuilder();
+		LinkedList<Object> params = new LinkedList<Object>();
+
+		Binding binding = this.getBinding(clazz);
+		String conj = "WHERE ";
+		for (String key : data.keySet()) {
+			if (allowedFields != null && !allowedFields.contains(key)) {
+				continue;
+			}
+			String fieldname = "";
+			String op = "";
+			boolean needValue = true;
+			if (key.startsWith("eq__")) {
+				fieldname = key.substring(4);
+				op = " = ? ";
+			} else if (key.startsWith("lt__")) {
+				fieldname = key.substring(4);
+				op = " < ? ";
+			} else if (key.startsWith("lte__")) {
+				fieldname = key.substring(5);
+				op = " <= ? ";
+			} else if (key.startsWith("gt__")) {
+				fieldname = key.substring(4);
+				op = " > ? ";
+			} else if (key.startsWith("gte__")) {
+				fieldname = key.substring(5);
+				op = " >= ? ";
+			} else if (key.startsWith("neq__")) {
+				fieldname = key.substring(5);
+				op = " != ? ";
+			} else if (key.startsWith("isnull__")) {
+				fieldname = key.substring(8);
+				op = " IS NULL ";
+				needValue = false;
+			} else if (key.startsWith("isblank__")) {
+				fieldname = key.substring(8);
+				op = " = '' ";
+				needValue = false;
+			} else {
+				continue;
+			}
+			Object parsedValue = null;
+			if (needValue) {
+				Object oValue = data.get(key);
+				if (oValue.getClass() == String.class) {
+					String value = (String)oValue;
+					IQueryStringFieldParser parser = binding.getParser(fieldname);
+					if (parser == null) {
+						continue;
+					}
+
+					if (value.length() == 0) {
+						continue;
+					}
+					try {
+						parsedValue = parser.parse(value);
+
+					} catch (Exception ex) {
+						if (!parser.getIgnoreMalFormat()) {
+							throw ex;
+						} else {
+							continue;
+						}
+					}
+				} else {
+					parsedValue = oValue;
+				}
+			}
+
+			sb.append(conj);
+			sb.append(fieldname);
+			sb.append(op);
+
+			conj = " AND \n";
+			if (needValue) {
+				params.add(parsedValue);
+			}
+
+		}
+		return new JDBCWhere(sb.toString(), params.toArray());
+	}
 
 	public JDBCWhere genJDBCWhere(Request req, Class<? extends Object> clazz,
 			Set<String> allowedFields) throws Exception {
