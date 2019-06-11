@@ -1,5 +1,6 @@
 package gubo.db;
 
+import gubo.exceptions.ApiException;
 import gubo.jdbc.mapping.InsertStatementGenerator;
 import gubo.jdbc.mapping.ResultSetMapper;
 import gubo.jdbc.mapping.UpdateStatementGenerator;
@@ -7,6 +8,7 @@ import gubo.jdbc.mapping.UpdateStatementGenerator;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -133,6 +135,44 @@ public class SimplePoJoDAO {
 				+ keyName + " = ?";
 		T pojo = mapper.loadPojo(dbconn, this.clazz, sql, pkValue);
 		return pojo;
+	}
+	
+	/**
+	 * @param keyNamesAndvalues里面 偶数下标的是列名，奇数下标的是值。
+	 **/
+	public <T> T loadPoJoByUniqueKeys(Connection dbconn,
+			Object ... keyNamesAndvalues) throws SQLException {
+		ResultSetMapper<T> mapper = new ResultSetMapper<T>();
+		
+		LinkedList<String> names = new LinkedList<String>();
+		LinkedList<Object> values = new LinkedList<Object>();
+		int i = 0;
+		for (Object nOrV : keyNamesAndvalues) {
+			if (i % 2 ==0 ) {
+				// nOrV 是列名
+				names.add((String)nOrV);
+			} else {
+				// nOrV 是值
+				values.add(nOrV);
+			}
+			i++;
+		}
+		// String sql = "select * from " + this.tablename + " where "
+//				+ keyName + " = ?";
+		StringBuilder sql = new StringBuilder("select * from " + this.tablename + " where 1=1 ");
+		for (String name : names) {
+			sql.append(" AND `" + name + "` = ?");
+		}
+		System.out.println(sql.toString());
+		List<T> pojoList = mapper.loadPojoList(dbconn, this.clazz, sql.toString(), values.toArray());
+		if (pojoList.isEmpty()) {
+			return null;
+		}
+		if (pojoList.size() > 1) {
+			throw new RuntimeException("Found " + pojoList.size() + " rows, while there should only be one row.");
+			
+		}
+		return pojoList.get(0);
 	}
 
 	/**

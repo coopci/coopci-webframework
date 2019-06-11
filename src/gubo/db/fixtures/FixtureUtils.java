@@ -37,7 +37,7 @@ public class FixtureUtils {
 	public static Object getPk(Connection dbconn, Class<? extends ISimplePoJo> clazz, Object... keyNamesAndvalues)
 			throws Exception {
 		SimplePoJoDAO dao = new SimplePoJoDAO(clazz);
-		ISimplePoJo pojo = dao.loadPoJoByUniqueKey(dbconn, (String) keyNamesAndvalues[0], keyNamesAndvalues[1]);
+		ISimplePoJo pojo = dao.loadPoJoByUniqueKeys(dbconn, keyNamesAndvalues);
 
 		return pojo.getPk();
 	}
