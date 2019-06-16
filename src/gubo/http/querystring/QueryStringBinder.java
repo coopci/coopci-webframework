@@ -2,6 +2,8 @@ package gubo.http.querystring;
 
 import gubo.exceptions.QueryStringParseException;
 import gubo.exceptions.RequiredParametersMissingException;
+import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
+import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler.BytesReadHandler;
 import gubo.http.querystring.parsers.BigDecimalParser;
 import gubo.http.querystring.parsers.BooleanFieldParser;
 import gubo.http.querystring.parsers.DatetimeParser;
@@ -33,15 +35,19 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.glassfish.grizzly.http.multipart.ContentDisposition;
+import org.glassfish.grizzly.http.multipart.MultipartEntry;
 import org.glassfish.grizzly.http.server.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.net.UrlEscapers;
 
+
+// TODO 处理 required=true的MultipartFile类型的字段。
 /**
  * 把http query string 指定的参数bind到pojo的 @QueryStringField 的字段上。
- * jdbc相关的是遗留功能，以后会被取代。 
+ * jdbc相关的是遗留功能，以后会被取代。
  **/
 public class QueryStringBinder {
 	public static Logger logger = LoggerFactory
@@ -52,7 +58,11 @@ public class QueryStringBinder {
 
 		// key 是 querystring中的字段名，不是Field的名字。
 		ConcurrentHashMap<String, IQueryStringFieldParser> _cachedParses = new ConcurrentHashMap<String, IQueryStringFieldParser>();
+		ConcurrentHashMap<String, Field> _cachedMultiparFileFields = new ConcurrentHashMap<String, Field>();
 
+		public Field getMultiparFileField(String fieldname) {
+			return _cachedMultiparFileFields.get(fieldname);
+		}
 		public IQueryStringFieldParser getParser(String fieldname) {
 			return this._cachedParses.get(fieldname);
 
@@ -97,6 +107,12 @@ public class QueryStringBinder {
 
 			}
 
+			// 如果字段是MultipartFile类型，则特殊处理。
+			if (f.getType() == MultipartFile.class) {
+				this._cachedMultiparFileFields.put(queryStrfieldName, f);
+				return;
+			}
+			
 			// System.out.println("queryStrfieldName = " + queryStrfieldName);
 
 			Class<? extends IQueryStringFieldParser> deserializerClass = anno
@@ -131,8 +147,8 @@ public class QueryStringBinder {
 				} else if (f.getType() == BigDecimal.class) {
 					deserializerClass = BigDecimalParser.class;
 				} else if (f.getType() == Timestamp.class) {
-                    deserializerClass = TimestampParser.class;
-                }
+					deserializerClass = TimestampParser.class;
+				}
 			}
 
 			// System.out.println("deserializerClass = " + deserializerClass);
@@ -155,7 +171,7 @@ public class QueryStringBinder {
 			throws InstantiationException, IllegalAccessException {
 		Binding binding = new Binding();
 		binding.clazz = clazz;
-		
+
 		Field[] fields = FieldUtils.getAllFields(clazz);
 		for (Field f : fields) {
 			binding.tryAddField(f);
@@ -223,6 +239,41 @@ public class QueryStringBinder {
 			data.put(fieldname, value);
 		}
 		this.bind(data, pojo, null);
+	}
+
+	public void bind(
+			InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler,
+			Object pojo) throws UnsupportedEncodingException, Exception {
+		this.bind(inMemoryMultipartEntryHandler.getMap(), pojo);
+
+		this.bindMultipartFiles(inMemoryMultipartEntryHandler, pojo);
+	}
+
+	public void bindMultipartFiles(
+			InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler,
+			Object pojo) throws InstantiationException, IllegalAccessException {
+		Binding binding = this.getBinding(pojo);
+		HashSet<Field> requiredFields = binding.getRequiredFieldsChecking();
+
+		for (String key : inMemoryMultipartEntryHandler.getMultipartEntries()
+				.keySet()) {
+
+			ContentDisposition contentDisposition = inMemoryMultipartEntryHandler
+					.getContentDisposition(key);
+			if (contentDisposition == null) {
+				continue;
+			}
+			String filename = contentDisposition
+					.getDispositionParam("filename");
+			byte[] bytes = inMemoryMultipartEntryHandler.getBytes(key);
+			
+			Field field = binding.getMultiparFileField(key);
+			if (field != null) {
+				MultipartFile mf = new MultipartFile(filename, bytes);
+				field.set(pojo, mf);
+			}
+		}
+
 	}
 
 	public static Map<String, String> extractParameters(Request req) {
@@ -297,15 +348,17 @@ public class QueryStringBinder {
 		}
 		return;
 	}
-	public String toQueryString(Map<String, String> data) throws UnsupportedEncodingException {
+
+	public String toQueryString(Map<String, String> data)
+			throws UnsupportedEncodingException {
 		StringBuilder sb = new StringBuilder();
-		for (Entry<String, String> entry: data.entrySet()) {
-            sb.append(entry.getKey());
-            sb.append("=");
-            //sb.append(java.net.URLEncoder.encode(entry.getValue(), "utf-8"));
-            sb.append(entry.getValue());
-            sb.append("&");
-        } 
+		for (Entry<String, String> entry : data.entrySet()) {
+			sb.append(entry.getKey());
+			sb.append("=");
+			// sb.append(java.net.URLEncoder.encode(entry.getValue(), "utf-8"));
+			sb.append(entry.getValue());
+			sb.append("&");
+		}
 		String ret = sb.toString();
 		// ret = java.net.URLEncoder.encode(ret, "utf-8");
 		ret = UrlEscapers.urlFragmentEscaper().escape(ret);
@@ -319,79 +372,42 @@ public class QueryStringBinder {
 		Map<String, String> data = this.toHashMap(pojo, dateFormatStr);
 		return this.toQueryString(data);
 		/*
-		if (dateFormatStr == null)
-			dateFormatStr = "yyyy-MM-dd HH:mm:ss";
-		SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormatStr);
-
-		StringBuilder sb = new StringBuilder();
-		Class<? extends Object> clazz = pojo.getClass();
-		
-		Field[] fields = FieldUtils.getAllFields(clazz);
-		for (Field f : fields) {
-			f.setAccessible(true);
-			if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
-				continue;
-			}
-			QueryStringField anno = f.getAnnotation(QueryStringField.class);
-			if (anno == null) {
-				continue;
-			}
-			if (anno.hidden() == true) {
-				continue;
-			}
-			String queryStrfieldName = f.getName();
-			if (anno != null) {
-				if (anno.name() != null && anno.name().length() > 0) {
-					queryStrfieldName = anno.name();
-				}
-			}
-			String k = java.net.URLEncoder.encode(queryStrfieldName, "UTF-8");
-			String v = "";
-			if (f.getType() == long.class) {
-				v = Long.toString(f.getLong(pojo));
-			} else if (f.getType() == int.class) {
-				v = Long.toString(f.getLong(pojo));
-			} else if (f.getType() == boolean.class) {
-				v = Boolean.toString(f.getBoolean(pojo));
-			} else if (f.getType() == float.class) {
-				v = Float.toString(f.getFloat(pojo));
-			} else if (f.getType() == double.class) {
-				v = Double.toString(f.getDouble(pojo));
-			} else if (Date.class.isAssignableFrom(f.getType())) {
-				Date d = (Date) f.get(pojo);
-				if (d == null) {
-					v = "";
-				} else {
-					v = dateFormatter.format(d);
-				}
-			} else if (f.getType().isAssignableFrom(Date.class)) {
-				Date d = (Date) f.get(pojo);
-				if (d == null) {
-					v = "";
-				} else {
-					v = dateFormatter.format(d);
-				}
-			} else {
-				Object o = f.get(pojo);
-				if (o == null)
-					v = "";
-				else
-					v = java.net.URLEncoder.encode(f.get(pojo).toString(),
-							"UTF-8");
-			}
-			sb.append(k);
-			sb.append("=");
-			sb.append(v);
-			sb.append("&");
-		}
-
-		String ret = sb.toString();
-		ret.replaceAll("\\+", "%20");
-		return ret;
-		*/
+		 * if (dateFormatStr == null) dateFormatStr = "yyyy-MM-dd HH:mm:ss";
+		 * SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormatStr);
+		 * 
+		 * StringBuilder sb = new StringBuilder(); Class<? extends Object> clazz
+		 * = pojo.getClass();
+		 * 
+		 * Field[] fields = FieldUtils.getAllFields(clazz); for (Field f :
+		 * fields) { f.setAccessible(true); if
+		 * (java.lang.reflect.Modifier.isStatic(f.getModifiers())) { continue; }
+		 * QueryStringField anno = f.getAnnotation(QueryStringField.class); if
+		 * (anno == null) { continue; } if (anno.hidden() == true) { continue; }
+		 * String queryStrfieldName = f.getName(); if (anno != null) { if
+		 * (anno.name() != null && anno.name().length() > 0) { queryStrfieldName
+		 * = anno.name(); } } String k =
+		 * java.net.URLEncoder.encode(queryStrfieldName, "UTF-8"); String v =
+		 * ""; if (f.getType() == long.class) { v =
+		 * Long.toString(f.getLong(pojo)); } else if (f.getType() == int.class)
+		 * { v = Long.toString(f.getLong(pojo)); } else if (f.getType() ==
+		 * boolean.class) { v = Boolean.toString(f.getBoolean(pojo)); } else if
+		 * (f.getType() == float.class) { v = Float.toString(f.getFloat(pojo));
+		 * } else if (f.getType() == double.class) { v =
+		 * Double.toString(f.getDouble(pojo)); } else if
+		 * (Date.class.isAssignableFrom(f.getType())) { Date d = (Date)
+		 * f.get(pojo); if (d == null) { v = ""; } else { v =
+		 * dateFormatter.format(d); } } else if
+		 * (f.getType().isAssignableFrom(Date.class)) { Date d = (Date)
+		 * f.get(pojo); if (d == null) { v = ""; } else { v =
+		 * dateFormatter.format(d); } } else { Object o = f.get(pojo); if (o ==
+		 * null) v = ""; else v =
+		 * java.net.URLEncoder.encode(f.get(pojo).toString(), "UTF-8"); }
+		 * sb.append(k); sb.append("="); sb.append(v); sb.append("&"); }
+		 * 
+		 * String ret = sb.toString(); ret.replaceAll("\\+", "%20"); return ret;
+		 */
 	}
 
-	
 	public HashMap<String, String> toHashMap(Object pojo, String dateFormatStr)
 			throws IllegalArgumentException, IllegalAccessException,
 			UnsupportedEncodingException {
@@ -401,7 +417,7 @@ public class QueryStringBinder {
 		HashMap<String, String> ret = new HashMap<String, String>();
 		// StringBuilder sb = new StringBuilder();
 		Class<? extends Object> clazz = pojo.getClass();
-		
+
 		Field[] fields = FieldUtils.getAllFields(clazz);
 		for (Field f : fields) {
 			f.setAccessible(true);
@@ -449,18 +465,18 @@ public class QueryStringBinder {
 				if (o == null)
 					v = "";
 				else {
-//					v = java.net.URLEncoder.encode(f.get(pojo).toString(),
-//							"UTF-8");
-        				v = f.get(pojo).toString();
+					// v = java.net.URLEncoder.encode(f.get(pojo).toString(),
+					// "UTF-8");
+					v = f.get(pojo).toString();
 				}
 			}
 			ret.put(k, v);
-			
+
 		}
 
 		return ret;
 	}
-	
+
 	/**
 	 * 改用QueryBuilder.JDBCWhere
 	 **/
@@ -496,45 +512,48 @@ public class QueryStringBinder {
 
 		public void setParamters(PreparedStatement stmt) throws SQLException {
 			for (int i = 0; i < this.params.length; ++i) {
-				stmt.setObject(i+1, this.params[i]);
+				stmt.setObject(i + 1, this.params[i]);
 			}
-			
+
 		}
 	}
+
 	/**
 	 * 改用QueryBuilder.JDBCOrderBy
 	 **/
 	@Deprecated
-    public static class JDBCOrderBy {
-        private String orderByClause = "";
+	public static class JDBCOrderBy {
+		private String orderByClause = "";
 
-        public String getOrderByClause() {
-            return orderByClause;
-        }
+		public String getOrderByClause() {
+			return orderByClause;
+		}
 
-        public void setOrderByClause(String orderByClause) {
-            this.orderByClause = orderByClause;
-        }
-    }
+		public void setOrderByClause(String orderByClause) {
+			this.orderByClause = orderByClause;
+		}
+	}
 
-    /**
-     *  改用QueryBuilder.genJDBCOrderBy
-     **/
-	@Deprecated
-    public JDBCOrderBy genJDBCOrderBy(Map<String, String> data,
-            Class<? extends Object> clazz, Set<String> allowedFields)
-            throws Exception {
-        // TODO add check for invalid columns, invalid direction(only desc and asc are allowed), and
-        // injection attack.
-        JDBCOrderBy ret = new JDBCOrderBy();
-        if (data.containsKey("order_by")) {
-            ret.orderByClause = "order by " + data.get("order_by");
-        }
-        return ret;
-    }
 	/**
-     *  改用QueryBuilder.genJDBCWhere
-     **/
+	 * 改用QueryBuilder.genJDBCOrderBy
+	 **/
+	@Deprecated
+	public JDBCOrderBy genJDBCOrderBy(Map<String, String> data,
+			Class<? extends Object> clazz, Set<String> allowedFields)
+			throws Exception {
+		// TODO add check for invalid columns, invalid direction(only desc and
+		// asc are allowed), and
+		// injection attack.
+		JDBCOrderBy ret = new JDBCOrderBy();
+		if (data.containsKey("order_by")) {
+			ret.orderByClause = "order by " + data.get("order_by");
+		}
+		return ret;
+	}
+
+	/**
+	 * 改用QueryBuilder.genJDBCWhere
+	 **/
 	@Deprecated
 	public JDBCWhere genJDBCWhere(Map<String, String> data,
 			Class<? extends Object> clazz, Set<String> allowedFields)
@@ -619,9 +638,10 @@ public class QueryStringBinder {
 		}
 		return new JDBCWhere(sb.toString(), params.toArray());
 	}
+
 	/**
-     *  改用QueryBuilder.genJDBCWhere
-     **/
+	 * 改用QueryBuilder.genJDBCWhere
+	 **/
 	@Deprecated
 	public JDBCWhere genJDBCWhere(Request req, Class<? extends Object> clazz,
 			Set<String> allowedFields) throws Exception {
@@ -629,9 +649,10 @@ public class QueryStringBinder {
 		Map<String, String> data = extractParameters(req);
 		return this.genJDBCWhere(data, clazz, allowedFields);
 	}
+
 	/**
-     *  改用QueryBuilder.genJDBCWhere
-     **/
+	 * 改用QueryBuilder.genJDBCWhere
+	 **/
 	@Deprecated
 	public JDBCWhere genJDBCWhere(Request req, Class<? extends Object> clazz)
 			throws Exception {

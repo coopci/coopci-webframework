@@ -3,6 +3,7 @@ package gubo.http.grizzly.demo;
 import gubo.http.grizzly.NannyHttpHandler;
 import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
 import gubo.http.grizzly.handlers.mapping.service.ServiceRegistry;
+import gubo.http.querystring.QueryStringBinder;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -66,10 +67,15 @@ public class Main {
 		        	}
 		        	@Override
 		        	public Object doPost(final Request request, final Response response,
-		        			final InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler) throws UnsupportedEncodingException {
+		        			final InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler) throws Exception {
 		        		
+		        		DemoRequest p = new DemoRequest();
+		        		final QueryStringBinder binder = new QueryStringBinder();
+		        		binder.bind(inMemoryMultipartEntryHandler, p); // 这样可以把所有的数据都放到p里，包括 multipart的文件。
+		        		String s = new String(p.qualification.getBytes());
+		        		// 下面的代码只是用来演示 inMemoryMultipartEntryHandler。
+		        		// 大部分程序 完全可以只用 p，而不需要写下面这样的代码。
 		        		
-
 		                String s1 = inMemoryMultipartEntryHandler
 		                        .getString("sfsd");
 		                String s2 = inMemoryMultipartEntryHandler

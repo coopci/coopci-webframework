@@ -50,9 +50,11 @@ public class InMemoryMultipartEntryHandler implements MultipartEntryHandler {
 		this.sizeLimit = sizeLimit;
 	}
 
-	class BytesReadHandler implements ReadHandler {
+	public static class BytesReadHandler implements ReadHandler {
 		private final MultipartEntry multipartEntry;
 		private final ContentDisposition contentDisposition;
+		
+
 		private final NIOInputStream inputStream;
 
 		private byte[] buf;
@@ -60,6 +62,10 @@ public class InMemoryMultipartEntryHandler implements MultipartEntryHandler {
 
 		byte[] data;
 
+		public ContentDisposition getContentDisposition() {
+			return contentDisposition;
+		}
+		
 		public MultipartEntry getMultipartEntry() {
 			return multipartEntry;
 		}
@@ -136,14 +142,14 @@ public class InMemoryMultipartEntryHandler implements MultipartEntryHandler {
 		if (!this.multipartEntries.containsKey(name)) {
 			return null;
 		}
-		return this.multipartEntries.get(name).contentDisposition;
+		return this.multipartEntries.get(name).getContentDisposition();
 	}
 
 	public byte[] getBytes(String name) {
 		if (!this.multipartEntries.containsKey(name)) {
 			return null;
 		}
-		return this.multipartEntries.get(name).data;
+		return this.multipartEntries.get(name).getData();
 	}
 
 	public String getString(String name, String charset)
@@ -229,7 +235,7 @@ public class InMemoryMultipartEntryHandler implements MultipartEntryHandler {
 	public Map<String, String> getMap() throws UnsupportedEncodingException {
 		Map<String, String> ret = new ConcurrentHashMap<String, String>(); 
 		for(Entry<String, BytesReadHandler> entry : this.multipartEntries.entrySet()) {
-			ContentDisposition dispo = entry.getValue().contentDisposition;
+			ContentDisposition dispo = entry.getValue().getContentDisposition();
 			if (dispo != null && dispo.getDispositionParams().contains("filename")) {
 				continue;
 			}

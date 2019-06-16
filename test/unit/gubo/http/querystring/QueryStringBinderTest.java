@@ -1,15 +1,28 @@
 package gubo.http.querystring;
 
 import static org.junit.Assert.*;
+import gubo.http.grizzly.demo.DemoRequest;
+import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
+import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler.BytesReadHandler;
 import gubo.http.querystring.QueryStringBinder.JDBCOrderBy;
 import gubo.http.querystring.QueryStringBinder.JDBCWhere;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.glassfish.grizzly.http.multipart.ContentDisposition;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
 public class QueryStringBinderTest {
     QueryStringBinder testee = new QueryStringBinder();
     
@@ -102,5 +115,55 @@ public class QueryStringBinderTest {
 		binder.bind("legs_num=3&bloodColor=bl%20ue", dog);
 		assertEquals(3, dog.legsNum);
 		assertEquals("bl ue", dog.bloodColor);
+	}
+	// @Mock
+	InMemoryMultipartEntryHandler mockInMemoryMultipartEntryHandler = new InMemoryMultipartEntryHandler();
+	
+	
+	@Mock
+	BytesReadHandler mockBytesReadHandlerForText;
+	@Mock
+	BytesReadHandler mockBytesReadHandlerForFile;
+	@Mock
+	ContentDisposition mockContentDisposition;
+	
+	@SuppressWarnings("serial")
+	@Test
+	public void testBindWithMultipartFile() throws Exception {
+		DemoRequest req = new DemoRequest();
+//		when(mockInMemoryMultipartEntryHandler.getMap()).thenReturn(
+//				new HashMap<String, String>() {
+//					{
+//						this.put("owner", "user1");
+//					}
+//				});
+		Field multipartEntriesField = FieldUtils.getDeclaredField(InMemoryMultipartEntryHandler.class, "multipartEntries", true);
+		
+		// multipartEntriesField.setAccessible(true);
+		ConcurrentHashMap<String, BytesReadHandler> multipartEntries = (ConcurrentHashMap<String, BytesReadHandler>) multipartEntriesField.get(mockInMemoryMultipartEntryHandler);
+		
+		when(mockBytesReadHandlerForText.getData()).thenReturn("user1".getBytes());
+		multipartEntries.put("owner", mockBytesReadHandlerForText);
+		
+		
+		when(mockContentDisposition.getDispositionParam("filename")).thenReturn("file1");
+		when(mockContentDisposition.getDispositionParams()).thenReturn(
+				new HashMap<String, String>() {
+					{this.put("filename", "file1");}
+				}.keySet()
+		);
+		
+		when(mockBytesReadHandlerForFile.getContentDisposition()).thenReturn(mockContentDisposition);
+		when(mockBytesReadHandlerForFile.getData()).thenReturn("Content of file1.".getBytes());
+		multipartEntries.put("qualification", mockBytesReadHandlerForFile);
+		
+		
+		QueryStringBinder binder = new QueryStringBinder();
+		binder.bind(mockInMemoryMultipartEntryHandler, req);
+		assertEquals("user1", req.owner);
+		assertEquals("file1", req.qualification.getFilename());
+		byte[] bytes = new byte["Content of file1.".length()];
+		assertEquals("Content of file1.", new String(req.qualification.getBytes()));
+		return;
 	}
 }
