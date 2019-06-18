@@ -5,7 +5,6 @@ import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
 import gubo.http.grizzly.handlers.mapping.service.ServiceRegistry;
 import gubo.http.querystring.QueryStringBinder;
 
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;

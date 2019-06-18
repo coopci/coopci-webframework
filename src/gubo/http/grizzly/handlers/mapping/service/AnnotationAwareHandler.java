@@ -67,7 +67,8 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
     public Object doPost(Request request, Response response, InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler) throws Exception {
         
         Object p = pclazz.newInstance();
-        this.bindParameter(inMemoryMultipartEntryHandler.getMap(), p);
+        // this.bindParameter(inMemoryMultipartEntryHandler.getMap(), p);
+        this.bindParameter(inMemoryMultipartEntryHandler, p);
         
         Class<?>[] parameterTypes = this.method.getParameterTypes();
         Object[] params = new Object[parameterTypes.length];

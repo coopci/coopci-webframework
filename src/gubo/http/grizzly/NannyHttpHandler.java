@@ -472,6 +472,14 @@ public class NannyHttpHandler extends HttpHandler {
 		return;
 	}
 	
+	public void bindParameter(InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler, Object p) throws Exception {
+
+		// TODO test content-type to call the right binder.
+		final QueryStringBinder binder = new QueryStringBinder();
+		binder.bind(inMemoryMultipartEntryHandler, p);
+		return;
+	}
+	
 	public void bindParameter(Map<String, String> params, Object p) throws Exception {
 
 		final QueryStringBinder binder = new QueryStringBinder();
