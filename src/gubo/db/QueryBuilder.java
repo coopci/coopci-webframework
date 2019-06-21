@@ -385,7 +385,10 @@ public class QueryBuilder {
 				fieldname = key.substring(8);
 				op = " = '' ";
 				needValue = false;
-			} else {
+			} else if (key.startsWith("startswith__")) {
+                fieldname = key.substring(8);
+                op = " like CONCAT(?, '%') ";
+            } else {
 				continue;
 			}
 			Object parsedValue = null;
