@@ -302,7 +302,7 @@ public class QueryBuilder {
 				op = " = '' ";
 				needValue = false;
 			} else if (key.startsWith("startswith__")) {
-                fieldname = key.substring(8);
+                fieldname = key.substring("startswith__".length());
                 op = " like CONCAT(?, '%') ";
             } else {
 				continue;
