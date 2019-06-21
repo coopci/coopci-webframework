@@ -15,6 +15,9 @@ public class Person {
 	public long id;
 	
 	@Column
+	public String name;
+	
+	@Column
 	public int age;
 	
 	@Column

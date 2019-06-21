@@ -298,10 +298,13 @@ public class QueryBuilder {
 				op = " IS NULL ";
 				needValue = false;
 			} else if (key.startsWith("isblank__")) {
-				fieldname = key.substring(8);
+				fieldname = key.substring("isblank__".length());
 				op = " = '' ";
 				needValue = false;
-			} else {
+			} else if (key.startsWith("startswith__")) {
+                fieldname = key.substring(8);
+                op = " like CONCAT(?, '%') ";
+            } else {
 				continue;
 			}
 			Object parsedValue = null;
@@ -382,11 +385,11 @@ public class QueryBuilder {
 				op = " IS NULL ";
 				needValue = false;
 			} else if (key.startsWith("isblank__")) {
-				fieldname = key.substring(8);
+				fieldname = key.substring("isblank__".length());
 				op = " = '' ";
 				needValue = false;
 			} else if (key.startsWith("startswith__")) {
-                fieldname = key.substring(8);
+                fieldname = key.substring("startswith__".length());
                 op = " like CONCAT(?, '%') ";
             } else {
 				continue;
@@ -423,7 +426,7 @@ public class QueryBuilder {
 			sb.append(fieldname);
 			sb.append(op);
 
-			conj = " AND \n";
+			conj = "AND \n";
 			if (needValue) {
 				params.add(parsedValue);
 			}

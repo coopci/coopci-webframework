@@ -31,8 +31,22 @@ public class QueryBuilderTest {
 		condition.put("eq__age", "11");
 		JDBCWhere jdbcWhere = testee.genJDBCWhere2(condition, Person.class,
 				null);
-		assertEquals("WHERE salary = ? AND age = ?", jdbcWhere.whereClause.trim());
+		assertEquals("WHERE salary = ? AND \nage = ?", jdbcWhere.whereClause.trim());
 		assertEquals(new BigDecimal("10000.00"), jdbcWhere.params[0]);
 		assertEquals(11, jdbcWhere.params[1]);
 	}
+	
+	@Test
+    public void testStartswith() throws Exception {
+        QueryBuilder testee = new QueryBuilder();
+        HashMap<String, Object> condition = new HashMap<String, Object>();
+        condition.put("startswith__name", "lalala");
+        condition.put("isblank__name", "");
+        condition.put("eq__age", "11");
+        JDBCWhere jdbcWhere = testee.genJDBCWhere2(condition, Person.class,
+                null);
+        assertEquals("WHERE name like CONCAT(?, '%') AND \nname = '' AND \nage = ?", jdbcWhere.whereClause.trim());
+        assertEquals("lalala", jdbcWhere.params[0]);
+        assertEquals(11, jdbcWhere.params[1]);
+    }
 }
