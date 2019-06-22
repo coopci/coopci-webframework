@@ -162,7 +162,6 @@ public class QueryStringBinderTest {
 		binder.bind(mockInMemoryMultipartEntryHandler, req);
 		assertEquals("user1", req.owner);
 		assertEquals("file1", req.qualification.getFilename());
-		byte[] bytes = new byte["Content of file1.".length()];
 		assertEquals("Content of file1.", new String(req.qualification.getBytes()));
 		return;
 	}
