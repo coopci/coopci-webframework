@@ -1,10 +1,5 @@
 package gubo.db;
 
-import gubo.exceptions.ApiException;
-import gubo.jdbc.mapping.InsertStatementGenerator;
-import gubo.jdbc.mapping.ResultSetMapper;
-import gubo.jdbc.mapping.UpdateStatementGenerator;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -14,6 +9,10 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.sql.DataSource;
+
+import gubo.jdbc.mapping.InsertStatementGenerator;
+import gubo.jdbc.mapping.ResultSetMapper;
+import gubo.jdbc.mapping.UpdateStatementGenerator;
 
 public class SimplePoJoDAO {
 

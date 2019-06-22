@@ -1,21 +1,5 @@
 package gubo.http.querystring;
 
-import gubo.exceptions.QueryStringParseException;
-import gubo.exceptions.RequiredParametersMissingException;
-import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
-import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler.BytesReadHandler;
-import gubo.http.querystring.parsers.BigDecimalParser;
-import gubo.http.querystring.parsers.BooleanFieldParser;
-import gubo.http.querystring.parsers.DatetimeParser;
-import gubo.http.querystring.parsers.DoubleFieldParser;
-import gubo.http.querystring.parsers.FloatFieldParser;
-import gubo.http.querystring.parsers.IntegerFieldParser;
-import gubo.http.querystring.parsers.LongFieldParser;
-import gubo.http.querystring.parsers.NullParser;
-import gubo.http.querystring.parsers.StringFieldParser;
-import gubo.http.querystring.parsers.TimeParser;
-import gubo.http.querystring.parsers.TimestampParser;
-
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -36,12 +20,26 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.glassfish.grizzly.http.multipart.ContentDisposition;
-import org.glassfish.grizzly.http.multipart.MultipartEntry;
 import org.glassfish.grizzly.http.server.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.net.UrlEscapers;
+
+import gubo.exceptions.QueryStringParseException;
+import gubo.exceptions.RequiredParametersMissingException;
+import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
+import gubo.http.querystring.parsers.BigDecimalParser;
+import gubo.http.querystring.parsers.BooleanFieldParser;
+import gubo.http.querystring.parsers.DatetimeParser;
+import gubo.http.querystring.parsers.DoubleFieldParser;
+import gubo.http.querystring.parsers.FloatFieldParser;
+import gubo.http.querystring.parsers.IntegerFieldParser;
+import gubo.http.querystring.parsers.LongFieldParser;
+import gubo.http.querystring.parsers.NullParser;
+import gubo.http.querystring.parsers.StringFieldParser;
+import gubo.http.querystring.parsers.TimeParser;
+import gubo.http.querystring.parsers.TimestampParser;
 
 
 // TODO 处理 required=true的MultipartFile类型的字段。

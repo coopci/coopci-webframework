@@ -19,7 +19,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.persistence.GeneratedValue;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
