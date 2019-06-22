@@ -42,7 +42,11 @@ public class DdlImporter {
 			if (st.length() == 0) {
 				continue;
 			}
+			if (st.startsWith("--")) {
+				continue;
+			}
 			sb.append(st);
+			sb.append('\n');
 			if (st.endsWith(";")) {
 				// 一句ddl的结尾。
 				ret.add(sb.toString());
@@ -55,6 +59,7 @@ public class DdlImporter {
 
 	void run(Connection dbconn, List<String> ddlList) throws SQLException {
 		for (String ddl : ddlList) {
+			logger.info("Executing " + ddl + "...");
 			PreparedStatement ps = dbconn.prepareStatement(ddl);
 			ps.execute();
 		}
