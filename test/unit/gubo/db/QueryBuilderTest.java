@@ -49,4 +49,18 @@ public class QueryBuilderTest {
         assertEquals("lalala", jdbcWhere.params[0]);
         assertEquals(11, jdbcWhere.params[1]);
     }
+	
+	@Test
+    public void testContains() throws Exception {
+        QueryBuilder testee = new QueryBuilder();
+        HashMap<String, Object> condition = new HashMap<String, Object>();
+        condition.put("contains__name", "lalala");
+        condition.put("isblank__name", "");
+        condition.put("eq__age", "11");
+        JDBCWhere jdbcWhere = testee.genJDBCWhere2(condition, Person.class,
+                null);
+        assertEquals("WHERE name like CONCAT('%', ?, '%') AND \nname = '' AND \nage = ?", jdbcWhere.whereClause.trim());
+        assertEquals("lalala", jdbcWhere.params[0]);
+        assertEquals(11, jdbcWhere.params[1]);
+    }
 }

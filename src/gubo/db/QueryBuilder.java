@@ -304,6 +304,9 @@ public class QueryBuilder {
 			} else if (key.startsWith("startswith__")) {
                 fieldname = key.substring("startswith__".length());
                 op = " like CONCAT(?, '%') ";
+            } else if (key.startsWith("contains__")) {
+                fieldname = key.substring("contains__".length());
+                op = " like CONCAT('%', ?, '%') ";
             } else {
 				continue;
 			}
@@ -391,6 +394,9 @@ public class QueryBuilder {
 			} else if (key.startsWith("startswith__")) {
                 fieldname = key.substring("startswith__".length());
                 op = " like CONCAT(?, '%') ";
+            } else if (key.startsWith("contains__")) {
+                fieldname = key.substring("contains__".length());
+                op = " like CONCAT('%', ?, '%') ";
             } else {
 				continue;
 			}
