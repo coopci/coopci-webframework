@@ -103,14 +103,20 @@ public class SimplePoJoDAO {
 	}
 	public <T> T loadPoJoByPK(Connection dbconn, String pkName, Object pkValue)
 			throws SQLException {
-
-		ResultSetMapper<T> mapper = new ResultSetMapper<T>();
-		String sql = "select * from " + this.tablename + " where " + pkName
-				+ " = ?";
-		T pojo = mapper.loadPojo(dbconn, this.clazz, sql, pkValue);
-		return pojo;
-		
+		return loadPoJoByPK(dbconn, RowLockSpec.None, pkName, pkValue);
 	}
+	
+	public <T> T loadPoJoByPK(Connection dbconn, RowLockSpec rowLockSpec, String pkName, Object pkValue)
+            throws SQLException {
+
+        ResultSetMapper<T> mapper = new ResultSetMapper<T>();
+        String sql = "select * from " + this.tablename + " where " + pkName
+                + " = ? " + rowLockSpec.getSql();
+        T pojo = mapper.loadPojo(dbconn, this.clazz, sql, pkValue);
+        return pojo;
+        
+    }
+	
 	public <T> T loadPoJoByUniqueKey(DataSource ds, String keyName,
 			Object pkValue) throws SQLException {
 
