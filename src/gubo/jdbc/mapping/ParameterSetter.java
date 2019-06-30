@@ -6,7 +6,11 @@ import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Set;
 
+/**
+ * 用来把pojo的字段set到 PreparedStatement的参数上。 
+ **/
 public class ParameterSetter {
 	Method preparedStatementSetMethod;
 	int index;
@@ -23,11 +27,22 @@ public class ParameterSetter {
 
 	String columnName; // 数据库的列名。
 
+	String convertToMysqlSetString(Set<String> set) {
+		String result = String.join(",", set);
+		return result;
+	}
+	
 	void set(PreparedStatement ps, Object pojo) throws IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
 
 		Object value = pojoField.get(pojo);
-		preparedStatementSetMethod.invoke(ps, this.index, value);
+		if (value instanceof Set) {
+			// mysql 的集合 
+			preparedStatementSetMethod.invoke(ps, this.index, convertToMysqlSetString((Set<String>)value));
+		} else {
+			preparedStatementSetMethod.invoke(ps, this.index, value);	
+		}
+		
 	}
 
 	public static void f(Object o) {

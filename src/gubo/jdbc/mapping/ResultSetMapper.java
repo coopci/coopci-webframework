@@ -9,8 +9,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -180,6 +182,13 @@ public class ResultSetMapper<T> {
 		
 	}
 
+	static Set<String> convertToSet(String valueFromMysql, Class<?> javaClass) {
+		HashSet<String> ret = new HashSet<String>();
+		for (String ele : valueFromMysql.split(",")) {
+			ret.add(ele);
+		}
+		return ret;
+	}
 	static protected void set(Field field, Object bean, Object columnValue)
 			throws IllegalArgumentException, IllegalAccessException {
 
@@ -193,6 +202,9 @@ public class ResultSetMapper<T> {
 			} else {
 				field.set(bean, null);
 			}
+		} else if (Set.class.isAssignableFrom(field.getType())) {
+			Set<String> v = convertToSet((String)columnValue, field.getType());
+			field.set(bean, v);
 		} else {
 			field.set(bean, columnValue);
 		}
