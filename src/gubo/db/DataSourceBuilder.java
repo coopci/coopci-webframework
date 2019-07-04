@@ -1,5 +1,6 @@
 package gubo.db;
 
+import java.lang.reflect.Proxy;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -16,5 +17,12 @@ public class DataSourceBuilder {
 		config.setPassword(properties.getProperty("database.password"));
 		HikariDataSource ds = new HikariDataSource(config);
 		return ds;
+		
+//		ProxyDataSourceInvocationHandler h = new ProxyDataSourceInvocationHandler(ds);
+//		DataSource ret = (DataSource) Proxy.newProxyInstance(DataSource.class.getClassLoader(),
+//                new Class[] { DataSource.class },
+//                h);
+//		return ret;
+		
 	}
 }
