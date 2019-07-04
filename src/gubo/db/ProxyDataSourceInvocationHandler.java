@@ -11,9 +11,11 @@ import javax.sql.DataSource;
 public class ProxyDataSourceInvocationHandler implements InvocationHandler {
 
     DataSource delegate;
-
-    public ProxyDataSourceInvocationHandler(DataSource delegate) {
+    LeakTracker tracker;
+    
+    public ProxyDataSourceInvocationHandler(DataSource delegate, LeakTracker tracker) {
         this.delegate = delegate;
+        this.tracker = tracker;
     }
 
     Method getConnection;
@@ -28,8 +30,6 @@ public class ProxyDataSourceInvocationHandler implements InvocationHandler {
             e.printStackTrace();
         }
     }
-
-    ConcurrentHashMap<Connection, StackTraceElement[]> track = new ConcurrentHashMap<Connection, StackTraceElement[]>();
     
     @Override
     public Object invoke(Object proxy, Method method, Object[] args)
@@ -38,12 +38,12 @@ public class ProxyDataSourceInvocationHandler implements InvocationHandler {
             System.out.println("Intercepting getConnection");
             Connection conn = (Connection)method.invoke(this.delegate, args);
             
-            ProxyConnectionInvocationHandler h = new ProxyConnectionInvocationHandler(conn, this.track);
+            ProxyConnectionInvocationHandler h = new ProxyConnectionInvocationHandler(conn, this.tracker);
             Connection ret = (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(),
                     new Class[] { Connection.class },
                     h);
             StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-            track.put(conn, stack);
+            tracker.add(conn, stack);
             return ret;
         }
         return method.invoke(this.delegate, args);

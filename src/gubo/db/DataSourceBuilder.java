@@ -9,20 +9,29 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 public class DataSourceBuilder {
-
-	public DataSource build(Properties properties) {
+    public DataSource build(Properties properties) {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(properties.getProperty("database.url"));
+        config.setUsername(properties.getProperty("database.username"));
+        config.setPassword(properties.getProperty("database.password"));
+        HikariDataSource ds = new HikariDataSource(config);
+        return ds;
+    }
+	public DataSource build(Properties properties, LeakTracker leakTracker) {
 		HikariConfig config = new HikariConfig();
 		config.setJdbcUrl(properties.getProperty("database.url"));
 		config.setUsername(properties.getProperty("database.username"));
 		config.setPassword(properties.getProperty("database.password"));
 		HikariDataSource ds = new HikariDataSource(config);
-		return ds;
-		
-//		ProxyDataSourceInvocationHandler h = new ProxyDataSourceInvocationHandler(ds);
-//		DataSource ret = (DataSource) Proxy.newProxyInstance(DataSource.class.getClassLoader(),
-//                new Class[] { DataSource.class },
-//                h);
-//		return ret;
-		
+		if(leakTracker != null) {
+	      ProxyDataSourceInvocationHandler h = new ProxyDataSourceInvocationHandler(ds, leakTracker);
+	      DataSource ret = (DataSource) Proxy.newProxyInstance(DataSource.class.getClassLoader(),
+	                new Class[] { DataSource.class },
+	                h);
+	      
+	      return ret;
+		} else {
+		    return ds;
+		}
 	}
 }

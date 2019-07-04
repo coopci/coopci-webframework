@@ -8,10 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ProxyConnectionInvocationHandler implements InvocationHandler {
 
     Connection delegate;
-    ConcurrentHashMap<Connection, StackTraceElement[]> track;
-    public ProxyConnectionInvocationHandler(Connection delegate, ConcurrentHashMap<Connection, StackTraceElement[]> track) {
+    LeakTracker tracker;
+    public ProxyConnectionInvocationHandler(Connection delegate, LeakTracker tracker) {
         this.delegate = delegate;
-        this.track = track;
+        this.tracker = tracker;
     }
 
     Method close;
@@ -32,7 +32,7 @@ public class ProxyConnectionInvocationHandler implements InvocationHandler {
             throws Throwable {
         if (method.equals(close)) {
             System.out.println("Intercepting close");
-            this.track.remove(this.delegate);
+            this.tracker.remove(this.delegate);
         }
         return method.invoke(this.delegate, args);
     }
