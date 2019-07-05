@@ -221,6 +221,16 @@ public class QueryBuilder {
 			}
 			
 		}
+		/**
+		 * 
+		 * @param paraOffset if this values is 1, the first parameter will be set with stmt.setOject(2, )  
+		 **/
+		public void setParamters(PreparedStatement stmt, int paraOffset) throws SQLException {
+			for (int i = 0; i < this.params.length; ++i) {
+				stmt.setObject(i+1+paraOffset, this.params[i]);
+			}
+			
+		}
 	}
 
     public static class JDBCOrderBy {
