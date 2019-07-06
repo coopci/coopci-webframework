@@ -35,6 +35,8 @@ import org.glassfish.grizzly.http.server.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 /**
  * 根据给定的HashMap 建立 sql 查询字符串。
  * jdbc相关的是遗留功能，以后会被取代。 
@@ -356,9 +358,14 @@ public class QueryBuilder {
 		}
 		return new JDBCWhere(sb.toString(), params.toArray());
 	}
-	
 	public JDBCWhere genJDBCWhere2(Map<String, Object> data,
 			Class<? extends Object> clazz, Set<String> allowedFields)
+			throws Exception {
+		
+		return genJDBCWhere2(data, clazz, allowedFields, "");
+	}
+	public JDBCWhere genJDBCWhere2(Map<String, Object> data,
+			Class<? extends Object> clazz, Set<String> allowedFields, String tablename)
 			throws Exception {
 		if (data == null) {
 			return new JDBCWhere();
@@ -439,7 +446,12 @@ public class QueryBuilder {
 			}
 
 			sb.append(conj);
-			sb.append(fieldname);
+			if (Strings.isNullOrEmpty(tablename)) {
+				sb.append(fieldname);	
+			} else {
+				sb.append(tablename + "." + fieldname);
+			}
+			
 			sb.append(op);
 
 			conj = "AND \n";
