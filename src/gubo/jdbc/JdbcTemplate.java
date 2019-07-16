@@ -50,6 +50,21 @@ public class JdbcTemplate {
         rs.close();
         return ret;
     }
+	
+	public Long queryForLong(Connection dbconn, String sql,
+            Object... params) throws SQLException {
+        ResultSet rs = query(dbconn, sql, params);
+        int columnCount = rs.getMetaData().getColumnCount();
+        if (columnCount < 1) {
+            return null;
+        }
+        Long ret = null;
+        if (rs.next()) {
+            ret = rs.getLong(1);
+        }
+        rs.close();
+        return ret;
+    }
 
 	public Object[] queryForFirstRow(Connection dbconn, String sql,
 			Object... params) throws SQLException {
