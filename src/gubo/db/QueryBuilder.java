@@ -408,6 +408,10 @@ public class QueryBuilder {
 				fieldname = key.substring("isblank__".length());
 				op = " = '' ";
 				needValue = false;
+			} else if (key.startsWith("isnotblank__")) {
+				fieldname = key.substring("isnotblank__".length());
+				op = " != '' ";
+				needValue = false;
 			} else if (key.startsWith("startswith__")) {
                 fieldname = key.substring("startswith__".length());
                 op = " like CONCAT(?, '%') ";
