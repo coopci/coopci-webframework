@@ -42,7 +42,7 @@ public class ApiDocument {
 	/**
 	 * {@link Comment} 的group属性。
 	 **/
-	String group;
+	public String group;
 	
 	/**
      * {@link Comment} 的name属性。
