@@ -46,7 +46,9 @@ public class NannyHttpHandler extends HttpHandler {
 	}
 
 	public void send(Object ret, Request req, Response res) throws Exception {
-		if (ret instanceof ModelAndTemplate) {
+		if (ret == null) {
+			return;
+		} else if (ret instanceof ModelAndTemplate) {
 			send((ModelAndTemplate) ret, req, res);
 		} else if (ret instanceof String) {
 			String s = (String) ret;
