@@ -46,9 +46,17 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
                 params[i] = p;
             } 
         }
-        
-        Object res = this.method.invoke(this.service, params);
-        return res;
+        try {
+            Object res = this.method.invoke(this.service, params);
+            return res;
+        } catch (InvocationTargetException ex) {
+            Throwable cause = ex.getCause();
+            if (cause instanceof Exception) {
+                throw (Exception)cause;
+            } else {
+                throw ex;
+            }
+        }
     }
     
     @Override
