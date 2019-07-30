@@ -352,7 +352,7 @@ public class NannyHttpHandler extends HttpHandler {
 
 	public HashMap<String, Object> getErrorResponse(int error, String message) {
 		HashMap<String, Object> ret = new HashMap<String, Object>();
-		ret.put("code", error);
+		ret.put("status", error);
 		ret.put("message", message);
 		return ret;
 	}
