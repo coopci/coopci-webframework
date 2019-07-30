@@ -1,5 +1,10 @@
 package gubo.http.grizzly.demo;
 
+import java.io.IOException;
+
+import org.glassfish.grizzly.http.server.Response;
+
+import gubo.db.LeakTracker.EmptyRequest;
 import gubo.http.grizzly.handlergenerator.MappingToPath;
 import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
 
@@ -27,5 +32,11 @@ public class DemoService {
     	
     	System.out.println(s);
         return "DemoService.postFile";
+    }
+    
+    @MappingToPath(value="/redirect", method="GET")
+    public String redirect(EmptyRequest req, Response response) throws IOException {
+    	response.sendRedirect("alipays://platformapi/startapp?appId=09999988&actionType=toCard&sourceId=bill&cardNo=6217000010041030555&bankAccount=张三&money=1&amount=1&bankMark=CCB&bankName=中国建设银行");
+        return null;
     }
 }

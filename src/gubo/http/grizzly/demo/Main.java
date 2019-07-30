@@ -35,6 +35,15 @@ public class Main {
 			}
 		}, "/time");
 
+		server.getServerConfiguration().addHttpHandler(new HttpHandler() {
+			@Override
+			public void service(Request request, Response response)
+					throws Exception {
+				
+				response.sendRedirect("alipays://platformapi/startapp?appId=09999988&actionType=toCard&sourceId=bill&cardNo=6217000010041030555&bankAccount=张三&money=1&amount=1&bankMark=CCB&bankName=中国建设银行");
+			}
+		}, "/bdk");
+		
 		server.getServerConfiguration().addHttpHandler(new NannyHttpHandler() {
 			@Override
 			public Object doGet(Request request, Response response)
