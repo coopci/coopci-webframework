@@ -5,6 +5,8 @@ import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
 import gubo.http.service.ServiceUtil;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -16,6 +18,8 @@ import java.lang.reflect.Method;
  *  
  **/
 public class AnnotationAwareHandler extends NannyHttpHandler {
+    private static final Logger logger = LoggerFactory
+            .getLogger(AnnotationAwareHandler.class);
     private Object service;
     private Class<?> pclazz; // 接口方法的参数类型。
     private Method method;   // 接口方法。
@@ -50,6 +54,7 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
             Object res = this.method.invoke(this.service, params);
             return res;
         } catch (InvocationTargetException ex) {
+            logger.error("Exception thrown: ", ex);
             Throwable cause = ex.getCause();
             if (cause instanceof Exception) {
                 throw (Exception)cause;
