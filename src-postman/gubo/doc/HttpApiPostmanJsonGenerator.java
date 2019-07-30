@@ -148,7 +148,7 @@ public class HttpApiPostmanJsonGenerator {
 			request.method = doc.httpMethod;
 			request.description = doc.desc;
 		}
-		item.name = doc.url;
+		item.name = doc.desc;
 		item.request = request;
 
 		return item;
