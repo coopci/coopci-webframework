@@ -6,15 +6,19 @@ public class ThreeDigitsVersion implements Comparable<ThreeDigitsVersion>{
 	private final int digit1;
 	private final int digit2;
 	private final int digit3;
-	
+	private final String text;
 	public ThreeDigitsVersion(String versinoNumber) {
 		String[] digits = versinoNumber.split("\\.");
-		
+		text = versinoNumber;
 		this.digit1 = Integer.parseInt(digits[0]);
 		this.digit2 = Integer.parseInt(digits[1]);
 		this.digit3 = Integer.parseInt(digits[2]);
 	}
 	
+	@Override
+	public String toString() {
+		return this.text;
+	}
 	@Override
 	public int compareTo(ThreeDigitsVersion other) {
 		

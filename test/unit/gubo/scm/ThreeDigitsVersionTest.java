@@ -38,7 +38,6 @@ public class ThreeDigitsVersionTest {
 	@Test
 	public void testHashCode() {
 		ThreeDigitsVersion vn1 = new ThreeDigitsVersion("1.0.11");
-		ThreeDigitsVersion vn2 = new ThreeDigitsVersion("1.0.9");
 		ThreeDigitsVersion vn3 = new ThreeDigitsVersion("1.0.11");
 		HashMap<ThreeDigitsVersion, String> map = new HashMap<ThreeDigitsVersion, String>();
 		
