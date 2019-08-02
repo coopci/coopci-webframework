@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 
 // import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 
@@ -72,7 +73,7 @@ public class NannyHttpHandler extends HttpHandler {
 
 	public void servePost(Request req, Response res) throws Exception {
 		String contentType = req.getContentType();
-		if (contentType.startsWith("multipart/form-data")) {
+		if ( (!Strings.isNullOrEmpty(contentType)) && contentType.startsWith("multipart/form-data")) {
 			this.serveMultipart(req, res);
 		} else {
 			Object ret = this.doPost(req, res);
