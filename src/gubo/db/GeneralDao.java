@@ -27,6 +27,13 @@ public class GeneralDao {
 		return ret;
 	}
 	
+	public <T extends ISimplePoJo> T update(DataSource ds, T pojo)
+			throws Exception {
+		SimplePoJoDAO simplePoJoDAO = this.getSimplePoJoDAO(pojo);
+		T ret = simplePoJoDAO.update(ds, pojo);
+		return ret;
+	}
+	
 	
 	public <T> List<T> loadPojoList(Connection dbconn, Class<?> clazz, String sql,
 			Object... params) throws SQLException {
