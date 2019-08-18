@@ -34,6 +34,40 @@ public class GeneralDao {
 		return ret;
 	}
 	
+	public <T extends ISimplePoJo> T update(Connection dbconn, T pojo)
+			throws Exception {
+		SimplePoJoDAO simplePoJoDAO = this.getSimplePoJoDAO(pojo);
+		T ret = simplePoJoDAO.update(dbconn, pojo);
+		return ret;
+	}
+	
+	public <T extends ISimplePoJo> T update(DataSource ds, T pojo, String ... allowedCols)
+			throws Exception {
+		SimplePoJoDAO simplePoJoDAO = this.getSimplePoJoDAO(pojo);
+		T ret = simplePoJoDAO.update(ds, pojo, allowedCols);
+		return ret;
+	}
+	
+	public <T extends ISimplePoJo> T update(Connection dbconn, T pojo, String ... allowedCols)
+			throws Exception {
+		SimplePoJoDAO simplePoJoDAO = this.getSimplePoJoDAO(pojo);
+		T ret = simplePoJoDAO.update(dbconn, pojo, allowedCols);
+		return ret;
+	}
+	
+	public <T> T loadPojoByPk(Connection dbconn, Class<?> clazz, String pkName, Object pkValue) throws SQLException {
+		
+		SimplePoJoDAO simplePoJoDAO = this.daoManager.getDao(clazz);
+		T ret = simplePoJoDAO.loadPoJoByPK(dbconn, pkName, pkValue);
+		return ret ;
+	}
+	
+	public <T> T loadPojoByPk(DataSource ds, Class<?> clazz, String sql, String pkName, Object pkValue) throws SQLException {
+		
+		SimplePoJoDAO simplePoJoDAO = this.daoManager.getDao(clazz);
+		T ret = simplePoJoDAO.loadPoJoByPK(ds, pkName, pkValue);
+		return ret ;
+	}
 	
 	public <T> List<T> loadPojoList(Connection dbconn, Class<?> clazz, String sql,
 			Object... params) throws SQLException {
