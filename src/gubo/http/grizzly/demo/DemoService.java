@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.glassfish.grizzly.http.server.Response;
 
+import gubo.captcha.Captcha;
 import gubo.db.LeakTracker.EmptyRequest;
 import gubo.http.grizzly.handlergenerator.MappingToPath;
 import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
@@ -38,5 +39,18 @@ public class DemoService {
     public String redirect(EmptyRequest req, Response response) throws IOException {
     	response.sendRedirect("alipays://platformapi/startapp?appId=09999988&actionType=toCard&sourceId=bill&cardNo=6217000010041030555&bankAccount=张三&money=1&amount=1&bankMark=CCB&bankName=中国建设银行");
         return null;
+    }
+    
+    // http://localhost:8777/captcha
+    @MappingToPath(value="/captcha", method="GET")
+    public String captcha(EmptyRequest req, Response response) throws IOException {
+    	// response.sendRedirect("alipays://platformapi/startapp?appId=09999988&actionType=toCard&sourceId=bill&cardNo=6217000010041030555&bankAccount=张三&money=1&amount=1&bankMark=CCB&bankName=中国建设银行");
+        
+    	byte[] data = Captcha.generateImage("1234");
+    	response.setContentType("image/png");
+    	response.setContentLength(data.length);
+    	response.getOutputStream().write(data);
+    	response.getOutputStream().close();
+    	return null;
     }
 }
