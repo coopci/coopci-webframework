@@ -18,7 +18,7 @@ import javax.crypto.spec.PBEKeySpec;
 
 
 public class Hasher {
-    public final Integer DEFAULT_ITERATIONS = 10000;
+    public final Integer DEFAULT_ITERATIONS = 1000;
     public final String algorithm = "pbkdf2_sha256";
 
     public Hasher() {}
