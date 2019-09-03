@@ -27,6 +27,13 @@ public class GeneralDao {
 		return ret;
 	}
 	
+	public <T extends ISimplePoJo> T insert(Connection dbconn, T pojo)
+			throws Exception {
+		SimplePoJoDAO simplePoJoDAO = this.getSimplePoJoDAO(pojo);
+		T ret = simplePoJoDAO.insert(dbconn, pojo);
+		return ret;
+	}
+	
 	public <T extends ISimplePoJo> T update(DataSource ds, T pojo)
 			throws Exception {
 		SimplePoJoDAO simplePoJoDAO = this.getSimplePoJoDAO(pojo);
@@ -62,7 +69,7 @@ public class GeneralDao {
 		return ret ;
 	}
 	
-	public <T> T loadPojoByPk(DataSource ds, Class<?> clazz, String sql, String pkName, Object pkValue) throws SQLException {
+	public <T> T loadPojoByPk(DataSource ds, Class<?> clazz, String pkName, Object pkValue) throws SQLException {
 		
 		SimplePoJoDAO simplePoJoDAO = this.daoManager.getDao(clazz);
 		T ret = simplePoJoDAO.loadPoJoByPK(ds, pkName, pkValue);
