@@ -450,7 +450,9 @@ public class QueryBuilder {
 			}
 
 			sb.append(conj);
-			if (Strings.isNullOrEmpty(tablename)) {
+			if (Strings.isNullOrEmpty(tablename) ||
+					fieldname.contains(".") // 如果字段里面已经有.说明已经包含了表名。
+					) {
 				sb.append(fieldname);	
 			} else {
 				sb.append(tablename + "." + fieldname);
