@@ -1,8 +1,12 @@
 package gubo.http.grizzly.handlers.mapping.service;
 
 import gubo.http.grizzly.NannyHttpHandler;
+import gubo.http.grizzly.handlergenerator.LogParameters;
+import gubo.http.grizzly.handlergenerator.MappingToPath;
 import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
+import gubo.http.querystring.QueryStringBinder;
 import gubo.http.service.ServiceUtil;
+
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.slf4j.Logger;
@@ -10,6 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  *  
@@ -24,6 +30,18 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
     private Class<?> pclazz; // 接口方法的参数类型。
     private Method method;   // 接口方法。
     
+    boolean doLog = false;
+    Logger loggerForMethod = LoggerFactory.getLogger(AnnotationAwareHandler.class);
+	HashSet<String> hideFields = new HashSet<String>();
+	boolean isNullOrVoid(Class<?> clazz) {
+		if (clazz == null) {
+			return true;
+		}
+		if (clazz == Void.class) {
+			return true;
+		}
+		return false;
+	}
     public int getDefaultSizeLimit() {
         return 1024*1024*10;
     }
@@ -31,6 +49,18 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
         this.service = service;
         this.method = method;
         this.pclazz = ServiceUtil.getParameterClass(method);
+        LogParameters[] annos = this.method.getAnnotationsByType(LogParameters.class);
+        if (annos.length > 0) {
+        	LogParameters anno = annos[0];
+        	this.doLog = true;
+        	if(!isNullOrVoid(anno.loggerClass())) {
+        		loggerForMethod = LoggerFactory.getLogger(anno.loggerClass());
+        	}
+        	String[] hides = anno.hideFields().split(",");
+        	for (String h : hides) {
+        		this.hideFields.add(h);
+        	}
+        }
     }
     
     
@@ -50,7 +80,23 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
                 params[i] = p;
             } 
         }
+        if (this.doLog) {
+        	try {
+    			QueryStringBinder binder = new QueryStringBinder();
+//     			String paramsToLog = binder.toQueryString(p, null);
+    			HashMap<String, String> map = binder.toHashMap(p, null);
+    			for (String f : this.hideFields) {
+    				map.remove(f);
+    			}
+    			String paramsToLog = binder.toQueryString(map);
+    			String log = "Entering " + this.method.getName() + " " + paramsToLog;
+    			this.loggerForMethod.info(log);
+    		} catch (Exception e) {
+    			this.loggerForMethod.error("Logging failed for entrance of " + this.method.getName(), e);
+    		}
+        }
         try {
+        	
             Object res = this.method.invoke(this.service, params);
             return res;
         } catch (InvocationTargetException ex) {

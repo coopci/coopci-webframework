@@ -10,4 +10,5 @@ import java.lang.annotation.ElementType;
 public @interface MappingToPath {
 	String value();
 	String method() default "POST";
+	
 }
