@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
@@ -65,8 +66,25 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
     
     public Object doXXX(Request request, Response response) throws Exception {
         Object p = pclazz.newInstance();
-        this.bindParameter(request, p);
-        
+        try {
+        	this.bindParameter(request, p);
+        } catch (Exception ex) {
+        	// 绑定参数出错，
+        	if (this.doLog) {
+        		//把参数错误这件事 记日志
+            	final QueryStringBinder binder = new QueryStringBinder();
+            	Map<String, String> map = QueryStringBinder.extractParameters(request);
+        		
+    			for (String f : this.hideFields) {
+    				map.remove(f);
+    			}
+    			String paramsToLog = binder.toQueryString(map);
+    			String log = "Exception thrown when binding parameter for " + this.method.getName() + " " + paramsToLog;
+    			this.loggerForMethod.info(log, ex);
+        	}
+        	
+			throw ex;
+        }
         Class<?>[] parameterTypes = this.method.getParameterTypes();
         Object[] params = new Object[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; ++i) {

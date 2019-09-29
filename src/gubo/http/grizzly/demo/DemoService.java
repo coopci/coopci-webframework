@@ -1,13 +1,16 @@
 package gubo.http.grizzly.demo;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import org.glassfish.grizzly.http.server.Response;
 
 import gubo.captcha.Captcha;
 import gubo.db.LeakTracker.EmptyRequest;
+import gubo.http.grizzly.handlergenerator.LogParameters;
 import gubo.http.grizzly.handlergenerator.MappingToPath;
 import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
+import gubo.http.querystring.QueryStringField;
 
 public class DemoService {
 
@@ -53,4 +56,18 @@ public class DemoService {
     	response.getOutputStream().close();
     	return null;
     }
+    
+    public static class LogParametersRequest {
+    	@QueryStringField()
+    	public BigDecimal num;
+    }
+    @LogParameters()
+    @MappingToPath(value="/log-paramters", method="POST")
+    public String logParamters(LogParametersRequest params) {
+        
+        return "DemoService.logParamters " + params.num;
+    }
+    
+    
+    
 }
