@@ -48,11 +48,13 @@ public class KeyGenerator {
 	 *	这个方法是用来检查用户提交的code是不是正确的对外接口 。 
 	 *  @param secret 数据库里保存的用户的secret。
 	 *  @param 用户在google authenticator里看到的数字，需要用户提交上来。
+	 * @throws NoSuchAlgorithmException 
+	 * @throws InvalidKeyException 
 	 **/
-	public static boolean checkCode(String secret, long code) {
+	public static boolean checkCode(String secret, long code) throws InvalidKeyException, NoSuchAlgorithmException {
 		long t = System.currentTimeMillis();
 		t = t/30000;
-		return checkCode(secret, code);
+		return checkCode(secret, code, t);
 	}
 	public static boolean checkCode(String secret, long code, long t)
 			throws NoSuchAlgorithmException, InvalidKeyException {
