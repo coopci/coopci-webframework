@@ -9,7 +9,7 @@ public class ObjectNotFoundException extends ApiException {
 
 	public ObjectNotFoundException(String message) {
         super();
-        if (Strings.isNullOrEmpty(message)) {
+        if (!Strings.isNullOrEmpty(message)) {
             this.message = message;
         } else {
             this.message = "Object not found";
