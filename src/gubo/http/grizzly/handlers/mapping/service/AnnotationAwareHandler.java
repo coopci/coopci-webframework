@@ -63,7 +63,22 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
         	}
         }
     }
-    
+    void logBindingErrorIfNeeded(InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler, Exception ex) throws UnsupportedEncodingException {
+    	if (!this.doLog) {
+    		return;
+    	}
+    	//把参数错误这件事 记日志
+    	final QueryStringBinder binder = new QueryStringBinder();
+    	Map<String, String> map = inMemoryMultipartEntryHandler.getMap();
+    	
+		for (String f : this.hideFields) {
+			map.remove(f);
+		}
+		String paramsToLog = binder.toQueryString(map);
+		String log = "Exception thrown when binding parameter for " + this.method.getName() + " " + paramsToLog;
+		this.loggerForMethod.error(log, ex);
+    	
+    }
     void logBindingErrorIfNeeded(Request request, Exception ex) throws UnsupportedEncodingException {
     	if (!this.doLog) {
     		return;
@@ -158,7 +173,7 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
         	this.bindParameter(inMemoryMultipartEntryHandler, p);
         } catch (Exception ex) {
         	// 绑定参数出错，
-        	logBindingErrorIfNeeded(request, ex);
+        	logBindingErrorIfNeeded(inMemoryMultipartEntryHandler, ex);
 			throw ex;
         }
         

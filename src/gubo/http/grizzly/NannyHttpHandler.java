@@ -111,6 +111,7 @@ public class NannyHttpHandler extends HttpHandler {
 			}
 
 		} catch (Exception ex) {
+			logger.error("Exception in NannyHttpHandler.service, path=" + getRequestPath(req), ex);
 			this.handleException(ex, req, res);
 		}
 	}
@@ -508,6 +509,13 @@ public class NannyHttpHandler extends HttpHandler {
 		return InMemoryMultipartEntryHandler.SIZE_LIMIT_IGNORE;
 	}
 
+	String getRequestPath(Request request) {
+		if( request.getPathInfo() == null) {
+			return request.getHttpHandlerPath();
+		}
+		return request.getHttpHandlerPath() + request.getPathInfo();	
+	}
+	
 	public void serveMultipart(final Request request, final Response response)
 			throws Exception {
 		System.out.println("serveMultipart");
@@ -537,7 +545,7 @@ public class NannyHttpHandler extends HttpHandler {
 									inMemoryMultipartEntryHandler);
 							send(ret, request, response);
 						} catch (Exception ex) {
-							logger.error("onMultipartScanCompleted", ex);
+							logger.error("onMultipartScanCompleted, " + getRequestPath(request), ex);
 							try {
 								handleException(ex, request, response);
 							} catch (Exception e) {
