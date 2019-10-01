@@ -30,11 +30,17 @@ public class DemoService {
      *  只有在请求的content-type是 "multipart/form-data"的情况下，MultipartFile类型的字段才能被填对。
      *	"底层原理" 在 {@link AnnotationAwareHandler} 
      **/
+    @LogParameters()
     @MappingToPath(value="/post-file2", method="POST")
     public String postFile2(DemoRequest params) {
-    	String s = new String(params.qualification.getBytes());
+    	if (params.qualification !=null) {
+    		String s = new String(params.qualification.getBytes());
+        	
+        	System.out.println(s);	
+    	} else {
+    		System.out.println("params.qualification=null");
+    	}
     	
-    	System.out.println(s);
         return "DemoService.postFile";
     }
     
@@ -61,7 +67,7 @@ public class DemoService {
     	@QueryStringField()
     	public BigDecimal num;
     }
-    @LogParameters()
+    @LogParameters(loggerClass=DemoService.class)
     @MappingToPath(value="/log-paramters", method="POST")
     public String logParamters(LogParametersRequest params) {
         

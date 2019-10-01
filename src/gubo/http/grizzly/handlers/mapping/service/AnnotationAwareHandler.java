@@ -1,5 +1,6 @@
 package gubo.http.grizzly.handlers.mapping.service;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -63,25 +64,47 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
         }
     }
     
+    void logBindingErrorIfNeeded(Request request, Exception ex) throws UnsupportedEncodingException {
+    	if (!this.doLog) {
+    		return;
+    	}
+    	//把参数错误这件事 记日志
+    	final QueryStringBinder binder = new QueryStringBinder();
+    	Map<String, String> map = QueryStringBinder.extractParameters(request);
+		
+		for (String f : this.hideFields) {
+			map.remove(f);
+		}
+		String paramsToLog = binder.toQueryString(map);
+		String log = "Exception thrown when binding parameter for " + this.method.getName() + " " + paramsToLog;
+		this.loggerForMethod.error(log, ex);
+    }
     
+    void logParsedParameterIfNeeded(Request request, Object p) throws UnsupportedEncodingException {
+    	if (!this.doLog) {
+    		return;
+    	}
+    	try {
+			QueryStringBinder binder = new QueryStringBinder();
+//     			String paramsToLog = binder.toQueryString(p, null);
+			HashMap<String, String> map = binder.toHashMap(p, null);
+			for (String f : this.hideFields) {
+				map.remove(f);
+			}
+			String paramsToLog = binder.toQueryString(map);
+			String log = "Entering " + this.method.getName() + " " + paramsToLog;
+			this.loggerForMethod.info(log);
+		} catch (Exception e) {
+			this.loggerForMethod.error("Logging failed for entrance of " + this.method.getName(), e);
+		}
+    }
     public Object doXXX(Request request, Response response) throws Exception {
         Object p = pclazz.newInstance();
         try {
         	this.bindParameter(request, p);
         } catch (Exception ex) {
         	// 绑定参数出错，
-        	if (this.doLog) {
-        		//把参数错误这件事 记日志
-            	final QueryStringBinder binder = new QueryStringBinder();
-            	Map<String, String> map = QueryStringBinder.extractParameters(request);
-        		
-    			for (String f : this.hideFields) {
-    				map.remove(f);
-    			}
-    			String paramsToLog = binder.toQueryString(map);
-    			String log = "Exception thrown when binding parameter for " + this.method.getName() + " " + paramsToLog;
-    			this.loggerForMethod.info(log, ex);
-        	}
+        	logBindingErrorIfNeeded(request, ex);
         	
 			throw ex;
         }
@@ -97,21 +120,8 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
                 params[i] = p;
             } 
         }
-        if (this.doLog) {
-        	try {
-    			QueryStringBinder binder = new QueryStringBinder();
-//     			String paramsToLog = binder.toQueryString(p, null);
-    			HashMap<String, String> map = binder.toHashMap(p, null);
-    			for (String f : this.hideFields) {
-    				map.remove(f);
-    			}
-    			String paramsToLog = binder.toQueryString(map);
-    			String log = "Entering " + this.method.getName() + " " + paramsToLog;
-    			this.loggerForMethod.info(log);
-    		} catch (Exception e) {
-    			this.loggerForMethod.error("Logging failed for entrance of " + this.method.getName(), e);
-    		}
-        }
+       
+        logParsedParameterIfNeeded(request, p);
         try {
         	
             Object res = this.method.invoke(this.service, params);
@@ -143,8 +153,14 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
     public Object doPost(Request request, Response response, InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler) throws Exception {
         
         Object p = pclazz.newInstance();
-        // this.bindParameter(inMemoryMultipartEntryHandler.getMap(), p);
-        this.bindParameter(inMemoryMultipartEntryHandler, p);
+//        this.bindParameter(inMemoryMultipartEntryHandler, p);
+        try {
+        	this.bindParameter(inMemoryMultipartEntryHandler, p);
+        } catch (Exception ex) {
+        	// 绑定参数出错，
+        	logBindingErrorIfNeeded(request, ex);
+			throw ex;
+        }
         
         Class<?>[] parameterTypes = this.method.getParameterTypes();
         Object[] params = new Object[parameterTypes.length];
@@ -160,7 +176,7 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
                 params[i] = p;
             } 
         }
-        
+        logParsedParameterIfNeeded(request, p);
         Object res = this.method.invoke(this.service, params);
         return res;
     }

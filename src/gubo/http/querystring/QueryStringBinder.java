@@ -458,6 +458,9 @@ public class QueryStringBinder {
 				} else {
 					v = dateFormatter.format(d);
 				}
+			} else if (f.getType() == MultipartFile.class) {
+				MultipartFile mf = (MultipartFile) f.get(pojo);
+				v = "filename=" + mf.getFilename().replace("\"", "") + ",length=" + mf.getBytes().length;
 			} else {
 				Object o = f.get(pojo);
 				if (o == null)
