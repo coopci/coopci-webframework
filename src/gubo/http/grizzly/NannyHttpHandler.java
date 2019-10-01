@@ -545,7 +545,7 @@ public class NannyHttpHandler extends HttpHandler {
 									inMemoryMultipartEntryHandler);
 							send(ret, request, response);
 						} catch (Exception ex) {
-							logger.error("onMultipartScanCompleted, " + getRequestPath(request), ex);
+							logger.error("NannyHttpHandler.onMultipartScanCompleted, path=" + getRequestPath(request), ex);
 							try {
 								handleException(ex, request, response);
 							} catch (Exception e) {
