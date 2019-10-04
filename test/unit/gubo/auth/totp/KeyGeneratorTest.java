@@ -1,5 +1,7 @@
 package gubo.auth.totp;
 
+import static org.junit.Assert.assertTrue;
+
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -27,6 +29,7 @@ public class KeyGeneratorTest {
 		long t = 52313934;
 		long code = 627290;
 		boolean result = KeyGenerator.checkCode("OKDBSXOETZPWRS6J",  code, t);
+		assertTrue(result);
 		System.out.println("t="+t);
 		System.out.println("code="+code);
 		System.out.println("secret=OKDBSXOETZPWRS6J"+t);
