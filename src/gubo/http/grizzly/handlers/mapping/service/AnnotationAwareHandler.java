@@ -3,6 +3,7 @@ package gubo.http.grizzly.handlers.mapping.service;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -149,6 +150,7 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
             } else {
                 throw ex;
             }
+            
         }
     }
     

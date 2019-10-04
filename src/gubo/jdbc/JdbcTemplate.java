@@ -91,5 +91,16 @@ public class JdbcTemplate {
 		boolean rs = ps.execute();
 		return rs;
 	}
+	
+	public int executeUpdate(Connection dbconn, String sql, Object... params)
+			throws SQLException {
+		PreparedStatement ps = dbconn.prepareStatement(sql);
+		int i = 1;
+		for (Object o : params) {
+			ps.setObject(i++, o);
+		}
+		int rowCount = ps.executeUpdate();
+		return rowCount;
+	}
 
 }
