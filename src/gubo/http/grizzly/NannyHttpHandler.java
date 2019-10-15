@@ -9,9 +9,11 @@ import gubo.exceptions.SessionNotFoundException;
 import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
 import gubo.http.querystring.QueryStringBinder;
 import gubo.jdbc.mapping.InsertStatementGenerator;
+import gubo.reflection.FieldCopy;
 import gubo.session.SessonManager;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -75,7 +77,7 @@ public class NannyHttpHandler extends HttpHandler {
 		String contentType = req.getContentType();
 		if ( (!Strings.isNullOrEmpty(contentType)) && contentType.startsWith("multipart/form-data")) {
 			this.serveMultipart(req, res);
-		} else {
+		}  else {
 			Object ret = this.doPost(req, res);
 			this.send(ret, req, res);
 		}
@@ -470,10 +472,18 @@ public class NannyHttpHandler extends HttpHandler {
 
 	public void bindParameter(Request req, Object p) throws Exception {
 
+		String contentType = req.getContentType();
 		// TODO test content-type to call the right binder.
-		final QueryStringBinder binder = new QueryStringBinder();
-		binder.bind(req, p);
-		return;
+		if ( (!Strings.isNullOrEmpty(contentType)) && contentType.startsWith("application/json")) {
+			InputStream ins = req.getInputStream();
+			ObjectMapper objectMapper = new ObjectMapper();
+			Object o = objectMapper.readValue(ins, p.getClass());
+			FieldCopy.copy(o, p);
+		} else {
+			final QueryStringBinder binder = new QueryStringBinder();
+			binder.bind(req, p);
+			return;	
+		}
 	}
 	
 	public void bindParameter(InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler, Object p) throws Exception {
