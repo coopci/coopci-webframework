@@ -22,4 +22,8 @@ public @interface Comment {
     // 如果被注释的主体是API，那么可以用这个给API划分组别。例如映射到postman的ItemGroup。
     // 用 / 表示层级关系，例如  a/b  表示 b是a下的一个group，被注释的主体是b下的一个API。
     String group() default "";
+    
+    // 默认情况下如果参数里面有文件，则应该用form-data，否则是x-www-form-urlencoded。
+    // 当请求体里面有字段时复杂类型(例如数组，或自定义的类)时，需要指明用 application/json。
+    String contentType() default ""; 
 }
