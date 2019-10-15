@@ -47,7 +47,10 @@ public class ServiceRegistry {
             AnnotationAwareHandler handler = new AnnotationAwareHandler(service, method);
             
             String path = mp.value();
-            String pathWithoutTrailingSlash = prefix + "/" + path;
+            if (!path.startsWith("/")) {
+            	path = "/" + path;
+            }
+            String pathWithoutTrailingSlash = prefix + path;
             if (pathWithoutTrailingSlash.endsWith("/")) {
                 pathWithoutTrailingSlash = pathWithoutTrailingSlash.substring(0, pathWithoutTrailingSlash.length()-1);
             }
