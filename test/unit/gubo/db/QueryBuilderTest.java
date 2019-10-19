@@ -68,7 +68,7 @@ public class QueryBuilderTest {
     public void testArrayHas() throws Exception {
         QueryBuilder testee = new QueryBuilder();
         HashMap<String, Object> condition = new HashMap<String, Object>();
-        condition.put("array_has__name", "lalala,name2");
+        condition.put("array_has__name", "('lalala', 'name2')");
         condition.put("isblank__name", "");
         condition.put("eq__age", "11");
         JDBCWhere jdbcWhere = testee.genJDBCWhere2(condition, Person.class,

@@ -440,9 +440,6 @@ public class QueryBuilder {
 					}
 					try {
 						parsedValue = parser.parse(value);
-						if (key.startsWith("array_has__")) {
-							parsedValue = Utils.wordsToSqlArray(value);
-						}
 						
 					} catch (Exception ex) {
 						if (!parser.getIgnoreMalFormat()) {
