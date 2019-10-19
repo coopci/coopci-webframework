@@ -13,6 +13,7 @@ import gubo.http.querystring.parsers.NullParser;
 import gubo.http.querystring.parsers.StringFieldParser;
 import gubo.http.querystring.parsers.TimeParser;
 import gubo.http.querystring.parsers.TimestampParser;
+import gubo.jdbc.Utils;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -400,6 +401,9 @@ public class QueryBuilder {
 			} else if (key.startsWith("neq__")) {
 				fieldname = key.substring(5);
 				op = " != ? ";
+			} else if (key.startsWith("array_has__")) {
+				fieldname = key.substring("array_has__".length());
+				op = " in ? ";
 			} else if (key.startsWith("isnull__")) {
 				fieldname = key.substring(8);
 				op = " IS NULL ";
@@ -436,7 +440,10 @@ public class QueryBuilder {
 					}
 					try {
 						parsedValue = parser.parse(value);
-
+						if (key.startsWith("array_has__")) {
+							parsedValue = Utils.wordsToSqlArray(value);
+						}
+						
 					} catch (Exception ex) {
 						if (!parser.getIgnoreMalFormat()) {
 							throw ex;
@@ -462,7 +469,9 @@ public class QueryBuilder {
 
 			conj = "AND \n";
 			if (needValue) {
+				
 				params.add(parsedValue);
+				
 			}
 
 		}
