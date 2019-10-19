@@ -403,7 +403,10 @@ public class QueryBuilder {
 				op = " != ? ";
 			} else if (key.startsWith("array_has__")) {
 				fieldname = key.substring("array_has__".length());
-				op = " in ? ";
+				op = " in " + data.get(key) + " "; 
+				// assuming value is a string returned from Utils.wordsToSqlArray
+				// This is vulnerable to sql injection.
+				needValue = false;
 			} else if (key.startsWith("isnull__")) {
 				fieldname = key.substring(8);
 				op = " IS NULL ";

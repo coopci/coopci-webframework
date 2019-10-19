@@ -73,8 +73,8 @@ public class QueryBuilderTest {
         condition.put("eq__age", "11");
         JDBCWhere jdbcWhere = testee.genJDBCWhere2(condition, Person.class,
                 null);
-        assertEquals("WHERE name in ? AND \nname = '' AND \nage = ?", jdbcWhere.whereClause.trim());
-        assertEquals("('lalala', 'name2')", jdbcWhere.params[0]);
-        assertEquals(11, jdbcWhere.params[1]);
+        assertEquals("WHERE name in ('lalala', 'name2') AND \nname = '' AND \nage = ?", jdbcWhere.whereClause.trim());
+        // assertEquals("('lalala', 'name2')", jdbcWhere.params[0]);
+        assertEquals(11, jdbcWhere.params[0]);
     }
 }
