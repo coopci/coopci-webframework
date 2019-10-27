@@ -84,6 +84,14 @@ public class GeneralDao {
 		return ret ;
 	}
 	
+	public <T> T loadPojo(Connection dbconn, Class<?> clazz, String sql,
+			Object... params) throws SQLException {
+		
+		SimplePoJoDAO simplePoJoDAO = this.daoManager.getDao(clazz);
+		T ret = simplePoJoDAO.loadPojo(dbconn, sql, params);
+		return ret ;
+	}
+	
 	public <T> List<T> loadPojoList(DataSource ds, Class<?> clazz, String sql,
 			Object... params) throws SQLException {
 		
