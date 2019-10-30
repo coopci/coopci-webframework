@@ -65,6 +65,20 @@ public class DdlImporter {
 		}
 	}
 
+	// run的recreateSchema太危险，所以单写这么一个用来 更新视图，以免以后改了表但是忘了重新生成视图。
+	public void refreshViews(DataSource ds, String schemaName, String... sqlFiles) throws SQLException, IOException {
+
+		try (Connection dbconn = ds.getConnection()) {
+			dbconn.setAutoCommit(false);
+			dbconn.setCatalog(schemaName);
+			for (String sqlFile : sqlFiles) {
+				List<String> ddlList = loadDdlList(sqlFile);
+				this.run(dbconn, ddlList);
+			}
+			dbconn.commit();
+		}
+
+	}
 	/**
 	 * 
 	 * @param recreateSchema
