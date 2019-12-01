@@ -192,7 +192,17 @@ public class ResultSetMapper<T> {
 	static protected void set(Field field, Object bean, Object columnValue)
 			throws IllegalArgumentException, IllegalAccessException {
 
-		if ((field.getType() == boolean.class || field.getType() == Boolean.class)
+		if (field.getType().isEnum() && columnValue.getClass() == String.class) {
+			
+			Enum<?> value = null;
+			if (columnValue.getClass() == String.class) {
+				value = Enum.valueOf((Class<? extends Enum>)field.getType(), (String)columnValue);	
+			} else if (columnValue.getClass().isEnum()) {
+				value = (Enum<?>)columnValue;
+			}
+			field.set(bean, value);
+		}
+		else if ((field.getType() == boolean.class || field.getType() == Boolean.class)
 				&& columnValue instanceof Integer) {
 			Integer intValue = (Integer) columnValue;
 			if (intValue == 0) {

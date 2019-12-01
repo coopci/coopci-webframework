@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gubo.http.querystring.Gender;
+
 @Entity(name = "person")
 @Table(name = "person")
 public class Person implements ISimplePoJo{
@@ -26,6 +28,9 @@ public class Person implements ISimplePoJo{
 	
 	@Column
 	public BigDecimal salary;
+	
+	@Column
+	public Gender gender;
 	
 	@Column
 	public Set<String> methods;

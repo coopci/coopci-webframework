@@ -6,7 +6,7 @@ import javax.persistence.Column;
 
 import org.junit.Test;
 
-public class ResultSetMapperTest {
+public class ResultSetMapperUnitTest {
 
 	class ToClass {
 
