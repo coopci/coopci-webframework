@@ -1,11 +1,8 @@
 package gubo.http.querystring;
 
-import static org.junit.Assert.*;
-import gubo.http.grizzly.demo.DemoRequest;
-import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
-import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler.BytesReadHandler;
-import gubo.http.querystring.QueryStringBinder.JDBCOrderBy;
-import gubo.http.querystring.QueryStringBinder.JDBCWhere;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -20,7 +17,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.mockito.Mockito.when;
+import gubo.http.grizzly.demo.DemoRequest;
+import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
+import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler.BytesReadHandler;
+import gubo.http.querystring.QueryStringBinder.JDBCOrderBy;
+import gubo.http.querystring.QueryStringBinder.JDBCWhere;
 
 @RunWith(MockitoJUnitRunner.class)
 public class QueryStringBinderTest {
@@ -164,5 +165,14 @@ public class QueryStringBinderTest {
 		assertEquals("file1", req.qualification.getFilename());
 		assertEquals("Content of file1.", new String(req.qualification.getBytes()));
 		return;
+	}
+	
+	@Test
+	public void testBind() throws Exception {
+		QueryStringBinder binder = new QueryStringBinder();
+		Person person = new Person();
+		binder.bind("name=john&age=30&isVIP=true&height=1.80&tier=III&register_time=2019-07-01 00:01:01&gender=Male", person);
+		assertEquals(Gender.Male, person.gender);
+		assertEquals("男", person.gender.chinese);
 	}
 }

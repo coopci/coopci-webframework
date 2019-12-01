@@ -33,6 +33,7 @@ import gubo.http.querystring.parsers.BigDecimalParser;
 import gubo.http.querystring.parsers.BooleanFieldParser;
 import gubo.http.querystring.parsers.DatetimeParser;
 import gubo.http.querystring.parsers.DoubleFieldParser;
+import gubo.http.querystring.parsers.EnumFieldParser;
 import gubo.http.querystring.parsers.FloatFieldParser;
 import gubo.http.querystring.parsers.IntegerFieldParser;
 import gubo.http.querystring.parsers.LongFieldParser;
@@ -153,6 +154,9 @@ public class QueryStringBinder {
 
 			IQueryStringFieldParser deserializerObj = deserializerClass
 					.newInstance();
+			if (f.getType().isEnum()) {
+				deserializerObj = new EnumFieldParser((Class<? extends Enum>)f.getType());
+			}
 			if (anno != null) {
 				deserializerObj.setIgnoreMalFormat(anno.ignoreMalFormat());
 				deserializerObj.setCanBeBlank(anno.canBeBlank());

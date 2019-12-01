@@ -37,4 +37,7 @@ public class Person {
 			deserializer=RomanIntegerFieldParser.class
 			)
 	public int tier;
+	
+	@QueryStringField
+	public Gender gender;
 }
