@@ -469,6 +469,10 @@ public class QueryStringBinder {
 			} else if (f.getType() == MultipartFile.class) {
 				MultipartFile mf = (MultipartFile) f.get(pojo);
 				v = "filename=" + mf.getFilename().replace("\"", "") + ",length=" + mf.getBytes().length;
+			} else if (f.getType().isEnum()) {
+				
+				Enum<?> value = (Enum<?>) f.get(pojo);
+				v = value.name();
 			} else {
 				Object o = f.get(pojo);
 				if (o == null)
