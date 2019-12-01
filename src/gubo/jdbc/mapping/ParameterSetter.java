@@ -39,6 +39,8 @@ public class ParameterSetter {
 		if (value instanceof Set) {
 			// mysql 的集合 
 			preparedStatementSetMethod.invoke(ps, this.index, convertToMysqlSetString((Set<String>)value));
+		} else if ( value instanceof Enum<?>) {
+			preparedStatementSetMethod.invoke(ps, this.index, ((Enum<?>) value).name());
 		} else {
 			preparedStatementSetMethod.invoke(ps, this.index, value);	
 		}

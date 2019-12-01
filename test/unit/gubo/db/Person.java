@@ -39,4 +39,12 @@ public class Person implements ISimplePoJo{
 	public void setId(long id) {
 		this.id = id;
 	}
+	
+	public void flipGender() {
+		if(this.gender == Gender.Male) {
+			this.gender = Gender.Female;
+		} else {
+			this.gender = Gender.Male;
+		}
+	}
 }

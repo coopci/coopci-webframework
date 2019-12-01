@@ -1,9 +1,8 @@
-package gubo.jdbc.mapping;
+package gubo.db;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.After;
@@ -13,24 +12,9 @@ import org.junit.Test;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import gubo.db.DaoManager;
-import gubo.db.GeneralDao;
-import gubo.db.Person;
-import gubo.http.querystring.Gender;
+import gubo.jdbc.mapping.ResultSetMapper;
 
-
-//CREATE TABLE `person` (
-//		   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-//		   `name` varchar(45) DEFAULT NULL,
-//		   `age` int(11) DEFAULT NULL,
-//		   `salary` decimal(10,2) DEFAULT NULL,
-//		   `methods` set('m1','m2') DEFAULT NULL,
-//		   `gender` varchar(45) NOT NULL DEFAULT '',
-//		   PRIMARY KEY (`id`),
-//		   KEY `methods` (`methods`)
-//		 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-//		 
-public class ResultSetMapperTest {
+public class GeneralDaoTest {
 	HikariDataSource ds;
 	@Before
 	public void setup() {
@@ -53,28 +37,31 @@ public class ResultSetMapperTest {
 	public void teardown() {
 		ds.close();
 	}
+	
 	@Test
-	public void testMapRersultSetToObject() throws Exception {
-		ResultSetMapper<Person> mapper = new ResultSetMapper<Person>();
+	public void testSelectAndUpdate() throws Exception {
+		DaoManager daoManager = new DaoManager();
+		GeneralDao generalDao = new GeneralDao(daoManager);
+		
 		
 		try (Connection dbconn = ds.getConnection()) {
-			PreparedStatement stmt = dbconn.prepareStatement("select * from person limit 1");
-			
-			ResultSet rs = stmt.executeQuery();
-			List<Person> personList = mapper.mapRersultSetToObject(rs, Person.class);
+			dbconn.setAutoCommit(false);
+			List<Person> personList = generalDao.loadPojoList(dbconn, Person.class, "select * from person limit 1");
 			
 			for (Person person : personList) {
 				System.out.println("person.gender: " + person.gender);
 				
 			}
-			DaoManager daoManager = new DaoManager();
-			GeneralDao generalDao = new GeneralDao(daoManager);
+			
 			
 			Person person = personList.get(0);
+			person.methods.add("m1");
 			person.flipGender();
 			generalDao.update(dbconn, person);
+			dbconn.commit();
 		}
 		
 		
 	}
+	
 }

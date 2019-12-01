@@ -1,5 +1,8 @@
 package gubo.http.querystring;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Gender {
 	Male("男"),
 	Female("女");

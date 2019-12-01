@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,6 +17,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gubo.http.grizzly.demo.DemoRequest;
 import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
@@ -174,6 +177,12 @@ public class QueryStringBinderTest {
 		binder.bind("name=john&age=30&isVIP=true&height=1.80&tier=III&register_time=2019-07-01 00:01:01&gender=Male", person);
 		assertEquals(Gender.Male, person.gender);
 		assertEquals("男", person.gender.chinese);
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+		String jstr = objectMapper.writeValueAsString(person);
+		System.out.println("jstr: " + jstr);
+		
 		String qstring = binder.toQueryString(person, null);
 		System.out.println("qstring: " + qstring);
 		assertTrue(qstring.contains("gender=Male"));
