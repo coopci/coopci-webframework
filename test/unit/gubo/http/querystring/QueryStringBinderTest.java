@@ -174,5 +174,8 @@ public class QueryStringBinderTest {
 		binder.bind("name=john&age=30&isVIP=true&height=1.80&tier=III&register_time=2019-07-01 00:01:01&gender=Male", person);
 		assertEquals(Gender.Male, person.gender);
 		assertEquals("男", person.gender.chinese);
+		String qstring = binder.toQueryString(person, null);
+		System.out.println("qstring: " + qstring);
+		assertTrue(qstring.contains("gender=Male"));
 	}
 }

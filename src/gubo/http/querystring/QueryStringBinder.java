@@ -117,7 +117,9 @@ public class QueryStringBinder {
 			Class<? extends IQueryStringFieldParser> deserializerClass = anno
 					.deserializer();
 			if (deserializerClass == NullParser.class) {
-				if (f.getType() == String.class) {
+				if (f.getType().isEnum()) {
+					deserializerClass = EnumFieldParser.class;
+				} else if (f.getType() == String.class) {
 					deserializerClass = StringFieldParser.class;
 				} else if (f.getType() == Long.class) {
 					deserializerClass = LongFieldParser.class;
@@ -151,12 +153,14 @@ public class QueryStringBinder {
 			}
 
 			// System.out.println("deserializerClass = " + deserializerClass);
-
-			IQueryStringFieldParser deserializerObj = deserializerClass
-					.newInstance();
-			if (f.getType().isEnum()) {
+			IQueryStringFieldParser deserializerObj = null;
+			if (deserializerClass == EnumFieldParser.class) {
 				deserializerObj = new EnumFieldParser((Class<? extends Enum>)f.getType());
+			} else {
+				deserializerObj = deserializerClass
+					.newInstance();
 			}
+			
 			if (anno != null) {
 				deserializerObj.setIgnoreMalFormat(anno.ignoreMalFormat());
 				deserializerObj.setCanBeBlank(anno.canBeBlank());
