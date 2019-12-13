@@ -115,7 +115,7 @@ public class NannyHttpHandler extends HttpHandler {
 			}
 
 		} catch (Exception ex) {
-			logger.error("Exception in NannyHttpHandler.service, path={}, contentType={}" + getRequestPath(req), req.getContentType(), ex);
+			logger.error("Exception in NannyHttpHandler.service, path={}, contentType={}", getRequestPath(req), req.getContentType(), ex);
 			if (ex instanceof RequiredParametersMissingException ) {
 				StringBuilder sb = new StringBuilder();
 				for( Entry<String, String[]> entry : req.getParameterMap().entrySet()) {
