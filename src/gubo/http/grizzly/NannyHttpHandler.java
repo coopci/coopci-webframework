@@ -5,6 +5,7 @@ import gubo.exceptions.ApiException;
 import gubo.exceptions.BadParameterException;
 import gubo.exceptions.QueryStringParseException;
 import gubo.exceptions.RequiredParameterException;
+import gubo.exceptions.RequiredParametersMissingException;
 import gubo.exceptions.SessionNotFoundException;
 import gubo.http.grizzly.handlers.InMemoryMultipartEntryHandler;
 import gubo.http.querystring.QueryStringBinder;
@@ -22,6 +23,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.glassfish.grizzly.EmptyCompletionHandler;
 import org.glassfish.grizzly.http.Method;
@@ -113,7 +115,21 @@ public class NannyHttpHandler extends HttpHandler {
 			}
 
 		} catch (Exception ex) {
-			logger.error("Exception in NannyHttpHandler.service, path=" + getRequestPath(req), ex);
+			logger.error("Exception in NannyHttpHandler.service, path={}, contentType={}" + getRequestPath(req), req.getContentType(), ex);
+			if (ex instanceof RequiredParametersMissingException ) {
+				StringBuilder sb = new StringBuilder();
+				for( Entry<String, String[]> entry : req.getParameterMap().entrySet()) {
+					sb.append(entry.getKey())
+					.append(":");
+					for (String v : entry.getValue()) {
+						sb.append(v)
+						.append(",");
+					}
+					sb.append("\n");
+				}
+				String params = sb.toString();
+				logger.error("req.getParameterMap(): {}", params);
+			}
 			this.handleException(ex, req, res);
 		}
 	}
