@@ -15,12 +15,21 @@ public class ThreeDigitsVersionTest {
 		ThreeDigitsVersion vn1 = new ThreeDigitsVersion("1.0.11");
 		ThreeDigitsVersion vn2 = new ThreeDigitsVersion("1.0.9");
 		ThreeDigitsVersion vn3 = new ThreeDigitsVersion("1.0.11");
+		
+		// 1.0.9 < 1.0.11
 		assertEquals(-1, vn2.compareTo(vn1));
+		
+		// 1.0.11 > 1.0.9
 		assertEquals(1, vn1.compareTo(vn2));
 		
+		
+		// 1.0.11 == 1.0.11 
 		assertEquals(0, vn1.compareTo(vn1));
+		
+		// 1.0.9 == 1.0.9
 		assertEquals(0, vn2.compareTo(vn2));
 		
+		// 1.0.11 == 1.0.11 
 		assertEquals(0, vn1.compareTo(vn3));
 	}
 	
