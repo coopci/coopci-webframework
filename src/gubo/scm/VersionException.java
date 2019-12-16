@@ -19,4 +19,16 @@ public class VersionException extends ApiException {
         this.requirement = requirement;
         this.current = current;
     }
+    
+    public String getMessage() {
+        String msg = "Version not fullfilled, requires: " + this.requirement.toString() + " your version: " + this.current;
+        return msg;
+    }
+    public int getHttpStatus() {
+        return 400;
+    }
+    
+    public int getCode() {
+        return 400;
+    }
 }
