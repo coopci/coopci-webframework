@@ -56,6 +56,24 @@ public class ThreeDigitsVersionTest {
 		assertEquals(value, map.get(vn3));
 		
 	}
+	
+	@Test(expected = VersionException.class)
+    public void testCheckFailed1() throws VersionException {
+        ThreeDigitsVersion vn1 = new ThreeDigitsVersion("1.0.11");
+        vn1.check("1.0.9");
+    }
+	
+	@Test(expected = VersionException.class)
+    public void testCheckFailed2() throws VersionException {
+        ThreeDigitsVersion vn1 = new ThreeDigitsVersion("1.0.11");
+        vn1.check("");
+    }
+	
+	@Test
+    public void testCheckPass() throws VersionException {
+        ThreeDigitsVersion vn1 = new ThreeDigitsVersion("1.0.11");
+        vn1.check("1.0.11");
+    }
 
 	
 }

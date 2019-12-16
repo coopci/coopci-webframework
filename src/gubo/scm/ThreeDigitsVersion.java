@@ -1,5 +1,7 @@
 package gubo.scm;
 
+import com.google.common.base.Strings;
+
 import java.util.Objects;
 
 public class ThreeDigitsVersion implements Comparable<ThreeDigitsVersion>{
@@ -61,4 +63,21 @@ public class ThreeDigitsVersion implements Comparable<ThreeDigitsVersion>{
 	public int hashCode() {
 	    return Objects.hash(this.digit1, this.digit2, this.digit3);
 	  }
+	
+	
+	/**
+	 * 把this作为要求的版本号，检查target 是否至少和this一样新。
+	 * @throws VersionException 
+	 * 
+	 **/
+	public void check(String target) throws VersionException {
+	    if (Strings.isNullOrEmpty(target)) {
+	        throw new VersionException(this.toString(), target);
+	    }
+	    ThreeDigitsVersion other = new ThreeDigitsVersion(target);
+	    if (this.compareTo(other) > 0) {
+	        throw new VersionException(this.toString(), target);
+	    }
+	    
+	}
 }
