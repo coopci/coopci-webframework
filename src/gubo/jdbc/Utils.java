@@ -1,5 +1,7 @@
 package gubo.jdbc;
 
+import java.util.Set;
+
 public class Utils {
 
 	/**
@@ -18,6 +20,21 @@ public class Utils {
 			if (i < wordsArray.length - 1) {
 				sb.append(", ");
 			}
+		}
+		sb.append(')');
+		return sb.toString();
+	}
+	
+	public static String toSqlArray(Set<Long> longs) {
+		StringBuilder sb = new StringBuilder();
+		sb.append('(');
+		int i = 0;
+		for (Long n : longs) {
+			sb.append(n);
+			if (i < longs.size() - 1) {
+				sb.append(", ");
+			}
+			++i;
 		}
 		sb.append(')');
 		return sb.toString();
