@@ -25,8 +25,11 @@ public abstract class ScheduledService implements BaseService {
 	
 
 	volatile boolean stop = false;
-
-	private Timer timer = new Timer();
+	public String getName() {
+		return this.getClass().getSimpleName();
+	};
+	private Timer timer = new Timer(this.getName());
+	
 	private TimerTask timerTask = new TimerTask() {
 
 		@Override
