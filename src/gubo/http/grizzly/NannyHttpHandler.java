@@ -388,10 +388,24 @@ public class NannyHttpHandler extends HttpHandler {
 			this.handleException((QueryStringParseException) ex, req, res);
 		} else if (ex instanceof ApiException) {
 			this.handleException((ApiException) ex, req, res);
+		} else if (ex instanceof IllegalArgumentException) {
+			this.handlerIllegalArgumentException((IllegalArgumentException) ex, req, res);
 		} else {
 			throw ex;
 		}
 
+		return;
+	}
+	
+
+	public void handlerIllegalArgumentException(IllegalArgumentException ex, Request req, Response res) throws IOException {
+		String msg = ex.getMessage();
+		HashMap<String, Object> ret = getErrorResponse(400, msg);
+		ret.put("message", msg);
+		ret.put("exception-handler", NannyHttpHandler.class);
+		ret.put("handler", this.getClass().toString());
+		res.setStatus(400);
+		this.sendJson(ret, req, res);
 		return;
 	}
 
