@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -64,4 +65,19 @@ public class GeneralDaoTest {
 		
 	}
 	
+	@Test
+	public void testLoadMapList() throws Exception {
+		DaoManager daoManager = new DaoManager();
+		GeneralDao generalDao = new GeneralDao(daoManager);
+		
+		
+		try (Connection dbconn = ds.getConnection()) {
+			dbconn.setAutoCommit(false);
+			List<Map<String, Object>> personList = generalDao.loadMapList(dbconn, "select * from person limit 1");
+			
+			dbconn.commit();
+		}
+		
+		
+	}
 }
