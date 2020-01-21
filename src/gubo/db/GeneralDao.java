@@ -3,8 +3,11 @@ package gubo.db;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
+
+import gubo.jdbc.mapping.ResultSetMapper;
 
 /**
  *	根据要操作的pojo自动选择要使用哪个 SimplePoJoDAO。
@@ -100,5 +103,22 @@ public class GeneralDao {
 		return ret ;
 	}
 	
+	public List<Map<String, Object>> loadMapList(Connection dbconn, String sql,
+			Object... params) throws SQLException {
+		// 其实这里 ResultSetMapper 的模板参数随便填什么都行。
+		ResultSetMapper<Map<String, Object>> mapper = new ResultSetMapper<Map<String, Object>>();
+		List<Map<String, Object>> pojoList = mapper.loadMapList(dbconn, sql, params);
+		return pojoList;
+	}
 	
+	public List<Map<String, Object>> loadMapList(DataSource ds, String sql,
+			Object... params) throws SQLException {
+		List<Map<String, Object>> ret = null;
+		try(Connection dbconn = ds.getConnection()) {
+			dbconn.setAutoCommit(false);
+			ret = this.loadMapList( dbconn,  sql,params);
+			dbconn.commit();
+		}
+		return ret;
+	}
 }

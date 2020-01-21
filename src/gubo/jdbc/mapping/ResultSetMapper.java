@@ -9,7 +9,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -88,6 +90,44 @@ public class ResultSetMapper<T> {
 		return ret;
 	}
 
+	// 用在把sql查询结果直接作为json输出的场景。
+	// 可以避免特意定义一个java类只为了去装查询结果。
+	public List<Map<String, Object>> loadMapList(Connection dbconn,
+			String sql, Object... params) throws SQLException {
+
+		PreparedStatement stmt = dbconn.prepareStatement(sql);
+		int idx = 1;
+		for (Object p : params) {
+			stmt.setObject(idx, p);
+			++idx;
+		}
+		ResultSet rs = stmt.executeQuery();
+		List<Map<String, Object>> ret = this.mapRersultSetToMap(rs);
+		return ret;
+	}
+	public List<Map<String, Object>> mapRersultSetToMap(ResultSet rs) throws SQLException {
+		
+		List<Map<String, Object>> ret = new LinkedList<Map<String, Object>>();
+		
+		ResultSetMetaData rsmd = rs.getMetaData();
+
+		int colCount = rsmd.getColumnCount();
+		while (rs.next()) {
+			Map<String, Object> row = new HashMap<String, Object>();
+			for (int _iterator = 0; _iterator < colCount; _iterator++) {
+				// getting the SQL column name
+				// String columnName = rsmd
+				// .getColumnName(_iterator + 1);
+				String columnName = rsmd.getColumnLabel(_iterator + 1);
+
+				Object columnValue = rs.getObject(_iterator + 1);
+				row.put(columnName, columnValue);
+				
+			}
+			ret.add(row);
+		}
+		return ret;
+	}
 	@SuppressWarnings("unchecked")
 	public List<T> mapRersultSetToObject(ResultSet rs, Class<?> outputClass) {
 		if (rs == null) {
