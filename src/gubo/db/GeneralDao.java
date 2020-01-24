@@ -18,6 +18,9 @@ public class GeneralDao {
 	public GeneralDao(DaoManager daoManager) {
 		this.daoManager = daoManager;
 	}
+	public GeneralDao() {
+		this.daoManager = new DaoManager();
+	}
 	
 	SimplePoJoDAO getSimplePoJoDAO(Object pojo) {
 		Class<?> clazz = pojo.getClass();
