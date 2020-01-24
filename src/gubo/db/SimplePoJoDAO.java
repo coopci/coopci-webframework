@@ -206,7 +206,9 @@ public class SimplePoJoDAO {
 	public <T extends ISimplePoJo> T insert(Connection dbconn, T pojo)
 			throws Exception {
 		Long newid = InsertStatementGenerator.insertNew(dbconn, pojo);
-		pojo.setId(newid);
+		if (newid != null) {
+			pojo.setId(newid);
+		}
 		return pojo;
 	}
 
