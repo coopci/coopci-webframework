@@ -7,6 +7,7 @@
 	<artifactId>jtwig-core</artifactId>
 	<version>5.86.1.RELEASE</version>
 	<dependencies>
+	<!--
 		<dependency>
 			<groupId>org.jtwig</groupId>
 			<artifactId>jtwig-reflection</artifactId>
@@ -26,7 +27,6 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
@@ -58,8 +58,6 @@
 			<artifactId>mockito-core</artifactId>
 			<version>2.19.0</version>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/mockwebserver -->
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>mockwebserver</artifactId>
@@ -67,14 +65,12 @@
 		</dependency>
 
 
-		<!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
 			<version>3.12.0</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.googlecode.cqengine/cqengine -->
 		<dependency>
 			<groupId>com.googlecode.cqengine</groupId>
 			<artifactId>cqengine</artifactId>
@@ -99,6 +95,14 @@
 		<artifactId>javase</artifactId>
 		<version>2.2</version>
 	</dependency>
+-->
+
+
+<dependency>
+    <groupId>com.fasterxml.jackson.dataformat</groupId>
+    <artifactId>jackson-dataformat-csv</artifactId>
+    <version>2.10.2</version>
+</dependency>
 
 	</dependencies>
 	<description>Jtwig jtwig-core</description>
