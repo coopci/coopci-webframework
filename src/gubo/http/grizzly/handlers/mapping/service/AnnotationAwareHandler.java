@@ -172,15 +172,19 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
     @Override
     public Object doPost(Request request, Response response, InMemoryMultipartEntryHandler inMemoryMultipartEntryHandler) throws Exception {
         
-        Object p = pclazz.newInstance();
-//        this.bindParameter(inMemoryMultipartEntryHandler, p);
-        try {
-        	this.bindParameter(inMemoryMultipartEntryHandler, p);
-        } catch (Exception ex) {
-        	// 绑定参数出错，
-        	logBindingErrorIfNeeded(inMemoryMultipartEntryHandler, ex);
-			throw ex;
-        }
+        Object p = null;
+        if (pclazz != null) {
+        	pclazz.newInstance();
+	        
+	//        this.bindParameter(inMemoryMultipartEntryHandler, p);
+	        try {
+	        	this.bindParameter(inMemoryMultipartEntryHandler, p);
+	        } catch (Exception ex) {
+	        	// 绑定参数出错，
+	        	logBindingErrorIfNeeded(inMemoryMultipartEntryHandler, ex);
+				throw ex;
+	        }
+    	}
         
         Class<?>[] parameterTypes = this.method.getParameterTypes();
         Object[] params = new Object[parameterTypes.length];
