@@ -174,7 +174,7 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
         
         Object p = null;
         if (pclazz != null) {
-        	pclazz.newInstance();
+        	p = pclazz.newInstance();
 	        
 	//        this.bindParameter(inMemoryMultipartEntryHandler, p);
 	        try {
