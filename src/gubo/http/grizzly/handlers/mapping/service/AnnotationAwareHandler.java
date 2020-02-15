@@ -115,14 +115,17 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
 		}
     }
     public Object doXXX(Request request, Response response) throws Exception {
-        Object p = pclazz.newInstance();
-        try {
-        	this.bindParameter(request, p);
-        } catch (Exception ex) {
-        	// 绑定参数出错，
-        	logBindingErrorIfNeeded(request, ex);
-        	
-			throw ex;
+    	Object p = null; 
+        if (pclazz != null) {
+        	p = pclazz.newInstance();
+        	 try {
+             	this.bindParameter(request, p);
+             } catch (Exception ex) {
+             	// 绑定参数出错，
+             	logBindingErrorIfNeeded(request, ex);
+             	
+     			throw ex;
+             }
         }
         Class<?>[] parameterTypes = this.method.getParameterTypes();
         Object[] params = new Object[parameterTypes.length];
