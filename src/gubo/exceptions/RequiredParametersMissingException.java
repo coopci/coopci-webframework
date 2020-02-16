@@ -12,12 +12,14 @@ public class RequiredParametersMissingException extends ApiException {
 	private static final long serialVersionUID = 1674140977712518163L;
 	
 	HashSet<String> missingParamters;
+	 Class<?> clazz;
 	public HashSet<String> getMissingParamters() {
 		return missingParamters;
 	}
 
-	public RequiredParametersMissingException(HashSet<String> missingParamters){
+	public RequiredParametersMissingException(HashSet<String> missingParamters,  Class<?> clazz){
 		this.missingParamters = missingParamters;
+		this.clazz = clazz;
 	}
 	
 	public String toString() {
@@ -30,6 +32,8 @@ public class RequiredParametersMissingException extends ApiException {
 			sb.append(p);
 			isFirst = false;
 		}
+		sb.append("for instance of class")
+		.append(this.clazz.getName());
 		String ret = sb.toString();
 		return ret;
 	}

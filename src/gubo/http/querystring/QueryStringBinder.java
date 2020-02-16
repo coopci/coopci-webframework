@@ -210,7 +210,7 @@ public class QueryStringBinder {
 	}
 
 	RequiredParametersMissingException makeRequiredParametersMissingException(
-			HashSet<Field> missingFields) {
+			HashSet<Field> missingFields, Class<?> clazz) {
 
 		if (missingFields.size() == 0)
 			return null;
@@ -228,7 +228,7 @@ public class QueryStringBinder {
 		}
 
 		RequiredParametersMissingException ret = new RequiredParametersMissingException(
-				missingParameters);
+				missingParameters, clazz);
 		return ret;
 	}
 
@@ -350,7 +350,7 @@ public class QueryStringBinder {
 		}
 
 		if (requiredFields.size() > 0 && !this.ignoreRequiredCheck) {
-			throw this.makeRequiredParametersMissingException(requiredFields);
+			throw this.makeRequiredParametersMissingException(requiredFields,pojo.getClass());
 		}
 		return;
 	}
