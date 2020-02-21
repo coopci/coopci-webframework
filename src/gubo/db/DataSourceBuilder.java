@@ -14,6 +14,7 @@ public class DataSourceBuilder {
         config.setJdbcUrl(properties.getProperty("database.url"));
         config.setUsername(properties.getProperty("database.username"));
         config.setPassword(properties.getProperty("database.password"));
+        config.setMaximumPoolSize((Integer)properties.get("maximumPoolSize"));
         HikariDataSource ds = new HikariDataSource(config);
         return ds;
     }
@@ -22,6 +23,7 @@ public class DataSourceBuilder {
 		config.setJdbcUrl(properties.getProperty("database.url"));
 		config.setUsername(properties.getProperty("database.username"));
 		config.setPassword(properties.getProperty("database.password"));
+		config.setMaximumPoolSize((Integer)properties.get("maximumPoolSize"));
 		HikariDataSource ds = new HikariDataSource(config);
 		if(leakTracker != null) {
 	      ProxyDataSourceInvocationHandler h = new ProxyDataSourceInvocationHandler(ds, leakTracker);
