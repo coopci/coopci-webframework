@@ -17,7 +17,9 @@ public class PropertiesPicker {
         for (Entry<Object, Object> entry : origin.entrySet() ) {
             String k = entry.getKey().toString();
             if (k.startsWith(prefix)) {
-                ret.put(entry.getKey(), entry.getValue());
+            	
+            	
+                ret.put(k.substring(prefix.length()), entry.getValue());
             }
         }
         return ret;

@@ -22,9 +22,10 @@ public class PropertiesPickerTest {
         
         
         assertEquals(1, picked.size());
-        assertEquals("1", picked.getProperty("abc.af"));
+        assertEquals("1", picked.getProperty("af"));
         
         assertFalse(picked.containsKey("abc"));
         assertFalse(picked.containsKey("abcd.af"));
+        assertFalse(picked.containsKey("abc.af"));
     }
 }
