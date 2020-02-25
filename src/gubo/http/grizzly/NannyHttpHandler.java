@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import com.timgroup.statsd.StatsDClient;
 
 // import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 
@@ -48,6 +49,18 @@ public class NannyHttpHandler extends HttpHandler {
 
 	public SessonManager getNannySessionManager() {
 		return this.sessonManager;
+	}
+	private StatsDClient statsd = null;
+
+	public StatsDClient getStatsd() {
+		return statsd;
+	}
+	//打到statsd上的metric 名字。
+	public String getMetricName() {
+		return null;
+	}
+	public void setStatsd(StatsDClient statsd) {
+		this.statsd = statsd;
 	}
 
 	public void send(Object ret, Request req, Response res) throws Exception {
@@ -71,6 +84,7 @@ public class NannyHttpHandler extends HttpHandler {
 	}
 
 	public void serveGet(Request req, Response res) throws Exception {
+		
 		Object ret = this.doGet(req, res);
 		this.send(ret, req, res);
 	}
@@ -101,6 +115,14 @@ public class NannyHttpHandler extends HttpHandler {
 		req.setCharacterEncoding("utf-8");
 		Method method = req.getMethod();
 
+		StatsDClient statsd = this.getStatsd();
+		String metricName = this.getMetricName();
+		
+		if (metricName != null && statsd != null) {
+			statsd.incrementCounter(metricName);
+			statsd.incrementCounter(metricName + ".inprocess"); //处理中的个数
+		}
+		long before = System.currentTimeMillis();
 		try {
 			if (method.getMethodString().equals("GET")) {
 				this.serveGet(req, res);
@@ -131,7 +153,17 @@ public class NannyHttpHandler extends HttpHandler {
 				logger.error("req.getParameterMap(): {}", params);
 			}
 			this.handleException(ex, req, res);
+		} finally {
+			if (metricName != null && statsd != null) {
+				statsd.incrementCounter(metricName + ".invocations"); //调用次数。
+				statsd.decrementCounter(metricName + ".inprocess");
+				long after = System.currentTimeMillis();
+				
+				statsd.recordExecutionTime(metricName + ".ExecutionTime", after-before);
+			}
 		}
+		
+		
 	}
 
 	public long getRequiredLongParameter(Request request, String pname)
