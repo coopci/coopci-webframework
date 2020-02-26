@@ -156,7 +156,17 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
             
         }
     }
-    
+    @Override
+    public String getMetricName() {
+    	if (this.service == null) {
+    		return null;
+    	}
+    	if (this.method == null) {
+    		return null;
+    	}
+    	
+    	return this.service.getClass().getName() + "." + this.method.getName();
+	}
     @Override
     public Object doGet(Request request, Response response) throws Exception {
         Object res = doXXX(request, response);
