@@ -57,7 +57,7 @@ public class NannyHttpHandler extends HttpHandler {
 	}
 	//打到statsd上的metric 名字。
 	public String getMetricName() {
-		return null;
+		return this.getClass().getName();
 	}
 	public void setStatsd(StatsDClient statsd) {
 		this.statsd = statsd;
