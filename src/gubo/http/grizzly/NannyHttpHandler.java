@@ -50,10 +50,20 @@ public class NannyHttpHandler extends HttpHandler {
 	public SessonManager getNannySessionManager() {
 		return this.sessonManager;
 	}
+	private static StatsDClient defaultStatsd = null;
+	public static StatsDClient getDefaultStatsd() {
+		return defaultStatsd;
+	}
+	public static void setDefaultStatsd(StatsDClient defaultStatsd) {
+		NannyHttpHandler.defaultStatsd = defaultStatsd;
+	}
 	private StatsDClient statsd = null;
 
 	public StatsDClient getStatsd() {
-		return statsd;
+		if(this.statsd!=null) {
+			return this.statsd;
+		}
+		return defaultStatsd;
 	}
 	//打到statsd上的metric 名字。
 	public String getMetricName() {
