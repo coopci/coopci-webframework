@@ -170,6 +170,8 @@ public class NannyHttpHandler extends HttpHandler {
 				long after = System.currentTimeMillis();
 				
 				statsd.recordExecutionTime(metricName + ".ExecutionTime", after-before);
+				
+				logger.info(metricName + ".ExecutionTime: " + (after-before) + " ms.");
 			}
 		}
 		
