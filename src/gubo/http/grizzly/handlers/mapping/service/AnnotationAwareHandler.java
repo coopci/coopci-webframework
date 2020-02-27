@@ -165,7 +165,7 @@ public class AnnotationAwareHandler extends NannyHttpHandler {
     		return null;
     	}
     	
-    	return this.service.getClass().getName() + "." + this.method.getName();
+    	return this.service.getClass().getSimpleName() + "." + this.method.getName();
 	}
     @Override
     public Object doGet(Request request, Response response) throws Exception {
