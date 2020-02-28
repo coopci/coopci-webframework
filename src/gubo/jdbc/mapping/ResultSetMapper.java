@@ -146,30 +146,34 @@ public class ResultSetMapper<T> {
 			while (rs.next()) {
 				T bean = (T) outputClass.newInstance();
 				for (int _iterator = 0; _iterator < colCount; _iterator++) {
-					// getting the SQL column name
-					// String columnName = rsmd
-					// .getColumnName(_iterator + 1);
-					String columnName = rsmd.getColumnLabel(_iterator + 1);
-
-					Object columnValue = rs.getObject(_iterator + 1);
-
-					Field field = mapping.colnameToField.get(columnName);
-					if (field == null) { // 这个resultset中的列没有对应的pojo 字段。
-						continue;
-					} else {
-						// field.set(bean, columnValue);
-						set(field, bean, columnValue);
-
+					try {
+						// getting the SQL column name
+						// String columnName = rsmd
+						// .getColumnName(_iterator + 1);
+						String columnName = rsmd.getColumnLabel(_iterator + 1);
+	
+						Object columnValue = rs.getObject(_iterator + 1);
+	
+						Field field = mapping.colnameToField.get(columnName);
+						if (field == null) { // 这个resultset中的列没有对应的pojo 字段。
+							continue;
+						} else {
+							// field.set(bean, columnValue);
+							set(field, bean, columnValue);
+	
+						}
+					} catch (Throwable t) {
+						logger.error(t.getMessage(), t);
 					}
 				}
 				outputList.add(bean);
 			}
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (InstantiationException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		if (outputList == null)
 			return new ArrayList<T>();
