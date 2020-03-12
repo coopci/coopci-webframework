@@ -59,6 +59,9 @@ public class DdlImporter {
 
 	void run(Connection dbconn, List<String> ddlList) throws SQLException {
 		for (String ddl : ddlList) {
+		    if(ddl.trim().isEmpty()) {
+		        continue;
+		    }
 			logger.info("Executing " + ddl + "...");
 			PreparedStatement ps = dbconn.prepareStatement(ddl);
 			ps.execute();
