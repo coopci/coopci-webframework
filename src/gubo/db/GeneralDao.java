@@ -124,4 +124,12 @@ public class GeneralDao {
 		}
 		return ret;
 	}
+	
+
+	public <T> T loadPoJoByUniqueKeys(Connection dbconn, Class<?> clazz, Object ... keyNamesAndvalues) throws SQLException {
+		
+		SimplePoJoDAO simplePoJoDAO = this.daoManager.getDao(clazz);
+		T ret = simplePoJoDAO.loadPoJoByUniqueKeys(dbconn, keyNamesAndvalues);
+		return ret ;
+	}
 }
