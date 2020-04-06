@@ -9,12 +9,21 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 public class DataSourceBuilder {
+    
+    private int toInt(Object v) {
+        if ( v instanceof Integer) {
+            return (Integer)v;
+        } else {
+            return Integer.parseInt(v.toString());
+        }
+    }
     public DataSource build(Properties properties) {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(properties.getProperty("database.url"));
         config.setUsername(properties.getProperty("database.username"));
         config.setPassword(properties.getProperty("database.password"));
-        config.setMaximumPoolSize((Integer)properties.get("maximumPoolSize"));
+        config.setMaximumPoolSize(toInt(properties.get("maximumPoolSize")));
+       
         HikariDataSource ds = new HikariDataSource(config);
         return ds;
     }
