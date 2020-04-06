@@ -98,6 +98,11 @@
 -->
 
 
+	<dependency>
+	    <groupId>com.thetransactioncompany</groupId>
+	    <artifactId>jsonrpc2-client</artifactId>
+	    <version>1.16.4</version>
+	</dependency>
 <dependency>
     <groupId>com.fasterxml.jackson.dataformat</groupId>
     <artifactId>jackson-dataformat-csv</artifactId>
@@ -117,13 +122,13 @@
 		</exclusion>
 	</exclusions>
 </dependency>
-
+<!-- 
 <dependency>
     <groupId>com.timgroup</groupId>
     <artifactId>java-statsd-client</artifactId>
     <version>3.0.1</version>
 </dependency>
-
+ -->
 	</dependencies>
 	<description>Jtwig jtwig-core</description>
 	<name>jtwig-core</name>
