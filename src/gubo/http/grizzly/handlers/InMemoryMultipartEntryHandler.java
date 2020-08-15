@@ -20,7 +20,11 @@ import org.glassfish.grizzly.http.multipart.MultipartEntryHandler;
  * 
  * See {@link gubo.http.grizzly.demo.MultipartHandler} for usage.
  * 
+ * Replaced with  gubo.http.querystring.MultipartFile,
+ * see gubo.http.grizzly.demo.DemoRequest.qualification for example. 
+ * 
  **/
+@Deprecated
 public class InMemoryMultipartEntryHandler implements MultipartEntryHandler {
 
 	/**
