@@ -71,6 +71,12 @@
 	<classpathentry exported="true" kind="lib" path="lib/java-statsd-client-3.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jsonrpc2-base-1.36.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jsonrpc2-client-1.16.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/accessors-smart-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/asm-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/asm-3.3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/json-smart-1.3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/json-smart-2.2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/coverity-escapers-1.1.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
