@@ -34,6 +34,11 @@ public class ConcurrencyGate {
 			return this.sem.availablePermits();
 		}
 	}
+	public ConcurrencyGate(int permits) {
+		this.permits = permits;
+		sem = new Semaphore(permits);
+		
+	}
 	public Ticket accquire(int n) throws InterruptedException {
 		Semaphore sem = this.sem;
 		Ticket ret = new Ticket(this.sem, n);
