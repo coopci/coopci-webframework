@@ -6,6 +6,8 @@ import javax.persistence.Id;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
+import gubo.secure.xss.XSSEscaper;
+
 public interface ISimplePoJo {
 
 	public void setId(long id);
@@ -18,5 +20,13 @@ public interface ISimplePoJo {
 		Field field = fields[0];
 		field.setAccessible(true);
 		return field.get(this);
+	}
+	
+	default void escapeXSS() {
+		try {
+			XSSEscaper.escapeHtml(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
