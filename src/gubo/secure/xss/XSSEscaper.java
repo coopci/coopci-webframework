@@ -15,6 +15,9 @@ public class XSSEscaper {
 	 * 
 	 **/
 	public static String escapeHtml(Object obj) throws IllegalArgumentException, IllegalAccessException {
+		if(obj==null) {
+			return null;
+		}
 		if(obj instanceof String) {
 			return Escape.html((String)obj);
 		}
