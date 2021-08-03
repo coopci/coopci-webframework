@@ -1,4 +1,4 @@
-package gubo.http.service;
+package springless.http.service;
 
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
