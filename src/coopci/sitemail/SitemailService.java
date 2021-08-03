@@ -45,15 +45,8 @@ public interface SitemailService {
 	 * */
 	String compose(String author,String lang, MailBody body );
 	
-	/**
-	 * 改信
-	 * 发送前和发送后都可以改。
-	 * @param id 信id
-	 * @param lang  语言。不能是null或空。
-	 * @param body 改后的内容。
-	 * */
-	void update(String id ,String lang, MailBody body);
 	
+
 	/****
 	 * 发信
 	 * 
@@ -62,5 +55,16 @@ public interface SitemailService {
 	 * @pram rid 收信人id
 	 * */
 	void send(String id, String sid, String ... rid);
+
 	
+	
+	/**
+	 * 改信
+	 * 发送前和发送后都可以改。
+	 * @param id 信id
+	 * @param lang  语言。不能是null或空。
+	 * @param body 改后的内容。
+	 * */
+	void update(String id ,String lang, MailBody body);
+		
 }

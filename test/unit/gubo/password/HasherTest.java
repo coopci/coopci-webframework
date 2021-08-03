@@ -2,6 +2,8 @@ package gubo.password;
 
 import org.junit.Test;
 
+import springless.password.Hasher;
+
 public class HasherTest {
 
 	@Test

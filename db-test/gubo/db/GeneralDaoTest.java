@@ -13,7 +13,10 @@ import org.junit.Test;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import gubo.jdbc.mapping.ResultSetMapper;
+import springless.db.DaoManager;
+import springless.db.GeneralDao;
+import springless.db.Person;
+import springless.jdbc.mapping.ResultSetMapper;
 
 public class GeneralDaoTest {
 	HikariDataSource ds;

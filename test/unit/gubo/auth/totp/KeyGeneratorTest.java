@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.junit.Test;
 
-import gubo.auth.totp.KeyGenerator;
+import springless.auth.totp.KeyGenerator;
 
 public class KeyGeneratorTest {
 	@Test

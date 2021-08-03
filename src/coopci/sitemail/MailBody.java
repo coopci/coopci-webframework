@@ -2,7 +2,7 @@ package coopci.sitemail;
 
 public class MailBody {
 
-	
+	public String title;
 	//可能是txt,html,或form。
 	// txt:显示文字就行了。
 	// html: 需要当成html渲染。

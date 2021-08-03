@@ -4,7 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import gubo.failure.isolation.LatencyGuard.LatencyBreakStatus;
+import springless.failure.isolation.LatencyGuard;
+import springless.failure.isolation.LatencyGuard.LatencyBreakStatus;
 
 public class LatencyGuardTest {
 

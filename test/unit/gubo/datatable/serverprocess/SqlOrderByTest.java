@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import springless.datatable.serverprocess.SqlOrderBy;
+
 public class SqlOrderByTest {
 
 	@Test

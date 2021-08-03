@@ -9,6 +9,8 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
+import spingless.jdbc.Utils;
+
 public class UtilsTest {
 
 	@Test

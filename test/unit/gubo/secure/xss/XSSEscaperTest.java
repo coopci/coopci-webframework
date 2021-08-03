@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import springless.secure.xss.XSSEscaper;
+
 public class XSSEscaperTest {
 	
 	public static class User {

@@ -1,7 +1,6 @@
 package gubo.http.clients;
 
 import static org.junit.Assert.*;
-import gubo.http.querystring.demo.Person;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -9,6 +8,8 @@ import java.nio.charset.Charset;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
+import springless.http.clients.SimpleHttpClient;
+import springless.http.querystring.demo.Person;
 
 import org.junit.Test;
 

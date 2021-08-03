@@ -13,10 +13,11 @@ import org.junit.Test;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import gubo.db.DaoManager;
-import gubo.db.GeneralDao;
-import gubo.db.Person;
-import gubo.http.querystring.Gender;
+import springless.db.DaoManager;
+import springless.db.GeneralDao;
+import springless.db.Person;
+import springless.http.querystring.Gender;
+import springless.jdbc.mapping.ResultSetMapper;
 
 
 //CREATE TABLE `person` (

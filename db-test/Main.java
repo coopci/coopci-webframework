@@ -1,6 +1,6 @@
-import gubo.db.DaoManager;
-import gubo.db.Person;
-import gubo.db.SimplePoJoDAO;
+import springless.db.DaoManager;
+import springless.db.Person;
+import springless.db.SimplePoJoDAO;
 
 import java.math.BigDecimal;
 import java.sql.Connection;

@@ -7,9 +7,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import gubo.algo.merge.allocate.seqnum.MemSeqAllocator;
-import gubo.algo.merge.allocate.seqnum.SeqService;
 import org.junit.Test;
+
+import springless.algo.merge.allocate.seqnum.MemSeqAllocator;
+import springless.algo.merge.allocate.seqnum.SeqService;
 
 public class SeqServiceTest {
 

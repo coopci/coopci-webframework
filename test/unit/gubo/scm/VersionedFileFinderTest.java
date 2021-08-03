@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import springless.scm.VersionedFile;
+import springless.scm.VersionedFileFinder;
+
 public class VersionedFileFinderTest {
 
 	@Test

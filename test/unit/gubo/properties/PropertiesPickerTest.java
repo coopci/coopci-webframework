@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
+import springless.properties.PropertiesPicker;
+
 import java.util.Properties;
 
 public class PropertiesPickerTest {

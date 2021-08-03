@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import springless.encode.Base62;
+
 public class Base62Test {
 
 	@Test

@@ -8,6 +8,9 @@ import java.util.UUID;
 
 import org.junit.Test;
 
+import springless.scm.ThreeDigitsVersion;
+import springless.scm.VersionException;
+
 public class ThreeDigitsVersionTest {
 
 	@Test
