@@ -78,6 +78,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/json-smart-2.2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/coverity-escapers-1.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mustache-compiler-0.9.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/h2-1.4.199.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
